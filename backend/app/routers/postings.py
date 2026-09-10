@@ -1,5 +1,6 @@
 from pathlib import Path
 from shutil import copyfileobj
+from typing import Literal
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
@@ -11,7 +12,7 @@ from app.core.dependencies import get_current_user, require_role
 from app.database import get_db
 from app.models import JobPosting, Submission, User
 from app.schemas.posting import PostingCreate, PostingResponse, PostingUpdate
-from app.schemas.submission import SubmissionUploadResponse
+from app.schemas.submission import RankedSubmissionResponse, SubmissionUploadResponse
 
 
 router = APIRouter(
@@ -240,3 +241,45 @@ def create_submission(
         id=submission.id,
         status="QUEUED",
     )
+
+
+@router.get(
+    "/{posting_id}/submissions",
+    response_model=list[RankedSubmissionResponse],
+)
+def list_ranked_submissions(
+    posting_id: UUID,
+    sort: Literal["score"] = "score",
+    current_user: User = Depends(require_role("recruiter")),
+    db: Session = Depends(get_db),
+) -> list[RankedSubmissionResponse]:
+    posting = get_posting_or_404(posting_id, db)
+
+    if posting.recruiter_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only view submissions for your own postings",
+        )
+
+    submissions = db.scalars(
+        select(Submission)
+        .where(Submission.posting_id == posting_id)
+        .order_by(
+            Submission.score.desc().nulls_last(),
+            Submission.created_at.asc(),
+            Submission.id.asc(),
+        )
+    ).all()
+
+    return [
+        RankedSubmissionResponse(
+            id=submission.id,
+            candidate_id=submission.candidate_id,
+            status=submission.status,
+            score=submission.score if submission.status == "DONE" else None,
+            matched_skills=(
+                submission.matched_skills if submission.status == "DONE" else None
+            ),
+        )
+        for submission in submissions
+    ]
