@@ -127,3 +127,7 @@ pnpm-debug.log*
 uploads/
 backend/uploads/
 worker/uploads/
+
+AGENTS.md
+.agent/
+.codex/
