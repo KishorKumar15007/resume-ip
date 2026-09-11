@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { ApiError } from "../../api/client";
 import { login } from "../../api/auth";
 import { useAuth } from "../../auth/RequireAuth";
-import { safeReturnPath } from "../../auth/session";
+import { parseSession, safeReturnPath } from "../../auth/session";
 import { Button } from "../../components/Button";
 import { Feedback } from "../../components/Feedback";
 import { FormField } from "../../components/FormField";
@@ -33,13 +33,14 @@ export function LoginPage() {
     setIsSubmitting(true);
     try {
       const response = await login({ email, password });
-      if (!establishSession(response)) throw new ApiError("authentication");
+      const session = parseSession(response.access_token);
+      if (!session || !establishSession(response)) throw new ApiError("authentication");
       setPassword("");
-      navigate(returnPath ?? "/session", { replace: true });
+      navigate(returnPath ?? (session.role === "candidate" ? "/postings" : "/recruiter/postings"), { replace: true });
     } catch (caught) {
       setError(caught instanceof ApiError && caught.kind === "authentication" ? "Invalid email or password." : "We could not sign you in. Please try again.");
     } finally { setIsSubmitting(false); }
   }
 
-  return <section className="auth-page" aria-labelledby="login-title"><h1 id="login-title">Sign in</h1><p className="lede">Continue to your resume and hiring workspace.</p><form className="form" onSubmit={onSubmit} noValidate aria-busy={isSubmitting}>{error && <Feedback tone="error">{error}</Feedback>}<FormField label="Email" error={emailError}>{(props) => <input {...props} autoComplete="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />}</FormField><FormField label="Password" error={passwordError}>{(props) => <span className="password-input"><input {...props} autoComplete="current-password" type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} required /><button className="password-toggle" type="button" aria-controls={props.id} aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword((visible) => !visible)}>{showPassword ? "Hide" : "Show"}</button></span>}</FormField><Button type="submit" isLoading={isSubmitting}>Sign in</Button></form><p className="auth-switch">Need an account? <Link to="/signup">Create one</Link>.</p></section>;
+  return <section className="auth-page" aria-labelledby="login-title"><h1 id="login-title">Sign in</h1><p className="lede">Continue to your resume and hiring workspace.</p><form className="form" onSubmit={onSubmit} noValidate aria-busy={isSubmitting}>{error && <Feedback tone="error">{error}</Feedback>}<FormField label="Email" error={emailError}>{(props) => <input {...props} autoComplete="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />}</FormField><FormField label="Password" error={passwordError}>{(props) => <span className="password-input"><input {...props} autoComplete="current-password" type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} required /><button className="password-toggle" type="button" aria-controls={props.id} aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword((visible) => !visible)}>{showPassword ? "Hide" : "Show"}</button></span>}</FormField><Button type="submit" isLoading={isSubmitting}>Sign in</Button></form><p className="auth-switch">Need an account? <Link replace to="/signup" state={{ parentPath: "/" }}>Create one</Link>.</p></section>;
 }

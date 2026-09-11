@@ -24,6 +24,12 @@ export interface PostingResponse {
   updated_at: string;
 }
 
+export interface PostingInput {
+  title: string;
+  description: string;
+  required_skills: string[];
+}
+
 export type SubmissionStatus = "QUEUED" | "PROCESSING" | "DONE" | "FAILED";
 
 export interface SubmissionResponse {

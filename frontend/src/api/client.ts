@@ -1,4 +1,4 @@
-export type ApiErrorKind = "authentication" | "permission" | "validation" | "conflict" | "unavailable" | "unexpected";
+export type ApiErrorKind = "authentication" | "permission" | "notFound" | "validation" | "conflict" | "unavailable" | "unexpected";
 
 export class ApiError extends Error {
   constructor(
@@ -20,6 +20,7 @@ function messageFor(kind: ApiErrorKind): string {
   switch (kind) {
     case "authentication": return "Your session is no longer valid. Please sign in again.";
     case "permission": return "You do not have permission to perform this action.";
+    case "notFound": return "This posting is no longer available.";
     case "validation": return "Please review the highlighted information and try again.";
     case "conflict": return "This action conflicts with existing information.";
     case "unavailable": return "The service is unavailable. Please try again.";
@@ -42,6 +43,7 @@ const apiBase = resolveApiBase();
 function classifyError(status: number): ApiErrorKind {
   if (status === 401) return "authentication";
   if (status === 403) return "permission";
+  if (status === 404) return "notFound";
   if (status === 409) return "conflict";
   if (status === 422) return "validation";
   return "unexpected";

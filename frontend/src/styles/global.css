@@ -4,7 +4,7 @@
 
 html { background: var(--color-page); color: var(--color-text); font-family: var(--font-body); }
 body { margin: 0; min-width: 20rem; }
-button, input, select { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button, select, input { min-height: 2.75rem; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: 0.65; }
@@ -28,7 +28,8 @@ p { line-height: 1.6; }
 .form { display: grid; gap: var(--space-6); }
 .form-field { display: grid; gap: var(--space-2); }
 .form-field label { font-weight: 650; }
-.form-field input, .form-field select { background: var(--color-surface); border: 1px solid var(--color-border-strong); border-radius: var(--radius-control); color: var(--color-text); padding: 0 var(--space-3); width: 100%; }
+.form-field input, .form-field select, .form-field textarea { background: var(--color-surface); border: 1px solid var(--color-border-strong); border-radius: var(--radius-control); color: var(--color-text); padding: 0 var(--space-3); width: 100%; }
+.form-field textarea { min-height: 8rem; padding-bottom: var(--space-3); padding-top: var(--space-3); resize: vertical; }
 .form-field [aria-invalid="true"] { border-color: var(--color-error); }
 .field-help, .field-error { font-size: 0.875rem; margin: 0; }
 .field-help { color: var(--color-text-muted); }
@@ -63,7 +64,28 @@ p { line-height: 1.6; }
 .workflow-panel { background: var(--color-surface-warm); border: 1px solid var(--color-border); border-radius: var(--radius-surface); padding: var(--space-6); }
 .workflow-visual { display: block; height: auto; margin: var(--space-4) auto var(--space-3); max-width: 34rem; width: 100%; }
 .workflow-caption { color: var(--color-text); font-family: var(--font-heading); font-size: 1.125rem; margin: 0; text-align: center; }
+.postings-page, .posting-editor { margin: 0 auto; max-width: 48rem; }
+.page-heading { align-items: end; display: flex; flex-wrap: wrap; gap: var(--space-4); justify-content: space-between; }
+.page-heading h1 { margin-bottom: 0; }
+.page-feedback { display: grid; gap: var(--space-4); justify-items: start; }
+.posting-list { display: grid; gap: var(--space-4); list-style: none; margin: 0; padding: 0; }
+.posting-row { border-top: 1px solid var(--color-border); display: flex; flex-wrap: wrap; gap: var(--space-4); justify-content: space-between; padding-top: var(--space-5); }
+.posting-row h2, .posting-detail h2 { font-family: var(--font-heading); font-size: 1.25rem; line-height: 1.2; margin: 0; }
+.posting-row p { margin: var(--space-2) 0; max-width: 40rem; }
+.posting-row__actions, .form-actions { align-items: center; display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.posting-row__actions { display: grid; grid-template-columns: repeat(2, minmax(6.5rem, 1fr)); }
+.posting-row__actions .button { height: 2.75rem; text-align: center; width: 100%; }
+.delete-confirmation { border-top: 1px solid var(--color-border); display: grid; gap: var(--space-3); padding: var(--space-4) 0 0; }
+.delete-confirmation h2 { font-family: var(--font-heading); font-size: 1.125rem; line-height: 1.2; margin: 0; }
+.delete-confirmation p { margin: 0; }
+.delete-confirmation__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.skill-list { display: flex; flex-wrap: wrap; gap: var(--space-2); list-style: none; margin: var(--space-4) 0 0; padding: 0; }
+.skill-list li { background: var(--color-surface-warm); border: 1px solid var(--color-border); border-radius: var(--radius-control); font-size: 0.875rem; padding: var(--space-1) var(--space-2); }
+.posting-detail { border-top: 1px solid var(--color-border); display: grid; gap: var(--space-6); margin: var(--space-8) 0; padding-top: var(--space-6); }
+.posting-description { margin: var(--space-3) 0 0; white-space: pre-wrap; }
+.posting-editor { max-width: var(--form-width); }
+.form-actions { margin-top: var(--space-2); }
 
-@media (min-width: 40rem) { .app-header__content, .page { padding-left: var(--space-6); padding-right: var(--space-6); } .workflow-panel { padding: var(--space-8); } }
+@media (min-width: 40rem) { .app-header__content, .page { padding-left: var(--space-6); padding-right: var(--space-6); } .workflow-panel { padding: var(--space-8); } .posting-row { flex-wrap: nowrap; } }
 @media (min-width: 64rem) { .app-header__content, .page { padding-left: var(--space-8); padding-right: var(--space-8); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
