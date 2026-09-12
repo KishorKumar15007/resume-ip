@@ -198,7 +198,7 @@ export function PostingDetailPage() {
   const formattedScore = submission?.status === "DONE" ? formatScore(submission.score) : null;
 
   return <section className="postings-page" aria-labelledby="posting-title">
-    {loadState.kind === "loading" && <Feedback>Loading posting…</Feedback>}
+    {loadState.kind === "loading" && <><h1 id="posting-title">Posting details</h1><Feedback>Loading posting…</Feedback></>}
     {loadState.kind === "error" && <div className="page-feedback">
       <h1 id="posting-title">Posting unavailable</h1>
       <Feedback tone="error">{loadState.message}</Feedback>
@@ -235,6 +235,7 @@ export function PostingDetailPage() {
       </section>}
       {session!.role === "candidate" && submission && <section className="submission-status" aria-labelledby="submission-status-title" aria-busy={isRefreshing}>
         <h2 id="submission-status-title">Resume processing</h2>
+        <span className={`status-badge status-badge--${submission.status.toLowerCase()}`}>{submission.status.charAt(0) + submission.status.slice(1).toLowerCase()}</span>
         {submission.status === "QUEUED" && <Feedback>Your resume is queued for processing.</Feedback>}
         {submission.status === "PROCESSING" && <Feedback>Your resume is being processed.</Feedback>}
         {submission.status === "DONE" && <>

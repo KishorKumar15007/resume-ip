@@ -59,6 +59,7 @@ export function PostingEditorPage({ mode }: { mode: EditorMode }) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submitting) return;
     setShowValidation(true);
     if (titleError || descriptionError || skillsError) return;
     setSubmitError(null);
@@ -76,7 +77,7 @@ export function PostingEditorPage({ mode }: { mode: EditorMode }) {
   }
 
   const heading = mode === "create" ? "Create posting" : "Edit posting";
-  if (loading) return <section className="posting-editor" aria-labelledby="posting-editor-title"><Feedback>Loading posting…</Feedback></section>;
+  if (loading) return <section className="posting-editor" aria-labelledby="posting-editor-title"><h1 id="posting-editor-title">{heading}</h1><Feedback>Loading posting…</Feedback></section>;
   if (loadError) return <section className="posting-editor" aria-labelledby="posting-editor-title"><h1 id="posting-editor-title">Posting unavailable</h1><Feedback tone="error">{loadError}</Feedback>{mode === "edit" && <Button type="button" variant="secondary" onClick={() => setAttempt((value) => value + 1)}>Try again</Button>}</section>;
 
   return <section className="posting-editor" aria-labelledby="posting-editor-title"><p className="eyebrow">Recruiter workspace</p><h1 id="posting-editor-title">{heading}</h1><p className="lede">Describe the role and list each required skill on its own line.</p>{submitError && <Feedback tone="error">{submitError}</Feedback>}<form className="form" noValidate onSubmit={(event) => void handleSubmit(event)}><FormField label="Title" error={showValidation ? titleError : undefined}>{(props) => <input {...props} maxLength={200} value={title} onChange={(event) => setTitle(event.target.value)} />}</FormField><FormField label="Description" error={showValidation ? descriptionError : undefined}>{(props) => <textarea {...props} value={description} onChange={(event) => setDescription(event.target.value)} />}</FormField><FormField label="Required skills" help="Enter one skill per line." error={showValidation ? skillsError : undefined}>{(props) => <textarea {...props} value={skillsText} onChange={(event) => setSkillsText(event.target.value)} />}</FormField><div className="form-actions"><Button type="submit" isLoading={submitting}>{mode === "create" ? "Create posting" : "Save changes"}</Button></div></form></section>;

@@ -1,5 +1,5 @@
 import { request } from "./client";
-import type { PostingInput, PostingResponse, SubmissionUploadResponse } from "./contracts";
+import type { PostingInput, PostingResponse, RankedSubmissionResponse, SubmissionUploadResponse } from "./contracts";
 
 export function listPostings(token: string, signal?: AbortSignal): Promise<PostingResponse[]> {
   return request<PostingResponse[]>("/postings", { token, signal });
@@ -25,4 +25,8 @@ export function uploadResume(token: string, postingId: string, resume: File, sig
   const body = new FormData();
   body.append("resume", resume);
   return request<SubmissionUploadResponse>(`/postings/${postingId}/submissions`, { method: "POST", token, body, signal });
+}
+
+export function listRankedSubmissions(token: string, postingId: string, signal?: AbortSignal): Promise<RankedSubmissionResponse[]> {
+  return request<RankedSubmissionResponse[]>(`/postings/${postingId}/submissions?sort=score`, { token, signal });
 }
