@@ -2,22 +2,9 @@ from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
-from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.database import Base
+from app.database import Base, settings
 from app.models import User, JobPosting, Submission
-
-
-class Settings(BaseSettings):
-    database_url: str
-
-    model_config = SettingsConfigDict(
-        env_file=r"C:\Github\Repos\.env",
-        extra="ignore",
-    )
-
-
-settings = Settings()
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)
