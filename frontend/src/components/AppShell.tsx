@@ -29,5 +29,5 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     else navigate(parentPath, { replace: true });
   }
 
-  return <><a className="skip-link" href="#main-content">Skip to content</a><header className="app-header"><div className="app-header__content"><Link className="brand" to="/">Resume Intelligence Portal</Link><nav className="nav" aria-label="Primary navigation">{contextualLink && <Link to={contextualLink.to} onClick={(event) => returnToParent(event, contextualLink.to)}>{contextualLink.label}</Link>}</nav></div></header><main className="page" id="main-content" tabIndex={-1}>{children}</main></>;
+  return <><a className="skip-link" href="#main-content">Skip to content</a><header className="app-header"><div className="app-header__content">{location.pathname === "/" ? <span className="brand">Resume Intelligence Portal</span> : <Link className="brand" to="/">Resume Intelligence Portal</Link>}<nav className="nav" aria-label="Primary navigation">{contextualLink && <Link to={contextualLink.to} onClick={(event) => returnToParent(event, contextualLink.to)}>{contextualLink.label}</Link>}</nav></div></header><main className="page" id="main-content" tabIndex={-1}>{children}</main></>;
 }

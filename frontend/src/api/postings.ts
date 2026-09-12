@@ -1,5 +1,5 @@
 import { request } from "./client";
-import type { PostingInput, PostingResponse } from "./contracts";
+import type { PostingInput, PostingResponse, SubmissionUploadResponse } from "./contracts";
 
 export function listPostings(token: string, signal?: AbortSignal): Promise<PostingResponse[]> {
   return request<PostingResponse[]>("/postings", { token, signal });
@@ -19,4 +19,10 @@ export function updatePosting(token: string, postingId: string, posting: Posting
 
 export function deletePosting(token: string, postingId: string): Promise<void> {
   return request<void>(`/postings/${postingId}`, { method: "DELETE", token });
+}
+
+export function uploadResume(token: string, postingId: string, resume: File, signal?: AbortSignal): Promise<SubmissionUploadResponse> {
+  const body = new FormData();
+  body.append("resume", resume);
+  return request<SubmissionUploadResponse>(`/postings/${postingId}/submissions`, { method: "POST", token, body, signal });
 }

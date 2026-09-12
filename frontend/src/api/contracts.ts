@@ -32,6 +32,11 @@ export interface PostingInput {
 
 export type SubmissionStatus = "QUEUED" | "PROCESSING" | "DONE" | "FAILED";
 
+export interface SubmissionUploadResponse {
+  id: string;
+  status: "QUEUED";
+}
+
 export interface SubmissionResponse {
   id: string;
   status: SubmissionStatus;
