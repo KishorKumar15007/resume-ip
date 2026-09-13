@@ -2,7 +2,7 @@ from typing import Literal
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -12,6 +12,10 @@ from app.models import JobPosting, Submission, User
 from app.schemas.posting import PostingCreate, PostingResponse, PostingUpdate
 from app.schemas.submission import RankedSubmissionResponse, SubmissionUploadResponse
 from app.services.gcs_storage import GCSResumeStorage, ResumeStorageError
+from app.services.resume_event_publisher import (
+    ResumeEventPublishError,
+    ResumeEventPublisher,
+)
 
 
 router = APIRouter(
@@ -20,6 +24,7 @@ router = APIRouter(
 )
 
 resume_storage = GCSResumeStorage()
+resume_event_publisher = ResumeEventPublisher()
 
 
 def get_posting_or_404(posting_id: UUID, db: Session) -> JobPosting:
@@ -39,6 +44,25 @@ def delete_uploaded_resume(storage_path: str) -> None:
         resume_storage.delete_pdf(storage_path)
     except ResumeStorageError:
         pass
+
+
+def mark_submission_failed(submission_id: UUID, db: Session) -> None:
+    try:
+        db.execute(
+            update(Submission)
+            .where(
+                Submission.id == submission_id,
+                Submission.status == "QUEUED",
+            )
+            .values(
+                status="FAILED",
+                score=None,
+                matched_skills=None,
+            )
+        )
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
 
 
 @router.post(
@@ -151,7 +175,7 @@ def create_submission(
     current_user: User = Depends(require_role("candidate")),
     db: Session = Depends(get_db),
 ) -> SubmissionUploadResponse:
-    get_posting_or_404(posting_id, db)
+    posting = get_posting_or_404(posting_id, db)
 
     existing_submission = db.scalar(
         select(Submission.id).where(
@@ -236,6 +260,22 @@ def create_submission(
         ) from exc
 
     db.refresh(submission)
+
+    try:
+        resume_event_publisher.publish_resume_uploaded(
+            submission_id=submission.id,
+            posting_id=submission.posting_id,
+            storage_path=submission.storage_path,
+            required_skills=posting.required_skills,
+        )
+    except ResumeEventPublishError as exc:
+        mark_submission_failed(submission.id, db)
+        delete_uploaded_resume(submission.storage_path)
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Unable to queue resume processing",
+        ) from exc
 
     return SubmissionUploadResponse(
         id=submission.id,
