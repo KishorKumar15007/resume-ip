@@ -60,7 +60,7 @@ export function RecruiterSubmissionsPage() {
       <p className="lede">Candidates are ordered by compatibility. Submissions still being processed appear after scored candidates.</p>
       {loadState.submissions.length === 0 ? <Feedback>No candidates have submitted resumes for this posting yet.</Feedback> : <ol className="ranked-submissions" aria-label="Ranked candidate submissions">{loadState.submissions.map((submission, index) => <li key={submission.candidate_id}><article className="ranked-submission">
         <div className="ranked-submission__heading"><p className="submission-rank">Rank {index + 1}</p><span className={`status-badge status-badge--${submission.status.toLowerCase()}`}>{statusLabel(submission.status)}</span></div>
-        <h2 className="candidate-label">Candidate {index + 1}</h2>
+        <h2 className="candidate-label">{submission.candidate_email}</h2>
         {submission.status === "DONE" && <div className="submission-result"><p className="compatibility-score"><span>Compatibility score</span><strong>{scoreLabel(submission.score)}</strong></p><div className="matched-skills"><h3>Matched required skills</h3>{submission.matched_skills === null ? <Feedback tone="warning">Matched skills are unavailable for this completed submission.</Feedback> : submission.matched_skills.length === 0 ? <p>No required skills were matched.</p> : <ul className="skill-list">{submission.matched_skills.map((skill, skillIndex) => <li key={skillIndex}>{skill}</li>)}</ul>}</div></div>}
         {submission.status === "FAILED" && <Feedback tone="warning">Processing failed. No compatibility result is available.</Feedback>}
       </article></li>)}</ol>}

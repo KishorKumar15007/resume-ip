@@ -46,4 +46,5 @@ export interface SubmissionResponse {
 
 export interface RankedSubmissionResponse extends SubmissionResponse {
   candidate_id: string;
+  candidate_email: string;
 }

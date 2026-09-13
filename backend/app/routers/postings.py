@@ -301,8 +301,9 @@ def list_ranked_submissions(
             detail="You can only view submissions for your own postings",
         )
 
-    submissions = db.scalars(
-        select(Submission)
+    submissions = db.execute(
+        select(Submission, User.email)
+        .join(Submission.candidate)
         .where(Submission.posting_id == posting_id)
         .order_by(
             Submission.score.desc().nulls_last(),
@@ -315,11 +316,12 @@ def list_ranked_submissions(
         RankedSubmissionResponse(
             id=submission.id,
             candidate_id=submission.candidate_id,
+            candidate_email=candidate_email,
             status=submission.status,
             score=submission.score if submission.status == "DONE" else None,
             matched_skills=(
                 submission.matched_skills if submission.status == "DONE" else None
             ),
         )
-        for submission in submissions
+        for submission, candidate_email in submissions
     ]

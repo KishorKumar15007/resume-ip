@@ -19,3 +19,4 @@ class SubmissionStatusResponse(BaseModel):
 
 class RankedSubmissionResponse(SubmissionStatusResponse):
     candidate_id: UUID
+    candidate_email: str
