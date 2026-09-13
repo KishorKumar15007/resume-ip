@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from argon2 import PasswordHasher
 from fastapi import HTTPException, status
@@ -12,7 +13,7 @@ class SecuritySettings(BaseSettings):
     access_token_expire_minutes: int = 60
 
     model_config = SettingsConfigDict(
-        env_file=r"C:\Github\Repos\.env",
+        env_file=Path(__file__).resolve().parent.parent.parent / ".env",
         extra="ignore",
     )
 

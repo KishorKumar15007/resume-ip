@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
@@ -11,7 +13,7 @@ class Settings(BaseSettings):
     cors_allowed_origins: str = ""
 
     model_config = SettingsConfigDict(
-        env_file=r"C:\Github\Repos\.env",
+        env_file=Path(__file__).resolve().parent.parent / ".env",
         extra="ignore",
     )
 
