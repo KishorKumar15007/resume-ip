@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     gcs_bucket_name: str
     gcp_project_id: str
     pubsub_resume_uploaded_topic: str
+    cors_allowed_origins: str = ""
 
     model_config = SettingsConfigDict(
         env_file=r"C:\Github\Repos\.env",
