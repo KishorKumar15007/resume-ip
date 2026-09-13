@@ -1,11 +1,9 @@
-from pathlib import Path
-from shutil import copyfileobj
 from typing import Literal
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, require_role
@@ -13,6 +11,7 @@ from app.database import get_db
 from app.models import JobPosting, Submission, User
 from app.schemas.posting import PostingCreate, PostingResponse, PostingUpdate
 from app.schemas.submission import RankedSubmissionResponse, SubmissionUploadResponse
+from app.services.gcs_storage import GCSResumeStorage, ResumeStorageError
 
 
 router = APIRouter(
@@ -20,7 +19,7 @@ router = APIRouter(
     tags=["Job Postings"],
 )
 
-UPLOADS_DIRECTORY = Path(__file__).resolve().parents[2] / "uploads"
+resume_storage = GCSResumeStorage()
 
 
 def get_posting_or_404(posting_id: UUID, db: Session) -> JobPosting:
@@ -33,6 +32,13 @@ def get_posting_or_404(posting_id: UUID, db: Session) -> JobPosting:
         )
 
     return posting
+
+
+def delete_uploaded_resume(storage_path: str) -> None:
+    try:
+        resume_storage.delete_pdf(storage_path)
+    except ResumeStorageError:
+        pass
 
 
 @router.post(
@@ -175,19 +181,9 @@ def create_submission(
         )
 
     submission_id = uuid4()
-    upload_path = UPLOADS_DIRECTORY / f"{submission_id}.pdf"
-
     try:
-        UPLOADS_DIRECTORY.mkdir(parents=True, exist_ok=True)
-        with upload_path.open("xb") as destination:
-            destination.write(file_header)
-            copyfileobj(resume.file, destination)
-    except OSError as exc:
-        try:
-            upload_path.unlink(missing_ok=True)
-        except OSError:
-            pass
-
+        storage_path = resume_storage.upload_pdf(submission_id, resume.file)
+    except ResumeStorageError as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Unable to store resume",
@@ -199,7 +195,7 @@ def create_submission(
         id=submission_id,
         posting_id=posting_id,
         candidate_id=current_user.id,
-        storage_path=str(upload_path),
+        storage_path=storage_path,
         status="QUEUED",
         score=None,
         matched_skills=None,
@@ -211,11 +207,7 @@ def create_submission(
         db.commit()
     except IntegrityError as exc:
         db.rollback()
-
-        try:
-            upload_path.unlink(missing_ok=True)
-        except OSError:
-            pass
+        delete_uploaded_resume(storage_path)
 
         duplicate_submission = db.scalar(
             select(Submission.id).where(
@@ -229,6 +221,14 @@ def create_submission(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="You have already submitted to this posting",
             ) from exc
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Unable to create submission",
+        ) from exc
+    except SQLAlchemyError as exc:
+        db.rollback()
+        delete_uploaded_resume(storage_path)
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

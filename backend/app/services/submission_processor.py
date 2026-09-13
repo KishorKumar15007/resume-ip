@@ -1,5 +1,5 @@
+from io import BytesIO
 from decimal import Decimal
-from pathlib import Path
 from typing import Literal
 from uuid import UUID
 
@@ -10,6 +10,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.database import SessionLocal
 from app.models import JobPosting, Submission
+from app.services.gcs_storage import GCSResumeStorage, ResumeStorageError
 
 
 ProcessingOutcome = Literal[
@@ -24,7 +25,7 @@ ProcessingOutcome = Literal[
     "STATE_CHANGED",
 ]
 
-UPLOADS_DIRECTORY = Path(__file__).resolve().parents[2] / "uploads"
+resume_storage = GCSResumeStorage()
 
 
 class ProcessingInputError(Exception):
@@ -80,7 +81,7 @@ def process_submission(submission_id: UUID) -> ProcessingOutcome:
                 / Decimal(len(posting.required_skills))
                 * Decimal("100")
             )
-        except (OSError, PdfReadError, ProcessingInputError):
+        except (PdfReadError, ProcessingInputError, ResumeStorageError):
             return _failed_outcome(submission_id)
 
         try:
@@ -139,16 +140,7 @@ def _existing_submission_outcome(
 
 
 def _extract_resume_text(storage_path: str) -> str:
-    uploads_directory = UPLOADS_DIRECTORY.resolve()
-    resume_path = Path(storage_path).resolve()
-
-    if not resume_path.is_relative_to(uploads_directory):
-        raise ProcessingInputError
-
-    if not resume_path.is_file():
-        raise ProcessingInputError
-
-    reader = PdfReader(resume_path)
+    reader = PdfReader(BytesIO(resume_storage.download_pdf(storage_path)))
 
     return "\n".join(page.extract_text() or "" for page in reader.pages)
 
