@@ -6,6 +6,10 @@ Legend:
 - `[~]` implemented, evidence missing
 - `[x]` implemented and evidenced
 
+## Phase 1 — Neon configuration prerequisite
+
+- [~] Pooled runtime/direct migration configuration and static checks complete; `env-neon-project.png` captures the Neon project, Singapore region, and default `production` branch. Neon migration and runtime checks remain pending.
+
 ## 1a — Scale setup and distribution
 
 - [ ] Scenario written

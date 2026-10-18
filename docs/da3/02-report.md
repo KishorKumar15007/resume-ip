@@ -59,6 +59,14 @@ The DA3 plan is to use Neon PostgreSQL for the DA3 database-backed work and cont
 
 The branch `assignment-3` was created from `main` during Phase 0 Step 1. The last recorded repository state had `main` at commit `07370d1` (`Ready for use`); verify this against the current local Git history before final submission. The report cover's name, registration number and final accessible GitHub branch URL will be filled before the final submission export.
 
+### Step 3 — Neon configuration
+
+The owner confirms Neon project `resume-ip-da3`, PostgreSQL 18, AWS Asia Pacific 1 (Singapore), database `neondb`, and default branch `production`. The captured Neon branch overview verifies the project name, Singapore region, and default `production` branch. It does not visibly show the PostgreSQL version; PostgreSQL 18 is owner-confirmed rather than independently visualised. Per the Step 3 evidence decision, no supplementary version screenshot is required. The protected external environment values were not inspected.
+
+The backend configuration reserves pooled `DATABASE_URL` for application runtime traffic and direct `MIGRATION_DATABASE_URL` for Alembic. The separation is necessary because Neon uses transaction pooling at the pooled endpoint, which is unsuitable for the intended migration workflow. Both Neon URLs must use `sslmode=require`.
+
+The SQLAlchemy runtime engine uses `pool_pre_ping=True`, `pool_recycle=300`, `DB_POOL_SIZE=5`, and `DB_MAX_OVERFLOW=5`. Ten possible connections per backend process is a configuration ceiling, not evidence that three processes can use thirty connections within the Neon plan. Static source and ConfigParser escaping checks passed; Neon migration, database connectivity, API smoke testing, and the effective three-instance connection budget remain unverified.
+
 ## 1a — Scale setup and distribution
 
 **Requirement:** Describe your peak-demand situation and the API that will be hit hardest. Then run three instances of your backend using Docker Compose behind an Nginx load balancer, connected to your existing cloud database. Show that requests are distributed across all three instances. (1 mark)

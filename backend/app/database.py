@@ -7,6 +7,9 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 class Settings(BaseSettings):
     database_url: str
+    migration_database_url: str | None = None
+    db_pool_size: int = 5
+    db_max_overflow: int = 5
     gcs_bucket_name: str
     gcp_project_id: str
     pubsub_resume_uploaded_topic: str
@@ -20,7 +23,13 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-engine = create_engine(settings.database_url)
+engine = create_engine(
+    settings.database_url,
+    pool_pre_ping=True,
+    pool_recycle=300,
+    pool_size=settings.db_pool_size,
+    max_overflow=settings.db_max_overflow,
+)
 
 SessionLocal = sessionmaker(
     bind=engine,

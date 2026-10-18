@@ -2,12 +2,33 @@ from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
+from sqlalchemy.engine import make_url
 
 from app.database import Base, settings
 from app.models import User, JobPosting, Submission
 
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.database_url)
+
+
+def get_migration_database_url() -> str:
+    if settings.migration_database_url:
+        return settings.migration_database_url
+
+    runtime_url = make_url(settings.database_url)
+    if runtime_url.get_backend_name() == "postgresql" and runtime_url.host in {
+        "127.0.0.1",
+        "localhost",
+        "postgres",
+    }:
+        return settings.database_url
+
+    raise RuntimeError(
+        "MIGRATION_DATABASE_URL is required for non-local database migrations."
+    )
+
+
+migration_database_url = get_migration_database_url()
+config.set_main_option("sqlalchemy.url", migration_database_url.replace("%", "%%"))
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
