@@ -2,12 +2,12 @@
 
 | Field | Value |
 | --- | --- |
-| Name | To be filled before final submission |
+| Name | Kishor Kumar |
 | Registration number | To be filled before final submission |
 | Course | BACSE344 |
 | Slot | C1 |
 | Assignment | DA3 |
-| GitHub branch link | Add the accessible `assignment-3` branch URL before final submission |
+| GitHub branch link | `https://github.com/KishorKumar15007/resume-ip/tree/assignment-3` (accessibility/push status unverified) |
 
 ## Section 0: Application and environment
 
@@ -43,7 +43,7 @@ A sign-in attempt at the frontend's `/login` page displayed “We could not sign
 
 ### DA3 environment decision
 
-The DA3 plan is to use Neon PostgreSQL for the DA3 database-backed work and controlled load-test experiments. At the time of this baseline capture, migration to Neon has **not** yet been completed. No claim is made here that DA1 data has been migrated from Cloud SQL to Neon. The intended DA3 configuration, migrations and smoke tests belong to Phase 1.
+The DA3 database-backed work uses Neon PostgreSQL. The DA1 Cloud SQL data was not carried over: the migrated Neon schema and smoke-test records are test data only. The Neon migration and API smoke test are documented below. The owner confirmed that the separate `da3-loadtest` Neon branch for later scale experiments was created from the actual default branch, `production`.
 
 | Item | Observed state | Evidence / verification |
 | --- | --- | --- |
@@ -54,7 +54,7 @@ The DA3 plan is to use Neon PostgreSQL for the DA3 database-backed work and cont
 | Worker service | `resume-ip-worker`; green status/check icon in service list; authentication required and internal ingress listed | `evidence/env-da1-deployment-status.png` |
 | DA1 database | `resume-ip-db`, Cloud SQL PostgreSQL 18.6, `asia-south1`; trial instance explicitly reported as suspended | `evidence/env-cloudsql-suspended.png` |
 | Database-dependent sign-in | UI displayed a generic sign-in failure; HTTP status/backend exception not captured | `evidence/env-db-dependent-login-error.png` |
-| DA3 database | Neon PostgreSQL is planned; migration is pending | Verify after Phase 1, Steps 3–4 |
+| DA3 database | Neon PostgreSQL schema applied; `alembic current` reported `ce1c22c4205c (head)` | `evidence/env-alembic-head.png` |
 | Baseline Git branch | `main`; DA3 branch created as `assignment-3` | Verify current commit hashes with `git log` before final submission |
 
 The branch `assignment-3` was created from `main` during Phase 0 Step 1. The last recorded repository state had `main` at commit `07370d1` (`Ready for use`); verify this against the current local Git history before final submission. The report cover's name, registration number and final accessible GitHub branch URL will be filled before the final submission export.
@@ -65,7 +65,49 @@ The owner confirms Neon project `resume-ip-da3`, PostgreSQL 18, AWS Asia Pacific
 
 The backend configuration reserves pooled `DATABASE_URL` for application runtime traffic and direct `MIGRATION_DATABASE_URL` for Alembic. The separation is necessary because Neon uses transaction pooling at the pooled endpoint, which is unsuitable for the intended migration workflow. Both Neon URLs must use `sslmode=require`.
 
-The SQLAlchemy runtime engine uses `pool_pre_ping=True`, `pool_recycle=300`, `DB_POOL_SIZE=5`, and `DB_MAX_OVERFLOW=5`. Ten possible connections per backend process is a configuration ceiling, not evidence that three processes can use thirty connections within the Neon plan. Static source and ConfigParser escaping checks passed; Neon migration, database connectivity, API smoke testing, and the effective three-instance connection budget remain unverified.
+The SQLAlchemy runtime engine uses `pool_pre_ping=True`, `pool_recycle=300`, `DB_POOL_SIZE=5`, and `DB_MAX_OVERFLOW=5`. Ten possible connections per backend process is a configuration ceiling, not evidence that three processes can use thirty connections within the Neon plan. Static source and ConfigParser escaping checks passed. The migration, table presence, and API smoke test are evidenced below; the effective three-instance connection budget remains unverified.
+
+#### Migrations note
+
+The following commands were run manually against the configured Neon database. The recorded terminal output shows `alembic current` at `ce1c22c4205c (head)`.
+
+```sql
+Set-Location backend
+alembic upgrade head
+alembic current
+```
+
+The recorded Neon tables view lists `alembic_version`, `users`, `job_postings`, and `submissions` in `evidence/env-neon-tables.png`.
+
+### Step 4 — Neon migration and API smoke test
+
+The schema was applied to Neon with `alembic upgrade head`; the subsequent `alembic current` output reports revision `ce1c22c4205c (head)`. The generated smoke-test outputs in `results/04-smoke.md` and `results/04-smoke.json` agree: all 19 of 19 checks passed against `http://localhost:8000`. The test uses synthetic recruiter and candidate accounts and a synthetic posting only.
+
+**Table 0.1. Step 4 synthetic API smoke test results (generated in `results/04-smoke.md`).**
+
+| step | expected | actual |
+| --- | --- | --- |
+| Register synthetic recruiter | HTTP 201 | HTTP 201 |
+| Register synthetic candidate | HTTP 201 | HTTP 201 |
+| Log in synthetic recruiter | HTTP 200 and access token | HTTP 200 |
+| Validate recruiter login token | non-empty access token | access token received and retained only in memory |
+| Log in synthetic candidate | HTTP 200 and access token | HTTP 200 |
+| Validate candidate login token | non-empty access token | access token received and retained only in memory |
+| Recruiter creates posting | HTTP 201 and posting id | HTTP 201 |
+| Validate created posting | non-empty posting id | posting id received |
+| Recruiter reads posting | HTTP 200 with matching id | HTTP 200 |
+| Validate recruiter read response | response id matches created posting | id matched |
+| Candidate reads posting | HTTP 200 with matching id | HTTP 200 |
+| Validate candidate read response | response id matches created posting | id matched |
+| Candidate create posting is rejected | HTTP 403 | HTTP 403 |
+| Candidate update posting is rejected | HTTP 403 | HTTP 403 |
+| Candidate delete posting is rejected | HTTP 403 | HTTP 403 |
+| Recruiter updates posting | HTTP 200 with updated title | HTTP 200 |
+| Validate recruiter update response | response title matches update | title matched |
+| Recruiter deletes posting | HTTP 204 | HTTP 204 |
+| Deleted posting is not found | HTTP 404 | HTTP 404 |
+
+The result capture is `evidence/env-smoke-pass.png`. The Alembic capture includes `Get-Date`, the migration commands, and the reported head revision. The owner confirmed `da3-loadtest` was created from `production`. The effective three-instance connection budget remains unverified.
 
 ## 1a — Scale setup and distribution
 
@@ -204,7 +246,7 @@ TODO(evidence)
 - The environment screenshots show the state observed on 18 October 2026; cloud service status can change.
 - The Cloud Run service list and a loaded frontend page do not prove that all backend/database-dependent features work.
 - The login screenshot establishes a generic UI failure only. It does not expose an HTTP status code or establish the exact exception.
-- The Cloud SQL console explicitly reports the trial instance as suspended. Neon migration and its smoke tests are still pending.
+- The Cloud SQL console explicitly reports the trial instance as suspended. Neon migration, table verification, and the synthetic 19/19 smoke test are recorded in Section 0; later scale and security work remains pending.
 - All performance, failover and security-scan results remain pending until measured and captured.
 
 TODO(evidence)

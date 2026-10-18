@@ -8,7 +8,10 @@ Legend:
 
 ## Phase 1 — Neon configuration prerequisite
 
-- [~] Pooled runtime/direct migration configuration and static checks complete; `env-neon-project.png` captures the Neon project, Singapore region, and default `production` branch. Neon migration and runtime checks remain pending.
+- [x] Step 4 is complete: timestamped Alembic migration evidence, required Neon-table evidence, and the 19/19 synthetic API smoke-test evidence have been verified; the owner confirms Neon branch `da3-loadtest` was created from `production`.
+- [x] Pooled runtime/direct migration configuration is implemented; Alembic evidence shows head `ce1c22c4205c`, and the Neon table capture lists `alembic_version`, `users`, `job_postings`, and `submissions`.
+- [x] Synthetic API smoke test passed 19/19 checks, including signup/login, posting CRUD, candidate `403` mutation rejection, and deleted-posting `404`; generated results are saved in `results/04-smoke.md` and `results/04-smoke.json`.
+- [x] Neon branch `da3-loadtest` was created from the default `production` branch (owner-confirmed).
 
 ## 1a — Scale setup and distribution
 

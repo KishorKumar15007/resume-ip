@@ -13,7 +13,7 @@ class SecuritySettings(BaseSettings):
     access_token_expire_minutes: int = 60
 
     model_config = SettingsConfigDict(
-        env_file=Path(__file__).resolve().parent.parent.parent / ".env",
+        env_file = Path(__file__).resolve().parents[4] / ".env",
         extra="ignore",
     )
 
