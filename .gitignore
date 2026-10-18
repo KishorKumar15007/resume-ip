@@ -45,6 +45,17 @@ Thumbs.db
 # Local Project Files
 # ==========================================
 local/
+docs/
+!docs/
+docs/*
+!docs/da3/
+!docs/da3/**
+# DA3 evidence may be tracked, but never environment files, uploads, credentials, or logs.
+docs/da3/**/.env
+docs/da3/**/.env.*
+docs/da3/**/uploads/
+docs/da3/**/credentials/
+docs/da3/**/*.log
 
 # ==========================================
 # Database Dumps / Backups
