@@ -1,0 +1,36 @@
+{
+  "label": "assumptions_not_observations",
+  "students": 2000,
+  "peak_window_seconds": 600,
+  "rounding": {
+    "shares_decimal_places": 2,
+    "rates_decimal_places": 2,
+    "method": "ROUND_HALF_UP"
+  },
+  "per_student_requests": [
+    {
+      "method": "POST",
+      "path": "/auth/login",
+      "count": 1,
+      "category": "write"
+    },
+    {
+      "method": "GET",
+      "path": "/postings",
+      "count": 15,
+      "category": "read"
+    },
+    {
+      "method": "GET",
+      "path": "/submissions/{submission_id}",
+      "count": 5,
+      "category": "read"
+    },
+    {
+      "method": "POST",
+      "path": "/postings/{posting_id}/submissions",
+      "count": 1,
+      "category": "write"
+    }
+  ]
+}

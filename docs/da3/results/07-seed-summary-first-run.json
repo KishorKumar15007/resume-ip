@@ -1,0 +1,16 @@
+{
+  "outcome": "success",
+  "recruiters": {
+    "created": 3,
+    "already_present": 0
+  },
+  "candidates": {
+    "created": 2,
+    "already_present": 0
+  },
+  "postings": {
+    "created": 50,
+    "already_present": 0
+  },
+  "message": "Synthetic DA3 fixtures are present; no credentials or URLs were recorded."
+}

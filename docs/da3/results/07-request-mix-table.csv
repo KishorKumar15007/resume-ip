@@ -1,0 +1,5 @@
+method,path,category,per_student,total_requests,share_of_total_percent,average_requests_per_second
+POST,/auth/login,write,1,2000,4.55,3.33
+GET,/postings,read,15,30000,68.18,50.00
+GET,/submissions/{submission_id},read,5,10000,22.73,16.67
+POST,/postings/{posting_id}/submissions,write,1,2000,4.55,3.33

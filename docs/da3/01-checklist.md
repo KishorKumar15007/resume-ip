@@ -17,10 +17,10 @@ Legend:
 
 ## 1a — Scale setup and distribution
 
-- [ ] Scenario written
-- [ ] Hardest-hit API named with reason
+- [x] Scenario written — placement-drive assumptions and the generated request-mix table are recorded in `results/07-request-mix-table.md` and the report.
+- [x] Hardest-hit API named with reason — `GET /postings` is selected by assumed request volume, with the Argon2-login CPU-cost limitation recorded.
 - [ ] Compose has 3 backends + Nginx
-- [ ] Connected to Neon
+- [~] Connected to Neon — the saved local `/health/db` check reported `db: ok` and deterministic seed summaries are present; a replacement seed screenshot with its database host redacted is still needed.
 - [ ] Distribution proof table + screenshot
 
 ## 1b — One versus three instances

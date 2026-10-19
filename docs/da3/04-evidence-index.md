@@ -18,9 +18,10 @@ Status meanings: `needed` = not yet captured; `captured` = screenshot file is pr
 | `docs/da3/evidence/env-cloudrun-service.png` | Environment / Step 6A | Cloud Run API readiness, revision, and `DATABASE_URL` secret-reference metadata with the numeric version visible and secret values hidden. | Inspect the existing API service after the configuration update. | captured |
 | `docs/da3/evidence/env-deployed-url-works.png` | Environment / Step 6A | The deployed frontend sign-in page at its Cloud Run URL after the API reconciliation. | Open the deployed URL after API verification; do not expose credentials. | captured |
 | `docs/da3/evidence/env-hosting-status.png` | Environment / Step 6B | Actual hosting state when Cloud Run is unavailable. | Capture the relevant console or browser state. | needed |
-| `docs/da3/evidence/1a-neon-branches.png` | 1a / Step 7 | Neon branches `production` and `da3-loadtest`. | Neon Console → Branches; hide connection strings. | needed |
-| `docs/da3/evidence/1a-seed-output.png` | 1a / Step 7 | Synthetic seed output with database host redacted. | Run the approved seed script against `da3-loadtest`. | needed |
-| `docs/da3/evidence/1a-xservedby-header.png` | 1a / Step 7 | `curl -i` response showing `X-Served-By`. | Run the documented health request. | needed |
+| `docs/da3/evidence/1a-neon-branches.png` | 1a / Step 7 | Neon branches `production` and `da3-loadtest`. | Neon Console → Branches; hide connection strings. | captured |
+| `docs/da3/evidence/1a-health-header-before.png` | 1a / Step 7 | BEFORE `GET /health` response from before the later instance/header instrumentation. | Preserved owner capture; do not overwrite it. | captured |
+| `docs/da3/evidence/1a-seed-output.png` | 1a / Step 7 | Synthetic seed output with database host redacted. | Preserved owner capture from the approved seed script against `da3-loadtest`. | captured |
+| `docs/da3/evidence/1a-xservedby-header.png` | 1a / Step 7 | Timestamped `curl -i` health response showing `X-Served-By` and instance identity. | Preserved owner capture of the documented health request. | captured |
 | `docs/da3/evidence/1a-compose-ps.png` | 1a / Step 8 | Three backends and Nginx with ports. | Run `docker compose ps` for the DA3 topology. | needed |
 | `docs/da3/evidence/1a-curl-rotation.png` | 1a / Step 8 | Multiple responses rotating `X-Served-By`. | Send six requests through Nginx. | needed |
 | `docs/da3/evidence/1a-host-resources.png` | 1a / Step 8 | Docker host resources and configured CPU limit. | Capture documented `docker info` and `docker inspect` output. | needed |

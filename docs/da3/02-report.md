@@ -119,18 +119,55 @@ The recorded verification is in `results/06-hosting-verification.md`. The availa
 
 **Requirement:** Describe your peak-demand situation and the API that will be hit hardest. Then run three instances of your backend using Docker Compose behind an Nginx load balancer, connected to your existing cloud database. Show that requests are distributed across all three instances. (1 mark)
 
-**What I built:** TODO(evidence)
+**What I built:** Step 7 provides the scenario, instance/response instrumentation, deterministic load-test fixtures, and generated request-mix result table for the later scale experiments. `backend/app/main.py` supplies an instance identity, `X-Served-By`, JSON access records, and `/health/db`; `docs/da3/scripts/seed_loadtest.py` creates only deterministic synthetic fixture records for the `da3-loadtest` configuration.
 
-**Commands run:** TODO(evidence)
+**Commands run:** The preserved request checks are in `results/07-local-api-checks.txt` and the saved runtime output is `results/07-local-api-runtime.log`. The first and second fixture-seed results are in `results/07-seed-summary-first-run.*` and `results/07-seed-summary-second-run.*`. The raw artifacts preserve the endpoint checks and outcomes, but not a complete server-start command transcript.
 
-**Result:** TODO(evidence)
-TODO(evidence): request-mix table.
+**Result:**
 
-**Evidence:** TODO(evidence)
+Peak-demand situation: On a placement-drive morning, assume 2,000 students access the resume portal during a 10-minute window as a major recruiter opens applications. Students log in, repeatedly browse job postings, check submission status, and submit resumes. This creates a short peak rather than steady traffic.
 
-**Explanation:** TODO(evidence)
+**Table 1a.1. Request-mix assumptions, not observations (generated in `results/07-request-mix-table.md`).**
 
-**Honesty notes:** TODO(evidence)
+| method | path | category | per student | total requests | share of total | average requests/s |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| POST | `/auth/login` | write | 1 | 2000 | 4.55% | 3.33 |
+| GET | `/postings` | read | 15 | 30000 | 68.18% | 50.00 |
+| GET | `/submissions/{submission_id}` | read | 5 | 10000 | 22.73% | 16.67 |
+| POST | `/postings/{posting_id}/submissions` | write | 1 | 2000 | 4.55% | 3.33 |
+
+- Students: 2,000 (assumption)
+- Peak window: 600 seconds (assumption)
+- Read requests: 40,000 (assumption)
+- Total HTTP requests: 44,000 (assumption)
+- Average total request rate: 73.33 requests/s (assumption)
+- Shares and rates use `ROUND_HALF_UP` to two decimal places.
+
+`GET /postings` is the initial hardest-hit API by assumed request volume: 30,000 of 44,000 assumed requests (68.18%). Login occurs once per student, but Argon2 password verification may be more CPU-intensive per request. Step 10 therefore calibrates `GET /postings`; it does not compare CPU cost across endpoints and cannot independently establish which route consumes the most CPU.
+
+The local instrumentation checks recorded `GET /health` as HTTP 200 with instance identity and `X-Served-By`; unauthenticated `GET /postings` as HTTP 401 with `X-Served-By`; an unknown path as HTTP 404 with `X-Served-By`; and `GET /health/db` as HTTP 200 with `db: ok`. The saved access-log records contain `instance`, `method`, `path`, `status`, and numeric `duration_ms` values.
+
+The first seed run created 3 recruiters, 2 candidates, and 50 postings. The preserved second run created 0 recruiters, 0 candidates, and 0 postings, while finding 3 recruiters, 2 candidates, and 50 postings already present. The second-run summary therefore verifies idempotency for these deterministic fixtures without duplicate creation.
+
+**Evidence:**
+
+**Figure 1a.1. Neon shows the `production` and `da3-loadtest` branches.**
+
+![Neon branch selector showing production and da3-loadtest](evidence/1a-neon-branches.png)
+
+**Figure 1a.2. Pre-instrumentation health response retained as BEFORE evidence.**
+
+![Earlier health response without the later instance/header instrumentation](evidence/1a-health-header-before.png)
+
+**Figure 1a.3. Instrumented health response includes `X-Served-By` and instance identity.**
+
+![Instrumented health response showing X-Served-By](evidence/1a-xserved-by.png)
+
+TODO(evidence): replace the seed-output capture with one that redacts the database host. The planned `1a-xservedby-header.png` filename is absent; the reviewed `1a-xserved-by.png` capture above contains the required header but remains separately indexed so the filename discrepancy is visible.
+
+**Explanation:** The placement-drive assumptions describe a short read-heavy peak for this portal, where candidates repeatedly browse openings and check a submission after applying. The request-mix table is explicitly an input to the experiment, not a measurement of production traffic; actual arrivals may spike above the calculated 73.33 requests/s average, but that spike was not measured. Instance identity and access records make later Nginx distribution testing observable without exposing credentials. The three-backend Compose/Nginx topology and its distribution proof remain separate Step 8 and Step 9 work.
+
+**Honesty notes:** The scenario assumes submission and status-read traffic, but Step 7 does not replay the complete mix. The upload route uses GCS/Pub/Sub, and the upload/worker path remains outside the current experiment. The current valid API checks are local and do not demonstrate three-instance routing, Nginx distribution, or a production load level.
 
 ## 1b — One versus three backend instances
 

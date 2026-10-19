@@ -1,0 +1,66 @@
+Capture time: 2026-10-19T20:51:13.6583495+05:30
+--- GET /health ---
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+
+  0      0   0      0   0      0      0      0                              0
+100     44 100     44   0      0    215      0                              0
+HTTP/1.1 200 OK
+date: Mon, 19 Oct 2026 15:21:13 GMT
+server: uvicorn
+content-length: 44
+content-type: application/json
+x-served-by: LAPTOP-C4O47LC6
+
+100     44 100     44   0      0    214      0                              0
+100     44 100     44   0      0    214      0                              0
+{"status":"ok","instance":"LAPTOP-C4O47LC6"}
+--- GET /postings (unauthenticated) ---
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+
+  0      0   0      0   0      0      0      0                              0
+100     30 100     30   0      0    139      0                              0
+100     30 100     30   0      0    139      0                              0
+100     30 100     30   0      0    139      0                              0
+HTTP/1.1 401 Unauthorized
+date: Mon, 19 Oct 2026 15:21:13 GMT
+server: uvicorn
+www-authenticate: Bearer
+content-length: 30
+content-type: application/json
+x-served-by: LAPTOP-C4O47LC6
+
+{"detail":"Not authenticated"}
+--- GET unknown route ---
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+
+  0      0   0      0   0      0      0      0                              0
+100     22 100     22   0      0    108      0                              0
+100     22 100     22   0      0    108      0                              0
+100     22 100     22   0      0    108      0                              0
+HTTP/1.1 404 Not Found
+date: Mon, 19 Oct 2026 15:21:13 GMT
+server: uvicorn
+content-length: 22
+content-type: application/json
+x-served-by: LAPTOP-C4O47LC6
+
+{"detail":"Not Found"}
+--- GET /health/db ---
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+
+  0      0   0      0   0      0      0      0                              0
+100     54 100     54   0      0     74      0                              0
+100     54 100     54   0      0     74      0                              0
+100     54 100     54   0      0     74      0                              0
+HTTP/1.1 200 OK
+date: Mon, 19 Oct 2026 15:21:13 GMT
+server: uvicorn
+content-length: 54
+content-type: application/json
+x-served-by: LAPTOP-C4O47LC6
+
+{"status":"ok","instance":"LAPTOP-C4O47LC6","db":"ok"}
