@@ -118,6 +118,7 @@ The result capture is `evidence/env-smoke-pass.png`. The Alembic capture include
 **Commands run:** TODO(evidence)
 
 **Result:** TODO(evidence)
+TODO(evidence): request-mix table.
 
 **Evidence:** TODO(evidence)
 
@@ -150,6 +151,7 @@ The result capture is `evidence/env-smoke-pass.png`. The Alembic capture include
 **Commands run:** TODO(evidence)
 
 **Result:** TODO(evidence)
+TODO(evidence): availability-probe table.
 
 **Evidence:** TODO(evidence)
 
@@ -166,6 +168,7 @@ The result capture is `evidence/env-smoke-pass.png`. The Alembic capture include
 **Commands run:** TODO(evidence)
 
 **Result:** TODO(evidence)
+TODO(evidence): components-and-ports table.
 
 **Evidence:** TODO(evidence)
 
@@ -182,6 +185,7 @@ The result capture is `evidence/env-smoke-pass.png`. The Alembic capture include
 **Commands run:** TODO(evidence)
 
 **Result:** TODO(evidence)
+TODO(evidence): sensitive-data inventory table and hash/salt comparison table.
 
 **Evidence:** TODO(evidence)
 
@@ -214,6 +218,7 @@ The result capture is `evidence/env-smoke-pass.png`. The Alembic capture include
 **Commands run:** TODO(evidence)
 
 **Result:** TODO(evidence)
+TODO(evidence): CRITICAL/HIGH table rows for every scanned application image.
 
 **Evidence:** TODO(evidence)
 
@@ -248,6 +253,7 @@ TODO(evidence)
 - The login screenshot establishes a generic UI failure only. It does not expose an HTTP status code or establish the exact exception.
 - The Cloud SQL console explicitly reports the trial instance as suspended. Neon migration, table verification, and the synthetic 19/19 smoke test are recorded in Section 0; later scale and security work remains pending.
 - All performance, failover and security-scan results remain pending until measured and captured.
+- The DA3 experiments did not exercise the end-to-end resume upload and scoring path; the existing Google Cloud Storage and Pub/Sub code was left unchanged.
 
 TODO(evidence)
 

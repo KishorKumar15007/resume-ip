@@ -38,6 +38,7 @@ Status meanings: `needed` = not yet captured; `captured` = screenshot file is pr
 | `docs/da3/evidence/1c-nginx-diff.png` | 1c / Step 13 | Nginx resilience configuration diff. | Capture `results/13-nginx-config.diff`. | needed |
 | `docs/da3/evidence/1c-retry-log.png` | 1c / Step 13 | Retried request with two upstream addresses. | Capture resilient Nginx retry logs. | needed |
 | `docs/da3/evidence/1c-before-after-table.png` | 1c / Step 13 | Generated before/after failure table. | Run `scripts/aggregate_1c.py`. | needed |
+| `docs/da3/evidence/1c-availability-probe.png` | 1c | Probe summary showing total probes and 0 failed probes during a resilient run. | `scripts/availability_probe.py` summary shown during `failover_test.py --config resilient`. | needed |
 | `docs/da3/evidence/1d-architecture-diagram.png` | 1d / Step 14 | Final architecture diagram with proposed burst component. | Export the approved diagram. | needed |
 | `docs/da3/evidence/2a-before-plaintext-demo.png` | 2a / Step 15 | Labelled plaintext demonstration table. | Capture the demo exactly as labelled. | needed |
 | `docs/da3/evidence/2a-after-hashed-users.png` | 2a / Step 15 | Real users table with Argon2id hashes. | Capture after approved hashing verification. | needed |
@@ -58,9 +59,11 @@ Status meanings: `needed` = not yet captured; `captured` = screenshot file is pr
 | `docs/da3/evidence/2b-authz-matrix.png` | 2b / Step 18 | Full authorisation matrix, all PASS. | Run `scripts/authz_matrix.py`. | needed |
 | `docs/da3/evidence/2b-candidate-403.png` | 2b / Step 18 | Candidate receives 403 for posting mutation. | Capture the controlled request. | needed |
 | `docs/da3/evidence/2c-trivy-baseline-summary.png` | 2c / Step 19 | Baseline CRITICAL/HIGH totals with versions. | Run the approved containerised Trivy scan. | needed |
+| `docs/da3/evidence/2c-trivy-baseline-frontend.png` | 2c | Trivy totals for the frontend baseline image (only if a frontend image exists). | `scripts/trivy_scan.py resume-frontend:da3-baseline frontend-baseline`. | needed |
 | `docs/da3/evidence/2c-dockerfile-baseline.png` | 2c / Step 19 | Baseline Dockerfile. | Capture the reviewed file. | needed |
 | `docs/da3/evidence/2c-baseline-user-size.png` | 2c / Step 19 | Baseline image user and size. | Capture documented Docker output. | needed |
 | `docs/da3/evidence/2c-trivy-hardened-summary.png` | 2c / Step 20 | Hardened CRITICAL/HIGH totals. | Run the identical hardened scan. | needed |
+| `docs/da3/evidence/2c-trivy-hardened-frontend.png` | 2c | Trivy totals for the frontend after hardening (only if a frontend image exists and is hardened). | `scripts/trivy_scan.py resume-frontend:da3-hardened frontend-hardened`. | needed (conditional on the Step 20 decision to harden the frontend) |
 | `docs/da3/evidence/2c-dockerfile-hardened.png` | 2c / Step 20 | Hardened Dockerfile. | Capture the reviewed file. | needed |
 | `docs/da3/evidence/2c-nonroot-proof.png` | 2c / Step 20 | Container UID 10001. | Run the documented container `id` command. | needed |
 | `docs/da3/evidence/2c-image-sizes.png` | 2c / Step 20 | Baseline and hardened image sizes. | Capture `docker images`. | needed |
