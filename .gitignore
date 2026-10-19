@@ -56,6 +56,8 @@ docs/da3/**/.env.*
 docs/da3/**/uploads/
 docs/da3/**/credentials/
 docs/da3/**/*.log
+docs/da3/results/nginx-logs/*
+!docs/da3/results/nginx-logs/.gitkeep
 
 # ==========================================
 # Database Dumps / Backups

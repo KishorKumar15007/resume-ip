@@ -7,13 +7,22 @@ from jose import JWTError, jwt
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+_MODULE_PARENTS = Path(__file__).resolve().parents
+# Local development retains the owner-managed external dotenv path.  The
+# container image has fewer path parents, so Compose supplies its settings
+# through process environment variables instead of attempting this lookup.
+_HOST_ENV_FILE = (
+    _MODULE_PARENTS[4] / ".env" if len(_MODULE_PARENTS) > 4 else None
+)
+
+
 class SecuritySettings(BaseSettings):
     jwt_secret_key: str
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
 
     model_config = SettingsConfigDict(
-        env_file = Path(__file__).resolve().parents[4] / ".env",
+        env_file = _HOST_ENV_FILE,
         extra="ignore",
     )
 

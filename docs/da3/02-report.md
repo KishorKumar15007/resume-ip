@@ -119,9 +119,9 @@ The recorded verification is in `results/06-hosting-verification.md`. The availa
 
 **Requirement:** Describe your peak-demand situation and the API that will be hit hardest. Then run three instances of your backend using Docker Compose behind an Nginx load balancer, connected to your existing cloud database. Show that requests are distributed across all three instances. (1 mark)
 
-**What I built:** Step 7 provides the scenario, instance/response instrumentation, deterministic load-test fixtures, and generated request-mix result table for the later scale experiments. `backend/app/main.py` supplies an instance identity, `X-Served-By`, JSON access records, and `/health/db`; `docs/da3/scripts/seed_loadtest.py` creates only deterministic synthetic fixture records for the `da3-loadtest` configuration.
+**What I built:** Step 7 provides the scenario, instance/response instrumentation, deterministic load-test fixtures, and generated request-mix result table for the later scale experiments. `backend/app/main.py` supplies an instance identity, `X-Served-By`, JSON access records, and `/health/db`; `docs/da3/scripts/seed_loadtest.py` creates only deterministic synthetic fixture records for the `da3-loadtest` configuration. Step 8 adds the isolated `compose.da3.yml` topology with three backend services behind Nginx, one-backend and three-backend Nginx configurations, a profile-gated Apache Bench image, Python-standard-library health checks, and an ignored raw Nginx-log mount.
 
-**Commands run:** The preserved request checks are in `results/07-local-api-checks.txt` and the saved runtime output is `results/07-local-api-runtime.log`. The first and second fixture-seed results are in `results/07-seed-summary-first-run.*` and `results/07-seed-summary-second-run.*`. The raw artifacts preserve the endpoint checks and outcomes, but not a complete server-start command transcript.
+**Commands run:** The preserved request checks are in `results/07-local-api-checks.txt` and the saved runtime output is `results/07-local-api-runtime.log`. The first and second fixture-seed results are in `results/07-seed-summary-first-run.*` and `results/07-seed-summary-second-run.*`. The raw artifacts preserve the endpoint checks and outcomes, but not a complete server-start command transcript. For Step 8, the owner ran the isolated Compose topology, direct and Nginx health checks, the one-backend configuration check, Nginx syntax checks, and five Nginx-recreation verification cycles. `results/08-nginx-access-excerpt.txt` preserves six real JSON access records from the recreation-5 immediate batch; the complete generated raw Nginx log remains ignored.
 
 **Result:**
 
@@ -149,6 +149,25 @@ The local instrumentation checks recorded `GET /health` as HTTP 200 with instanc
 
 The first seed run created 3 recruiters, 2 candidates, and 50 postings. The preserved second run created 0 recruiters, 0 candidates, and 0 postings, while finding 3 recruiters, 2 candidates, and 50 postings already present. The second-run summary therefore verifies idempotency for these deterministic fixtures without duplicate creation.
 
+### Step 8 — isolated Compose and Nginx verification
+
+The default isolated Compose topology started `backend-1`, `backend-2`, `backend-3`, and `nginx`; the profile-gated `loadtest` service was not part of that default topology. Each backend listens internally on port 8000 and maps respectively to host ports 8001, 8002, and 8003. The observed container limits were 0.5 CPU and 512 MiB for each backend. All three containers became healthy without GCP credentials or credential mounts, and no shared upload volume is configured because Step 5 is deliberately skipped. The non-secret GCS/Pub/Sub setting names remain configuration requirements, but the upload and worker paths were not exercised.
+
+**Table 1a.2. Step 8 topology and owner-run verification.**
+
+| Check | Verified result | Evidence / source |
+| --- | --- | --- |
+| Default topology | Three healthy backend containers plus Nginx; the unrelated exited `resume-portal-postgres` container was left untouched and is not part of this topology. | `evidence/1a-compose-ps.png` |
+| Backend ports and identities | `backend-1`: host 8001 → container 8000; `backend-2`: 8002 → 8000; `backend-3`: 8003 → 8000. | `evidence/1a-compose-ps.png`; Compose configuration |
+| Resource limits | Each backend was inspected at 0.5 CPU (`500000000` NanoCPUs) and 512 MiB (`536870912` bytes). | `evidence/1a-host-resources.png` |
+| Nginx routing | The three-backend configuration returned `X-Served-By` in exact 4/4/4 rotation across a marked 12-request check. | `evidence/1a-curl-rotation.png` |
+| Cloud database route | `GET /health/db` through Nginx returned HTTP 200 with `db: ok`. | `evidence/1a-neon-connected.png` |
+| One-backend control | With `nginx-1.conf`, all 6 of 6 checked requests reached `backend-1`; the default three-backend configuration was then restored. | Owner-run verification |
+| Nginx syntax | Both `nginx-3.conf` and `nginx-1.conf` passed `nginx -t`; the final restored three-backend syntax check passed. | Owner-run verification |
+| Repeated shared-zone verification | Five Nginx recreations each passed immediate and delayed 12-request batches: 10 batches, 120/120 HTTP 200 responses, exact 4/4/4 split in every batch, 12 matching access records per batch, and no upstream errors. | Owner-run verification; excerpt: `results/08-nginx-access-excerpt.txt` |
+
+The owner observed severe immediate post-recreation clumping before the corrective change. The working hypothesis was worker-local upstream state; it was not proven conclusively. Both upstream configurations now use `zone resume_ip_backends 64k;` to share upstream state across Nginx workers, while keeping the one-instance comparison different only in server count. The JSON Nginx log retains request and upstream fields and adds time, worker PID, connection ID, and connection request count. The five-recreation result empirically verifies this configuration under the tested conditions; it does not promise that all possible future workloads or environments will behave identically.
+
 **Evidence:**
 
 **Figure 1a.1. Neon shows the `production` and `da3-loadtest` branches.**
@@ -161,13 +180,29 @@ The first seed run created 3 recruiters, 2 candidates, and 50 postings. The pres
 
 **Figure 1a.3. Instrumented health response includes `X-Served-By` and instance identity.**
 
-![Instrumented health response showing X-Served-By](evidence/1a-xserved-by.png)
+![Instrumented health response showing X-Served-By](evidence/1a-xservedby-header.png)
 
-TODO(evidence): replace the seed-output capture with one that redacts the database host. The planned `1a-xservedby-header.png` filename is absent; the reviewed `1a-xserved-by.png` capture above contains the required header but remains separately indexed so the filename discrepancy is visible.
+TODO(evidence): replace the seed-output capture with one that redacts the database host. The canonical `1a-xservedby-header.png` capture is present and indexed as captured.
 
-**Explanation:** The placement-drive assumptions describe a short read-heavy peak for this portal, where candidates repeatedly browse openings and check a submission after applying. The request-mix table is explicitly an input to the experiment, not a measurement of production traffic; actual arrivals may spike above the calculated 73.33 requests/s average, but that spike was not measured. Instance identity and access records make later Nginx distribution testing observable without exposing credentials. The three-backend Compose/Nginx topology and its distribution proof remain separate Step 8 and Step 9 work.
+**Figure 1a.4. The default isolated Compose topology has three healthy backend services and Nginx.**
 
-**Honesty notes:** The scenario assumes submission and status-read traffic, but Step 7 does not replay the complete mix. The upload route uses GCS/Pub/Sub, and the upload/worker path remains outside the current experiment. The current valid API checks are local and do not demonstrate three-instance routing, Nginx distribution, or a production load level.
+![Docker Compose service list with three healthy backends and Nginx](evidence/1a-compose-ps.png)
+
+**Figure 1a.5. Twelve Nginx requests rotate exactly 4/4/4 across the backend identities.**
+
+![Twelve marked Nginx requests showing an exact four-per-backend split](evidence/1a-curl-rotation.png)
+
+**Figure 1a.6. Docker reports the host resources and the configured backend limits.**
+
+![Docker host resources and each backend's CPU and memory limits](evidence/1a-host-resources.png)
+
+**Figure 1a.7. The Nginx-routed database health endpoint returns `db: ok`.**
+
+![Nginx health db response with HTTP 200 and db ok](evidence/1a-neon-connected.png)
+
+**Explanation:** The placement-drive assumptions describe a short read-heavy peak for this portal, where candidates repeatedly browse openings and check a submission after applying. The request-mix table is explicitly an input to the experiment, not a measurement of production traffic; actual arrivals may spike above the calculated 73.33 requests/s average, but that spike was not measured. Instance identity, Nginx upstream logging, and the verified three-backend routing make the Step 8 topology observable without exposing credentials. Step 9 remains separate: it will run the N=300, concurrency-10 distribution experiment and produce its own distribution table and evidence.
+
+**Honesty notes:** The scenario assumes submission and status-read traffic, but Step 7 does not replay the complete mix. The upload route uses GCS/Pub/Sub, and the upload/worker path remains outside the current experiment. Step 8 verifies startup, health, database routing, and controlled request rotation; it is not the Step 9 N=300 concurrent distribution test or a production-load measurement.
 
 ## 1b — One versus three backend instances
 

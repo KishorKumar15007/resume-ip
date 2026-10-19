@@ -5,6 +5,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 
+_MODULE_PARENTS = Path(__file__).resolve().parents
+# Local development retains the owner-managed external dotenv path.  The
+# container image has fewer path parents, so Compose supplies its settings
+# through process environment variables instead of attempting this lookup.
+_HOST_ENV_FILE = (
+    _MODULE_PARENTS[3] / ".env" if len(_MODULE_PARENTS) > 3 else None
+)
+
+
 class Settings(BaseSettings):
     database_url: str
     migration_database_url: str | None = None
@@ -16,7 +25,7 @@ class Settings(BaseSettings):
     cors_allowed_origins: str = ""
 
     model_config = SettingsConfigDict(
-        env_file = Path(__file__).resolve().parents[3] / ".env",
+        env_file = _HOST_ENV_FILE,
         extra="ignore",
     )
 

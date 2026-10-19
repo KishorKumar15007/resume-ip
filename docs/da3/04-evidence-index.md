@@ -22,10 +22,11 @@ Status meanings: `needed` = not yet captured; `captured` = screenshot file is pr
 | `docs/da3/evidence/1a-health-header-before.png` | 1a / Step 7 | BEFORE `GET /health` response from before the later instance/header instrumentation. | Preserved owner capture; do not overwrite it. | captured |
 | `docs/da3/evidence/1a-seed-output.png` | 1a / Step 7 | Synthetic seed output with database host redacted. | Preserved owner capture from the approved seed script against `da3-loadtest`. | captured |
 | `docs/da3/evidence/1a-xservedby-header.png` | 1a / Step 7 | Timestamped `curl -i` health response showing `X-Served-By` and instance identity. | Preserved owner capture of the documented health request. | captured |
-| `docs/da3/evidence/1a-compose-ps.png` | 1a / Step 8 | Three backends and Nginx with ports. | Run `docker compose ps` for the DA3 topology. | needed |
-| `docs/da3/evidence/1a-curl-rotation.png` | 1a / Step 8 | Multiple responses rotating `X-Served-By`. | Send six requests through Nginx. | needed |
-| `docs/da3/evidence/1a-host-resources.png` | 1a / Step 8 | Docker host resources and configured CPU limit. | Capture documented `docker info` and `docker inspect` output. | needed |
-| `docs/da3/evidence/1a-neon-connected.png` | 1a / Step 8 | `/health/db` through Nginx returning `db: ok`. | Run the health check with host redacted. | needed |
+| `docs/da3/evidence/1a-compose-ps.png` | 1a / Step 8 | Default isolated topology: three healthy backends with host ports 8001–8003 and Nginx on 8080; the unrelated exited PostgreSQL container is visibly separate. | Owner-run `docker compose -f compose.da3.yml ps -a`. | verified |
+| `docs/da3/evidence/1a-curl-rotation.png` | 1a / Step 8 | Twelve marked Nginx requests with `X-Served-By` rotating exactly 4/4/4 across all three backends. | Owner-run fresh-connection health requests through Nginx. | verified |
+| `docs/da3/evidence/1a-host-resources.png` | 1a / Step 8 | Docker host resources plus each backend's observed 0.5 CPU and 512 MiB limits. | Owner-run Docker info and inspect commands. | verified |
+| `docs/da3/evidence/1a-neon-connected.png` | 1a / Step 8 | Nginx-routed `/health/db` response with HTTP 200 and `db: ok`. | Owner-run `Invoke-WebRequest http://localhost:8080/health/db`. | verified |
+| `docs/da3/results/08-nginx-access-excerpt.txt` | 1a / Step 8 | Six real JSON Nginx access records from recreation-5's immediate batch, including time, PID, connection diagnostics, request, and upstream status/address. This is a short tracked excerpt; complete raw logs remain Git-ignored. | Selected after verified owner-run recreation testing; do not substitute a fabricated excerpt. | verified |
 | `docs/da3/evidence/1a-distribution-table.png` | 1a / Step 9 | Per-backend distribution table. | Run `scripts/distribution_test.py`. | needed |
 | `docs/da3/evidence/1a-nginx-log-upstreams.png` | 1a / Step 9 | Nginx log lines with distinct `$upstream_addr` values. | Capture the logged upstream slice. | needed |
 | `docs/da3/evidence/1b-calibration-table.png` | 1b / Step 10 | Calibration table. | Run the bounded calibration mode. | needed |

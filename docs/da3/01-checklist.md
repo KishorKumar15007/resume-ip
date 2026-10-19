@@ -19,8 +19,8 @@ Legend:
 
 - [x] Scenario written — placement-drive assumptions and the generated request-mix table are recorded in `results/07-request-mix-table.md` and the report.
 - [x] Hardest-hit API named with reason — `GET /postings` is selected by assumed request volume, with the Argon2-login CPU-cost limitation recorded.
-- [ ] Compose has 3 backends + Nginx
-- [~] Connected to Neon — the saved local `/health/db` check reported `db: ok` and deterministic seed summaries are present; a replacement seed screenshot with its database host redacted is still needed.
+- [x] Compose has 3 backends + Nginx — the isolated default topology was owner-run and evidenced with three healthy backends and Nginx.
+- [x] Connected to Neon — `/health/db` through Nginx returned HTTP 200 with `db: ok`; the topology uses the `da3-loadtest` branch configuration.
 - [ ] Distribution proof table + screenshot
 
 ## 1b — One versus three instances
