@@ -57,7 +57,7 @@ The DA3 database-backed work uses Neon PostgreSQL. The DA1 Cloud SQL data was no
 | DA3 database | Neon PostgreSQL schema applied; `alembic current` reported `ce1c22c4205c (head)` | `evidence/env-alembic-head.png` |
 | Baseline Git branch | `main`; DA3 branch created as `assignment-3` | Verify current commit hashes with `git log` before final submission |
 
-The branch `assignment-3` was created from `main` during Phase 0 Step 1. The last recorded repository state had `main` at commit `07370d1` (`Ready for use`); verify this against the current local Git history before final submission. The report cover's name, registration number and final accessible GitHub branch URL will be filled before the final submission export.
+The branch `assignment-3` was created from `main` during Phase 0 Step 1. The last recorded repository state had `main` at commit `07370d1` (`Ready for use`); verify this against the current local Git history before final submission. The report cover's registration number remains to be filled, and the final GitHub branch accessibility remains to be verified before the final submission export.
 
 ### Step 3 — Neon configuration
 
@@ -71,7 +71,7 @@ The SQLAlchemy runtime engine uses `pool_pre_ping=True`, `pool_recycle=300`, `DB
 
 The following commands were run manually against the configured Neon database. The recorded terminal output shows `alembic current` at `ce1c22c4205c (head)`.
 
-```sql
+```powershell
 Set-Location backend
 alembic upgrade head
 alembic current
