@@ -4,6 +4,8 @@ For AI coding agents (Codex) and the owner. Read this together with `AGENTS.md`,
 
 Source-of-truth order when things disagree: **the repository and `.agent/CONTINUITY.md` > this file > the DA1 handoff.** If the repo contradicts a claim here, trust the repo and record the discrepancy in the decisions log.
 
+**Version 2 (19 Oct 2026) changes:** (1) Q1(c) must end at **zero** failed requests; (2) an availability probe proves "without downtime"; (3) every part has a result table (1d components and ports, 2a inventory and hash/salt comparison); (4) Trivy scans every application image, not only the backend; (5) Step 5 is skipped by default; (6) docs are updated only by DOCS UPDATE prompts, not by code prompts.
+
 ---
 
 ## 1. What DA3 is
@@ -21,20 +23,22 @@ The question text is in Appendix A. The part-by-part summary:
 |---|---|---|
 | 1a | 1 | Peak-demand scenario + hardest-hit API; 3 backend instances via Docker Compose behind Nginx on the existing cloud DB; show requests spread across all 3 |
 | 1b | 1.5 | 1,000 requests with 1 instance then 3, same tool and concurrency; table of requests/sec and average response time; state the improvement |
-| 1c | 1.5 | Stop one instance mid-test and record failed requests; configure Nginx so none fail; show before/after count |
+| 1c | 1.5 | Stop one instance mid-test and record failed requests; configure Nginx so that **zero** requests fail; show before/after count and show the service stayed up |
 | 1d | 1 | Architecture diagram with real component names and ports; add a cloud-bursting or edge/fog component in a different colour; explain how it handles the 1a peak and why it fits the domain |
 | 2a | 1 | Identify the most sensitive data; salted password hashes (bcrypt/Argon2); DB screenshot before and after |
 | 2b | 1.5 | TOTP MFA with an authenticator app; Update/Delete APIs restricted to logged-in users with the right role; show a request rejected without a valid token |
 | 2c | 1.5 | Trivy scan; harden (smaller base, non-root); rescan; table of CRITICAL and HIGH before and after |
 | 2d | 1 | Two threat agents; for each, the control implemented plus one requirement from the applicable regulation (HIPAA/GDPR) with a reason it applies |
 
+Question 1 also says the application must handle the peak **without downtime**, and the submission asks for **result tables for every part**. Both are acceptance criteria below.
+
 ---
 
 ## 2. Situation carried over from DA1
 
 - App: recruiters post jobs with required skills; candidates upload PDF resumes; a worker extracts text and computes a skill-match compatibility score; recruiters see a ranked shortlist. Stack: React, FastAPI, SQLAlchemy/Alembic, PostgreSQL, Argon2, JWT + RBAC. Details live in the DA1 handoff.
-- **Cloud SQL is suspended.** The database moves to **Neon** (Postgres). Start with a fresh schema via Alembic; no data carry-over is needed.
-- **GCP may be unavailable.** Do not assume Cloud Run, Cloud Storage or Pub/Sub still work. The stack must run without GCP credentials. The hosting platform shown in the DA3 diagram must be whatever is actually true.
+- **Cloud SQL is suspended.** The database moves to **Neon** (Postgres). Start with a fresh schema via Alembic; no data carry-over is needed. Q1(a) says "your existing cloud database": the report states plainly that Neon is the application's cloud database for DA3, replacing the suspended Cloud SQL instance.
+- **GCP may be unavailable.** Do not assume Cloud Run, Cloud Storage or Pub/Sub still work. The DA3 experiments (login, postings, auth, security, Docker/Nginx) must not depend on GCP. The upload and worker path is not exercised: Step 5 is skipped by default and recorded as N/A by scope, and no local fallback is implemented. The hosting platform shown in the DA3 diagram must be whatever is actually true.
 - **The real extent of DA1 completion is unverified.** The last confirmed state was Job Posting CRUD verified against live Postgres. The first prompt audits the repo and reports facts; later prompts marked *(if needed)* depend on it.
 
 ---
@@ -55,14 +59,14 @@ The question text is in Appendix A. The part-by-part summary:
 - Three explicit Compose services `backend-1/2/3` (host ports 8001–8003, container port 8000), one uvicorn worker each, a CPU limit per container; Nginx on host port 8080, round-robin. The backend sets an `X-Served-By` header; Nginx logs `$upstream_addr`.
 - For 1-instance runs use an Nginx config with a single upstream, so the Nginx hop stays constant between runs.
 - Load tool runs in a container (ab, hey or k6), exactly 1,000 requests, identical tool and concurrency for both runs. Concurrency is calibrated on the 1-instance setup until it is saturated, then locked. Report medians of 3 repetitions. Warm-up before each run.
-- Failover "before": a deterministic baseline Nginx config (retries off) so the failure is reproducible, disclosed as such. Kill the backend with `docker kill`, not a graceful stop; with `ab` use `-r` so it does not abort on errors. "After": passive failover with `max_fails`, `fail_timeout`, `proxy_next_upstream` (error, timeout, 502, 503, 504), a short `proxy_connect_timeout` and limited `proxy_next_upstream_tries`. Same test, same load.
+- Failover "before": a deterministic baseline Nginx config (retries off) so the failure is reproducible, disclosed as such. Kill the backend with `docker kill`, not a graceful stop; with `ab` use `-r` so it does not abort on errors. "After": passive failover with `max_fails`, `fail_timeout`, `proxy_next_upstream` (error, timeout, 502, 503, 504), a short `proxy_connect_timeout` and limited `proxy_next_upstream_tries`. Same test, same load. **Acceptance for 1c: zero failed requests after the fix** (`ab` Failed requests = 0 and Non-2xx = 0, in the median and in every repetition). Retrying is safe because the tested endpoint is an idempotent GET. If failures remain, diagnose the real cause (for example `ab` run without `-r`, a connect timeout that is too long, `max_fails` too lenient), fix it, rerun all repetitions, and keep both result sets. **Downtime proof:** during every run an availability probe polls `GET /health` through Nginx about every 200 ms and records any non-200 response or timeout; the report states the number of probes and the number that failed. The probe is separate from the measured `ab` run and is not counted in its results.
 - Cloud bursting is a **diagram and explanation only** and is not built: overflow beyond the fixed Compose capacity goes to elastic instances on the hosting platform, justified by spiky, short-lived load, a stateless API and an external database.
 
 **Q2: security**
 - Keep Argon2id (salt is embedded in each hash). Show per-user salts: the same password gives different hashes.
 - TOTP with `pyotp`; TOTP secret encrypted at rest with a key from the environment; two-step login with a short-lived MFA token that must be **rejected on every normal endpoint**; rate limiting and lockout on login and on code verification; recruiters are required to enrol.
 - RBAC and ownership checks on PUT/DELETE; candidates see only their own submissions; recruiters only submissions for their own postings.
-- Trivy runs in a container with **identical flags for both scans** (`--severity CRITICAL,HIGH`). Hardening: slim base image, multi-stage build, non-root numeric user, no build tools in the final image, `.dockerignore`, upgraded vulnerable dependencies. Regression-test after hardening.
+- Trivy runs in a container with **identical flags for both scans** (`--severity CRITICAL,HIGH`). Scan **every application image in the repo**: the backend image is hardened and rescanned (required); if a frontend image has its own Dockerfile, scan it too and either harden and rescan it or state in the report why it was not hardened. Hardening: slim base image, multi-stage build, non-root numeric user, no build tools in the final image, `.dockerignore`, upgraded vulnerable dependencies. Regression-test after hardening.
 - Threat agents (suggested): (1) external attacker doing credential stuffing or account takeover → Argon2, TOTP, rate limiting → GDPR Art. 32 (security of processing); (2) malicious or curious insider → RBAC and ownership checks → GDPR Art. 5(1)(f) (integrity and confidentiality) or Art. 25 (data protection by design). Applicability reasoning must be honest: a campus portal in India is primarily governed by the Digital Personal Data Protection Act, 2023; GDPR is cited as the framework the question prescribes, applying to personal data in resumes, and the DPDP Act is mentioned as the domestic equivalent.
 
 **Out of scope:** actually building cloud bursting, Kubernetes, new frameworks, new product features, ML, unrelated refactors.
@@ -99,13 +103,13 @@ Never mark `[x]` without the evidence existing. Checklist items:
 |---|---|
 | 1a | Scenario written · Hardest-hit API named with reason · Compose has 3 backends + Nginx · Connected to Neon · Distribution proof table + screenshot |
 | 1b | 1-instance and 3-instance runs of 1,000 requests · Same tool/concurrency stated · RPS and mean-latency table · Improvement stated · Limitations noted |
-| 1c | Instance killed mid-run · Failed count before · Nginx fix shown (config diff) · Failed count after · Before/after table |
-| 1d | Diagram uses real names and ports · Bursting/edge component in a different colour · Explanation ties to the 1a scenario · Reason for choosing it |
-| 2a | Sensitive data identified · Argon2 verified · Per-user salt shown · "Before" and "after" DB screenshots (before labelled as demo) |
+| 1c | Instance killed mid-run · Failed count before · Nginx fix shown (config diff) · Failed count after is 0 in every repetition · Availability probe shows no downtime · Before/after table |
+| 1d | Diagram uses real names and ports · Bursting/edge component in a different colour · Explanation ties to the 1a scenario · Reason for choosing it · Components-and-ports table |
+| 2a | Sensitive data identified · Argon2 verified · Per-user salt shown · "Before" and "after" DB screenshots (before labelled as demo) · Sensitive-data inventory table · Hash/salt comparison table |
 | 2b | TOTP enrolment works · Login needs the code · PUT/DELETE role-restricted · Rejection without token shown · MFA-pending token rejected · Rate limiting shown |
-| 2c | Baseline scan saved · Hardened Dockerfile · Rescan saved with same flags · CRITICAL/HIGH table · App still works |
+| 2c | Baseline scan saved · Hardened Dockerfile · Rescan saved with same flags · CRITICAL/HIGH table covering every application image (or the exclusion explained) · App still works |
 | 2d | Two threat agents · Implemented control each (with file/endpoint) · One regulation requirement each · Applicability reason |
-| Overall | README with reproduction steps · Clean-clone test passes · Secrets scan clean · Report PDF · 3-minute video · Branch pushed and accessible |
+| Overall | README with reproduction steps · Clean-clone test passes · Secrets scan clean · A result table present for every part (1a-2d) · Report PDF · 3-minute video · Branch pushed and accessible |
 
 ### 4.3 Report section template (`02-report.md`)
 
@@ -116,7 +120,7 @@ Every part uses the same structure:
 Requirement:    (quoted from the question)
 What I built:   (2-3 sentences, with file paths / endpoint names)
 Commands run:   (exact commands)
-Result:         (table, generated from results/ files)
+Result:         (table, generated from results/ files; every part has at least one table: 1d components and ports, 2a inventory and hash/salt comparison, 2d threat table)
 Evidence:       (screenshot filenames, each with a one-line caption)
 Explanation:    (3-4 sentences, specific to the resume portal)
 Honesty notes:  (labelled demos, resource limits, caveats)
@@ -124,7 +128,9 @@ Honesty notes:  (labelled demos, resource limits, caveats)
 
 Explanations must name this application's own things (endpoints, scenario, components). Generic text such as "high traffic degrades performance" costs marks.
 
-### 4.4 What every prompt must do before it finishes
+### 4.4 What the DOCS UPDATE of every step must do
+
+In the owner-driven flow, code prompts do **not** edit the report files in docs/da3. After the owner has verified a step and captured the screenshots, a separate DOCS UPDATE prompt does the following (see docs/da3/README.md):
 
 1. Save raw output to `results/<part>-<what>.*`.
 2. Generate any table **from the raw files with a script**; never type numbers by hand.
@@ -150,8 +156,8 @@ Evidence index format:
 
 ### 4.6 Division of work
 
-- The owner writes and sends the prompts, runs long tests (load runs, failover runs, scans) and takes the screenshots. This is deliberate, to conserve tokens.
-- Codex writes the scripts, config and code, and the documentation updates above. It does not run long load tests unless explicitly asked.
+- A separate planning AI (the thinking AI) decides each step and writes the Codex prompts. The owner approves plans, runs long tests (load runs, failover runs, scans), takes the screenshots and commits. This is deliberate, to conserve tokens.
+- Codex writes the scripts, config and code, and, only in DOCS UPDATE prompts, the documentation updates above. It does not run long load tests unless explicitly asked.
 - Use containers by default. Do not install host packages without explicit instruction.
 
 ---
@@ -173,7 +179,7 @@ Pacing: Phases 0–1 by 20 Oct, Phase 2 by 24 Oct, Phase 3 by 27 Oct, Phase 4 by
 |---|---|---|
 | 3 | Neon-ready DB config | Pooled vs direct URLs, SSL, pool settings, `.env`/`.env.example` (owner creates the Neon project). |
 | 4 | Migrate and smoke test | `alembic upgrade head` on Neon, confirm the head revision; owner verifies signup/login/CRUD in Swagger. |
-| 5 | Run without GCP *(if needed)* | Config switches so storage and job publishing work locally with no GCP credentials. |
+| 5 | Run without GCP *(skip by default)* | Config switches so storage and job publishing work locally with no GCP credentials. Skip and record N/A if the audit and the smoke test show the API already runs without GCP; no DA3 part uses the upload path. |
 | 6 | Hosting reconciliation *(if GCP is live)* | Re-point the deployed API to Neon, or record the true hosting state for the diagram. |
 
 **Phase 2: Q1 Scale**
@@ -186,19 +192,19 @@ Pacing: Phases 0–1 by 20 Oct, Phase 2 by 24 Oct, Phase 3 by 27 Oct, Phase 4 by
 | 10 | 1b: load harness | Containerised tool, warm-up, fixed `-n 1000`, calibrated concurrency, CSV output. |
 | 11 | 1b: 1 vs 3 results | 3 repetitions each, medians, improvement and speedup, limitations note. |
 | 12 | 1c: failure, before | Deterministic baseline config, `docker kill` mid-run, failed count. |
-| 13 | 1c: failure, after | Passive failover config, identical rerun, before/after table. |
-| 14 | 1d: diagram and bursting | Real names and ports, bursting component in a different colour, explanation. |
+| 13 | 1c: failure, after | Passive failover config, identical rerun with zero failures, availability probe, before/after table. |
+| 14 | 1d: diagram and bursting | Real names and ports, bursting component in a different colour, components-and-ports table, explanation. |
 
 **Phase 3: Q2 Secure**
 
 | # | Prompt | What it does |
 |---|---|---|
-| 15 | 2a: sensitive data and hashing | Inventory, Argon2 parameters, per-user salts, labelled before/after DB evidence. |
+| 15 | 2a: sensitive data and hashing | Inventory, Argon2 parameters, per-user salts, hash/salt comparison table, labelled before/after DB evidence. |
 | 16 | 2b: TOTP backend | Encrypted secret, setup/confirm/verify, two-step login, rate limiting and lockout. |
 | 17 | 2b: TOTP frontend | QR enrolment and second-step login. |
 | 18 | 2b: access-control matrix | PUT/DELETE across no/invalid/expired/MFA-pending/wrong-role/non-owner/owner; 401/403/200/204 table. |
-| 19 | 2c: Trivy baseline | Containerised scan, fixed flags, JSON and table. |
-| 20 | 2c: harden and rescan | Hardened image, identical-flags rescan, before/after table, regression test. |
+| 19 | 2c: Trivy baseline | Containerised scan of every application image, fixed flags, JSON and table. |
+| 20 | 2c: harden and rescan | Hardened backend image (frontend hardened or explained), identical-flags rescan, before/after table, regression test. |
 | 21 | 2d: threat agents and regulation | Two agents, controls mapped to code, GDPR articles, honest applicability, DPDP note. |
 
 **Phase 4: Evidence and submission**
