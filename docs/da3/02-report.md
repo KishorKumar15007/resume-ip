@@ -109,6 +109,12 @@ The schema was applied to Neon with `alembic upgrade head`; the subsequent `alem
 
 The result capture is `evidence/env-smoke-pass.png`. The Alembic capture includes `Get-Date`, the migration commands, and the reported head revision. The owner confirmed `da3-loadtest` was created from `production`. The effective three-instance connection budget remains unverified.
 
+### Step 6 — Hosting reconciliation
+
+Assignment 1's application remains hosted on Google Cloud Run. Because Cloud SQL was suspended, Step 6 reconfigured the existing `resume-ip-api` service to use the pooled Neon `production` database through Secret Manager version `1`; revision `resume-ip-api-00007-676` became Ready, and the owner confirmed that synthetic database-backed CRUD worked. The frontend and worker were left unchanged, and upload, Pub/Sub delivery, and scoring were not verified in this step.
+
+The recorded verification is in `results/06-hosting-verification.md`. The available Step 6 evidence is `evidence/env-cloudrun-api-before.png`, `evidence/env-neon-production-migration-head.png`, `evidence/env-cloudrun-service.png`, and `evidence/env-deployed-url-works.png`. The migration screenshot visibly reports the head revision; the Neon `production` target and CRUD outcome are owner-confirmed. Step 14's architecture diagram and explanation remain pending, so this reconciliation does not complete Part 1d.
+
 ## 1a — Scale setup and distribution
 
 **Requirement:** Describe your peak-demand situation and the API that will be hit hardest. Then run three instances of your backend using Docker Compose behind an Nginx load balancer, connected to your existing cloud database. Show that requests are distributed across all three instances. (1 mark)
