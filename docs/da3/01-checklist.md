@@ -21,7 +21,7 @@ Legend:
 - [x] Hardest-hit API named with reason — `GET /postings` is selected by assumed request volume, with the Argon2-login CPU-cost limitation recorded.
 - [x] Compose has 3 backends + Nginx — the isolated default topology was owner-run and evidenced with three healthy backends and Nginx.
 - [x] Connected to Neon — `/health/db` through Nginx returned HTTP 200 with `db: ok`; the topology uses the `da3-loadtest` branch configuration.
-- [ ] Distribution proof table + screenshot
+- [x] Distribution proof table + screenshots — `results/09-distribution.*` records 300 authenticated requests at concurrency 10, with 300 matching Nginx records and independent 100/100/100 header and final-upstream counts; both Step 9 screenshots were reviewed.
 
 ## 1b — One versus three instances
 

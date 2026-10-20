@@ -9,7 +9,7 @@ x-backend-common: &backend-common
       "exec uvicorn app.main:app --host 0.0.0.0 --port \"$${PORT}\" --workers 1",
     ]
   env_file:
-    - ./backend/.env.loadtest
+    - "${DA3_LOADTEST_ENV_FILE:?Set DA3_LOADTEST_ENV_FILE to the owner-managed load-test configuration path}"
   environment:
     PORT: "8000"
   expose:

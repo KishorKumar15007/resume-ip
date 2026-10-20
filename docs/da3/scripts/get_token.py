@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -11,8 +12,6 @@ import requests
 from dotenv import dotenv_values
 
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
-LOADTEST_ENV_PATH = REPOSITORY_ROOT / "backend" / ".env.loadtest"
 SEEDED_CANDIDATE_EMAIL = "da3-seed-candidate-1@example.com"
 REQUEST_TIMEOUT_SECONDS = 10
 LOOPBACK_HOSTS = {"localhost", "127.0.0.1", "::1"}
@@ -37,10 +36,15 @@ def parse_base_url(value: str) -> str:
 
 
 def load_credentials() -> tuple[str, str]:
-    if not LOADTEST_ENV_PATH.is_file():
+    configured_path = os.environ.get("DA3_LOADTEST_ENV_FILE")
+    if not configured_path:
         raise RuntimeError("load-test configuration file is unavailable")
 
-    values = dotenv_values(LOADTEST_ENV_PATH)
+    loadtest_env_path = Path(configured_path)
+    if not loadtest_env_path.is_absolute() or not loadtest_env_path.is_file():
+        raise RuntimeError("load-test configuration file is unavailable")
+
+    values = dotenv_values(loadtest_env_path)
     if values.get("DA3_LOADTEST_BRANCH") != "da3-loadtest":
         raise RuntimeError("load-test branch sentinel is invalid")
 

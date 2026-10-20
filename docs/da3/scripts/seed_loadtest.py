@@ -15,7 +15,6 @@ from sqlalchemy.engine import make_url
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 BACKEND_DIRECTORY = REPOSITORY_ROOT / "backend"
-LOADTEST_ENV_PATH = REPOSITORY_ROOT / "backend" / ".env.loadtest"
 RESULTS_DIRECTORY = REPOSITORY_ROOT / "docs" / "da3" / "results"
 SUMMARY_JSON_PATH = RESULTS_DIRECTORY / "07-seed-summary.json"
 SUMMARY_MARKDOWN_PATH = RESULTS_DIRECTORY / "07-seed-summary.md"
@@ -75,10 +74,15 @@ class SeedSummary:
 
 
 def load_loadtest_configuration() -> tuple[dict[str, str], str]:
-    if not LOADTEST_ENV_PATH.is_file():
+    configured_path = os.environ.get("DA3_LOADTEST_ENV_FILE")
+    if not configured_path:
         raise SeedConfigurationError("load-test configuration file is unavailable")
 
-    values = {key: value for key, value in dotenv_values(LOADTEST_ENV_PATH).items() if value}
+    loadtest_env_path = Path(configured_path)
+    if not loadtest_env_path.is_absolute() or not loadtest_env_path.is_file():
+        raise SeedConfigurationError("load-test configuration file is unavailable")
+
+    values = {key: value for key, value in dotenv_values(loadtest_env_path).items() if value}
     missing = sorted(REQUIRED_CONFIGURATION - values.keys())
     if missing:
         raise SeedConfigurationError("load-test configuration is incomplete")
