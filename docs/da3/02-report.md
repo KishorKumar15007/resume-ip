@@ -230,17 +230,53 @@ TODO(evidence): replace the seed-output capture with one that redacts the databa
 
 **Requirement:** Using Apache Bench or any suitable free load-testing tool (for example, hey, JMeter or k6), send 1,000 requests to that API, first with 1 instance and then with 3 instances, keeping the same tool and concurrency level for both runs. Tabulate requests per second and average response time, and state the improvement. (1.5 marks)
 
-**What I built:** TODO(evidence)
+**What I built:** A containerised Apache Bench harness in `docs/da3/scripts/loadtest.py` that uses the isolated Compose topology, runs a 100-request warm-up before each measurement, preserves raw output, and attempts to restore the three-backend topology after a run. The harness uses `ab -k` (HTTP Keep-Alive/persistent connections) against authenticated `GET /postings`. Each backend has one Uvicorn worker and the Compose configuration sets a `0.5` CPU limit per backend. Its effective SQLAlchemy pool values are size 5, overflow 5 and timeout 30 seconds.
 
-**Commands run:** TODO(evidence)
+**Commands run:**
 
-**Result:** TODO(evidence)
+```powershell
+python docs/da3/scripts/loadtest.py --single-run --instances 1 --concurrency 20 --requests 1000 --rep 11
+python docs/da3/scripts/loadtest.py --single-run --instances 3 --concurrency 20 --requests 1000 --rep 12
+python docs/da3/scripts/loadtest.py --single-run --instances 1 --concurrency 50 --requests 1000 --rep 13
+```
 
-**Evidence:** TODO(evidence)
+Authentication was refreshed through `docs/da3/scripts/get_token.py` before the validation runs; its token was held outside the saved artifacts.
 
-**Explanation:** TODO(evidence)
+**Result:** The formal calibration matrix is incomplete and no concurrency was selected by its original plateau rule. Table 1b.1 is the retained partial rep3 calibration, not a completed matrix or Step 11 benchmark.
 
-**Honesty notes:** TODO(evidence)
+| Configuration | C5 | C10 | C20 | C50 | C100 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 backend, measured requests/s | 16.61 | 24.80 | 21.42 | warm-up failed | warm-up failed |
+| 3 backends, measured requests/s | 15.78 | 32.41 | 50.14 | 66.82 | 64.68 |
+
+*Table 1b.1. Partial calibration from `results/10-calibration-rep3.json`; the run is invalid/incomplete overall, so every cell was ineligible for formal selection.*
+
+The owner later selected C20 after two separate successful 1,000-request validation runs:
+
+| Validation | Warm-up | Measured | Failed / non-2xx | Requests/s | Mean response time | Restored three-backend topology |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| rep11: 1 backend, C20 | 100 | 1,000 | 0 / 0 | 9.97 | 2006.793 ms | true |
+| rep12: 3 backends, C20 | 100 | 1,000 | 0 / 0 | 40.39 | 495.205 ms | true |
+
+*Pre-benchmark C20 validation summary. Successful validations from `results/10-single-i1-c20-rep11.json` and `results/10-single-i3-c20-rep12.json`. Table 1b.2 remains reserved for the final three-repetition, interleaved Step 11 benchmark.*
+
+**Evidence:** Figure 1b.1 is a screenshot of the retained incomplete rep3 calibration table. Figures 1b.2 and 1b.3 are screenshots of the saved rep11 and rep12 JSON summaries, respectively. The `docker stats` capture exists but was made without a load running and is inadequate to demonstrate saturation. The Neon connection graph exists but does not by itself establish a causal connection-limit explanation. TODO(evidence): Step 11 three-repetition results, aggregation table, and live-load CPU/saturation capture.
+
+![Partial rep3 calibration](evidence/1b-calibration-table.png)
+
+**Figure 1b.1. Partial, invalid/incomplete rep3 calibration table; it is not a Step 11 result.**
+
+![One-backend C20 validation](evidence/1b-validation-1-instance-c20-rep11.png)
+
+**Figure 1b.2. Screenshot of the saved rep11 one-backend C20 validation result.**
+
+![Three-backend C20 validation](evidence/1b-validation-3-instance-c20-rep12.png)
+
+**Figure 1b.3. Screenshot of the saved rep12 three-backend C20 validation result.**
+
+**Explanation:** The calibration plan covered concurrency levels 5, 10, 20, 50, and 100 for both one-backend and three-backend configurations. Each planned matrix cell used 100 warm-up requests followed by 300 measured requests, for 4,000 planned requests across the complete matrix including warm-ups. Several attempts failed or stopped early, so the complete valid matrix was not obtained. The original formal rule—select the lowest concurrency at which both configurations attain at least 90% of their own peak throughput with zero failed and zero non-2xx responses—therefore could not be evaluated reliably. We do not present C20 as a result of that formal plateau calculation. The user subsequently adopted a practical C20-first validation rule, with C10 as fallback if either 1,000-request validation had any failure or non-2xx response. Both C20 validation runs completed their 100-request warm-ups and 1,000 measured requests with zero failures and zero non-2xx responses. The user then explicitly selected and locked C20 for the Step 11 comparison. Failed and incomplete calibration attempts, their raw outputs, and the incomplete calibration tables are retained and described as calibration evidence rather than successful benchmark results.
+
+**Honesty notes:** The two C20 validations account for 2,200 verified completed responses (200 warm-up plus 2,000 measured). They do not establish the final performance improvement: Step 11 still requires three interleaved repetitions per configuration and an aggregate table. The complete calibration matrix planned 4,000 requests, but planned traffic is not an aggregate count of actual requests sent across all historical attempts. Several historical attempts have incomplete or unknown traffic; rep13 requested a 1,000-request measurement, but it timed out with return code 1 and the actual number sent/completed is unknown. The retained Docker stats image shows an idle capture, not saturation. `docker stats` CPU percentage is normalized against one host CPU; for a 0.5-CPU-limited backend, about 50% corresponds to that limit, but that observation was not captured under load. TODO(evidence): retained raw diagnostics for the historical `/health` C50 figure, `/health/db`, direct `/postings` diagnostic series, and a QueuePool excerpt correlated with Nginx lines.
 
 ## 1c — Backend failure resilience
 

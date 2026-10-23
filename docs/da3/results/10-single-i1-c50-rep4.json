@@ -1,0 +1,48 @@
+{
+  "concurrency": 50,
+  "error": "warm-up incomplete",
+  "instances": 1,
+  "measurement": null,
+  "mode": "single-run",
+  "rep": 4,
+  "requests": 300,
+  "restored_three_backends": true,
+  "traffic": {
+    "ab_reported_completed_measurement": 0,
+    "ab_reported_completed_warmup": 0,
+    "launched_measurement": 0,
+    "launched_warmup": 100,
+    "planned_measurement": 300,
+    "planned_warmup": 100,
+    "skipped_measurement": 300,
+    "skipped_warmup": 0,
+    "unknown_measurement": 0,
+    "unknown_warmup": 100
+  },
+  "warmup": {
+    "cleanup": {
+      "commands_succeeded": true,
+      "error": null,
+      "final_state_known": true,
+      "forced": false,
+      "no_containers_remain": true,
+      "stopped_leftovers": 0
+    },
+    "completed_requests": null,
+    "connect_failures": null,
+    "exception_failures": null,
+    "execution_error": null,
+    "failed_requests": null,
+    "interrupted": false,
+    "invocation_id": "efee1321bec74c56912c0f067ae3ca1c",
+    "launched": true,
+    "length_failures": null,
+    "mean_time_per_request_ms": null,
+    "non_2xx_responses": null,
+    "receive_failures": null,
+    "requests": 100,
+    "requests_per_second": null,
+    "return_code": 119,
+    "timed_out": false
+  }
+}

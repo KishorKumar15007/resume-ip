@@ -1,0 +1,153 @@
+{
+  "label": "calibration",
+  "purpose": "Step 10 calibration only; not a Step 11 reported benchmark.",
+  "resource_limits": {
+    "backends": {
+      "backend-1": {
+        "nano_cpus": 500000000,
+        "memory_bytes": 536870912
+      },
+      "backend-2": {
+        "nano_cpus": 500000000,
+        "memory_bytes": 536870912
+      },
+      "backend-3": {
+        "nano_cpus": 500000000,
+        "memory_bytes": 536870912
+      }
+    },
+    "equal_across_backends": true,
+    "uvicorn_workers_per_backend": 1
+  },
+  "traffic": {
+    "planned_warmup": 1000,
+    "planned_measured": 3000,
+    "launched_warmup": 400,
+    "launched_measured": 900,
+    "ab_reported_completed_warmup": 300,
+    "ab_reported_completed_measured": 900,
+    "unknown_warmup": 100,
+    "unknown_measured": 0
+  },
+  "points": [
+    {
+      "instances": 1,
+      "concurrency": 5,
+      "rep": 1,
+      "warmup": {
+        "requests": 100,
+        "completed_requests": 100,
+        "requests_per_second": "9.77",
+        "mean_time_per_request_ms": "512.011",
+        "failed_requests": 0,
+        "non_2xx_responses": 0,
+        "non_2xx_source": "omitted_means_zero",
+        "return_code": 0,
+        "interrupted": false
+      },
+      "measurement": {
+        "requests": 300,
+        "completed_requests": 300,
+        "requests_per_second": "10.49",
+        "mean_time_per_request_ms": "476.725",
+        "failed_requests": 0,
+        "non_2xx_responses": 0,
+        "non_2xx_source": "omitted_means_zero",
+        "return_code": 0,
+        "interrupted": false
+      },
+      "error": null
+    },
+    {
+      "instances": 1,
+      "concurrency": 10,
+      "rep": 1,
+      "warmup": {
+        "requests": 100,
+        "completed_requests": 100,
+        "requests_per_second": "14.39",
+        "mean_time_per_request_ms": "695.081",
+        "failed_requests": 0,
+        "non_2xx_responses": 0,
+        "non_2xx_source": "omitted_means_zero",
+        "return_code": 0,
+        "interrupted": false
+      },
+      "measurement": {
+        "requests": 300,
+        "completed_requests": 300,
+        "requests_per_second": "17.18",
+        "mean_time_per_request_ms": "582.220",
+        "failed_requests": 0,
+        "non_2xx_responses": 0,
+        "non_2xx_source": "omitted_means_zero",
+        "return_code": 0,
+        "interrupted": false
+      },
+      "error": null
+    },
+    {
+      "instances": 1,
+      "concurrency": 20,
+      "rep": 1,
+      "warmup": {
+        "requests": 100,
+        "completed_requests": 100,
+        "requests_per_second": "12.91",
+        "mean_time_per_request_ms": "1548.992",
+        "failed_requests": 0,
+        "non_2xx_responses": 0,
+        "non_2xx_source": "omitted_means_zero",
+        "return_code": 0,
+        "interrupted": false
+      },
+      "measurement": {
+        "requests": 300,
+        "completed_requests": 300,
+        "requests_per_second": "16.13",
+        "mean_time_per_request_ms": "1239.827",
+        "failed_requests": 0,
+        "non_2xx_responses": 0,
+        "non_2xx_source": "omitted_means_zero",
+        "return_code": 0,
+        "interrupted": false
+      },
+      "error": null
+    },
+    {
+      "instances": 1,
+      "concurrency": 50,
+      "rep": 1,
+      "warmup": {
+        "requests": 100,
+        "completed_requests": null,
+        "requests_per_second": null,
+        "mean_time_per_request_ms": null,
+        "failed_requests": null,
+        "non_2xx_responses": 0,
+        "non_2xx_source": "omitted_means_zero",
+        "return_code": 119,
+        "interrupted": false
+      },
+      "measurement": null,
+      "error": "warm-up did not complete cleanly"
+    }
+  ],
+  "maximum_requests_per_second": {},
+  "eligibility": {
+    "i1-c50": false,
+    "i1-c5": false,
+    "i3-c20": false,
+    "i1-c20": false,
+    "i3-c10": false,
+    "i3-c100": false,
+    "i3-c50": false,
+    "i1-c100": false,
+    "i1-c10": false,
+    "i3-c5": false
+  },
+  "selected_concurrency": null,
+  "calibration_error": "warm-up did not complete cleanly",
+  "interrupted": false,
+  "restored_three_backend_topology": true
+}

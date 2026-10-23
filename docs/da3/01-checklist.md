@@ -25,11 +25,19 @@ Legend:
 
 ## 1b — One versus three instances
 
-- [ ] 1-instance and 3-instance runs of 1,000 requests
-- [ ] Same tool/concurrency stated
-- [ ] RPS and mean-latency table
+- [~] Step 10 harness and both C20 validation runs are recorded: rep11 (1 backend) and rep12 (3 backends) each completed 100 warm-up plus 1,000 measured requests with zero failed/non-2xx responses; they are not the required Step 11 repeated comparison.
+- [~] Formal two-configuration five-level calibration matrix — partial/incomplete; the original plateau rule could not select a concurrency.
+- [x] Partial rep3 calibration screenshot is captured and accurately labelled incomplete (`evidence/1b-calibration-table.png`).
+- [x] C20 validation screenshots are captured for rep11 and rep12 (`evidence/1b-validation-1-instance-c20-rep11.png`, `evidence/1b-validation-3-instance-c20-rep12.png`).
+- [x] Owner selected C20 for Step 11 after both C20 validations passed; the C10 fallback was not triggered.
+- [~] Historical warm-up timeout screenshot is captured; it documents a failed calibration warm-up, not a result.
+- [~] One-instance `docker stats` screenshot is captured but inadequate as live-load saturation proof.
+- [~] Neon connections graph is captured but does not establish a causal limit/spike explanation.
+- [~] 1-instance and 3-instance runs of 1,000 requests — one validation each exists; Step 11 requires three interleaved reported repetitions.
+- [~] Same tool/concurrency stated — Apache Bench with `-k`, C20, 100-request warm-up and 1,000 measured requests are locked for Step 11.
+- [~] RPS and mean-latency table — validation table exists; Step 11 aggregate table remains TODO(evidence).
 - [ ] Improvement stated
-- [ ] Limitations noted
+- [~] Limitations noted — incomplete calibration, unproven saturation, shared remote database, and unresolved historical traffic are recorded; final Step 11 limitations await its runs.
 
 ## 1c — Failure resilience
 

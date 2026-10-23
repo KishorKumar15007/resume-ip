@@ -1,0 +1,96 @@
+time="2026-10-20T20:04:27+05:30" level=warning msg="Found orphan containers (resume-portal-postgres) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Image resume-ip-loadtest Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 530B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile.loadtest
+#2 transferring dockerfile: 122B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/alpine:3.22.1
+#3 DONE 3.7s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [1/2] FROM docker.io/library/alpine:3.22.1@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1
+#5 resolve docker.io/library/alpine:3.22.1@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1 0.0s done
+#5 sha256:9824c27679d3b27c5e1cb00a73adb6f4f8d556994111c12db3c5d61a0c843df8 0B / 3.80MB 0.2s
+#5 sha256:9824c27679d3b27c5e1cb00a73adb6f4f8d556994111c12db3c5d61a0c843df8 1.05MB / 3.80MB 0.6s
+#5 sha256:9824c27679d3b27c5e1cb00a73adb6f4f8d556994111c12db3c5d61a0c843df8 2.10MB / 3.80MB 0.8s
+#5 sha256:9824c27679d3b27c5e1cb00a73adb6f4f8d556994111c12db3c5d61a0c843df8 3.80MB / 3.80MB 0.8s done
+#5 extracting sha256:9824c27679d3b27c5e1cb00a73adb6f4f8d556994111c12db3c5d61a0c843df8 0.1s done
+#5 DONE 1.0s
+
+#6 [2/2] RUN apk add --no-cache apache2-utils
+#6 0.319 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/main/x86_64/APKINDEX.tar.gz
+#6 1.121 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/community/x86_64/APKINDEX.tar.gz
+#6 1.997 (1/5) Installing libuuid (2.41.6-r1)
+#6 2.191 (2/5) Installing apr (1.7.5-r0)
+#6 2.406 (3/5) Installing libexpat (2.9.0-r0)
+#6 2.501 (4/5) Installing apr-util (1.6.4-r0)
+#6 2.712 (5/5) Installing apache2-utils (2.4.69-r0)
+#6 2.811 Executing busybox-1.37.0-r18.trigger
+#6 2.823 OK: 8 MiB in 21 packages
+#6 DONE 3.0s
+
+#7 exporting to image
+#7 exporting layers 0.1s done
+#7 exporting manifest sha256:5d32057859a7267c6183fd0c9176b6ce6f3103989e09a1df8398e5c42fd44342 0.0s done
+#7 exporting config sha256:59857490fbc9e71e0368c46b704a4a5533c11e1271782ab029a583dcd5278755 0.0s done
+#7 exporting attestation manifest sha256:43e405e156792658a172f95d624e123692632c8e3bbcd76ad416396d8a60fcab 0.0s done
+#7 exporting manifest list sha256:0a701c88155ee060bf21aa65f649402fdb77d3df97f324e495193d425dce1741 0.0s done
+#7 naming to docker.io/library/resume-ip-loadtest:latest done
+#7 unpacking to docker.io/library/resume-ip-loadtest:latest 0.0s done
+#7 DONE 0.2s
+
+#8 resolving provenance for metadata file
+#8 DONE 0.0s
+ Image resume-ip-loadtest Built 
+ Container resume-ip-loadtest-run-ad6eff4b4d41 Creating 
+ Container resume-ip-loadtest-run-ad6eff4b4d41 Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking nginx (be patient).....done
+
+
+Server Software:        nginx/1.30.6
+Server Hostname:        nginx
+Server Port:            80
+
+Document Path:          /postings
+Document Length:        15896 bytes
+
+Concurrency Level:      5
+Time taken for tests:   10.240 seconds
+Complete requests:      100
+Failed requests:        0
+Keep-Alive requests:    100
+Total transferred:      1607700 bytes
+HTML transferred:       1589600 bytes
+Requests per second:    9.77 [#/sec] (mean)
+Time per request:       512.011 [ms] (mean)
+Time per request:       102.402 [ms] (mean, across all concurrent requests)
+Transfer rate:          153.32 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.1      0       1
+Processing:   261  456 198.8    394    1163
+Waiting:      261  455 198.8    394    1162
+Total:        261  456 198.9    394    1163
+
+Percentage of the requests served within a certain time (ms)
+  50%    394
+  66%    444
+  75%    502
+  80%    514
+  90%    678
+  95%   1022
+  98%   1086
+  99%   1163
+ 100%   1163 (longest request)

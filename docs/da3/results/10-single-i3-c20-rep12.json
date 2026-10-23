@@ -1,0 +1,73 @@
+{
+  "concurrency": 20,
+  "error": null,
+  "instances": 3,
+  "measurement": {
+    "cleanup": {
+      "commands_succeeded": true,
+      "error": null,
+      "final_state_known": true,
+      "forced": false,
+      "no_containers_remain": true,
+      "stopped_leftovers": 0
+    },
+    "completed_requests": 1000,
+    "connect_failures": null,
+    "exception_failures": null,
+    "execution_error": null,
+    "failed_requests": 0,
+    "interrupted": false,
+    "invocation_id": "31687b1401b64022a9258ab85bf6271f",
+    "launched": true,
+    "length_failures": null,
+    "mean_time_per_request_ms": "495.205",
+    "non_2xx_responses": 0,
+    "receive_failures": null,
+    "requests": 1000,
+    "requests_per_second": "40.39",
+    "return_code": 0,
+    "timed_out": false
+  },
+  "mode": "single-run",
+  "rep": 12,
+  "requests": 1000,
+  "restored_three_backends": true,
+  "traffic": {
+    "ab_reported_completed_measurement": 1000,
+    "ab_reported_completed_warmup": 100,
+    "launched_measurement": 1000,
+    "launched_warmup": 100,
+    "planned_measurement": 1000,
+    "planned_warmup": 100,
+    "skipped_measurement": 0,
+    "skipped_warmup": 0,
+    "unknown_measurement": 0,
+    "unknown_warmup": 0
+  },
+  "warmup": {
+    "cleanup": {
+      "commands_succeeded": true,
+      "error": null,
+      "final_state_known": true,
+      "forced": false,
+      "no_containers_remain": true,
+      "stopped_leftovers": 0
+    },
+    "completed_requests": 100,
+    "connect_failures": null,
+    "exception_failures": null,
+    "execution_error": null,
+    "failed_requests": 0,
+    "interrupted": false,
+    "invocation_id": "3486307482284f339a06ae3ef7824af8",
+    "launched": true,
+    "length_failures": null,
+    "mean_time_per_request_ms": "1076.192",
+    "non_2xx_responses": 0,
+    "receive_failures": null,
+    "requests": 100,
+    "requests_per_second": "18.58",
+    "return_code": 0,
+    "timed_out": false
+  }
+}

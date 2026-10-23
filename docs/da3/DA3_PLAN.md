@@ -189,8 +189,8 @@ Pacing: Phases 0–1 by 20 Oct, Phase 2 by 24 Oct, Phase 3 by 27 Oct, Phase 4 by
 | 7 | 1a: scenario, target API, fixtures | Scenario text, API justification, `X-Served-By` header, request log line, seed script, load-test token. |
 | 8 | 1a: Compose and Nginx | Three backends + Nginx, CPU limits, `$upstream_addr` logging, single-upstream variant. |
 | 9 | 1a: distribution proof | Script tallies requests per instance (header + Nginx log); table + screenshot. |
-| 10 | 1b: load harness | Containerised tool, warm-up, fixed `-n 1000`, calibrated concurrency, CSV output. |
-| 11 | 1b: 1 vs 3 results | 3 repetitions each, medians, improvement and speedup, limitations note. |
+| 10 | 1b: load harness and calibration | Apache Bench harness: both 1- and 3-backend configurations at C5/C10/C20/C50/C100; each cell has 100 keep-alive warm-up and 300 measured requests (4,000 planned requests). The original rule was the lowest common concurrency at at least 90% of each configuration's own maximum with zero failed/non-2xx. The matrix did not complete validly; later C20-first/C10-fallback validation was adopted, and the owner selected C20 after both C20 validations passed. Preserve incomplete calibration evidence and traffic unknowns. |
+| 11 | 1b: 1 vs 3 results | Three interleaved repetitions each, Apache Bench `-k`, C20, 100 warm-up and 1,000 measured requests per reported run; medians, improvement/speedup, and limitations. No tuning after these benchmark runs begin. |
 | 12 | 1c: failure, before | Deterministic baseline config, `docker kill` mid-run, failed count. |
 | 13 | 1c: failure, after | Passive failover config, identical rerun with zero failures, availability probe, before/after table. |
 | 14 | 1d: diagram and bursting | Real names and ports, bursting component in a different colour, components-and-ports table, explanation. |
