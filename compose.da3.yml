@@ -2,12 +2,7 @@ x-backend-common: &backend-common
   build:
     context: ./backend
     target: api
-  command:
-    [
-      "sh",
-      "-c",
-      "exec uvicorn app.main:app --host 0.0.0.0 --port \"$${PORT}\" --workers 1",
-    ]
+  command: [ "sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port \"$${PORT}\" --workers 1" ]
   env_file:
     - "${DA3_LOADTEST_ENV_FILE:?Set DA3_LOADTEST_ENV_FILE to the owner-managed load-test configuration path}"
   environment:
@@ -17,13 +12,7 @@ x-backend-common: &backend-common
   cpus: "${BACKEND_CPUS:-0.5}"
   mem_limit: "${BACKEND_MEMORY:-512m}"
   healthcheck:
-    test:
-      [
-        "CMD",
-        "python",
-        "-c",
-        "from urllib.request import urlopen; response = urlopen('http://127.0.0.1:8000/health', timeout=2); assert response.status == 200",
-      ]
+    test: [ "CMD", "python", "-c", "from urllib.request import urlopen; response = urlopen('http://127.0.0.1:8000/health', timeout=2); assert response.status == 200" ]
     interval: 5s
     timeout: 3s
     retries: 6
@@ -35,6 +24,7 @@ services:
     ports:
       - "8001:8000"
     environment:
+      DB_LIFECYCLE_TRACE: "${DB_LIFECYCLE_TRACE:-0}"
       PORT: "8000"
       INSTANCE_NAME: backend-1
 
@@ -43,6 +33,7 @@ services:
     ports:
       - "8002:8000"
     environment:
+      DB_LIFECYCLE_TRACE: "${DB_LIFECYCLE_TRACE:-0}"
       PORT: "8000"
       INSTANCE_NAME: backend-2
 
@@ -51,6 +42,7 @@ services:
     ports:
       - "8003:8000"
     environment:
+      DB_LIFECYCLE_TRACE: "${DB_LIFECYCLE_TRACE:-0}"
       PORT: "8000"
       INSTANCE_NAME: backend-3
 
@@ -78,4 +70,4 @@ services:
     depends_on:
       nginx:
         condition: service_started
-    command: ["-V"]
+    command: [ "-V" ]

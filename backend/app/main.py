@@ -5,6 +5,7 @@ import socket
 import sys
 from time import perf_counter
 from urllib.parse import urlsplit
+from uuid import uuid4
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +13,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.database import engine, settings
+from app.database import db_trace_request, engine, settings, _trace_event
 from app.routers.auth import router as auth_router
 from app.routers.postings import router as postings_router
 from app.routers.submissions import router as submissions_router
@@ -44,6 +45,8 @@ class RequestInstrumentationMiddleware:
             return
 
         started_at = perf_counter()
+        trace_token = db_trace_request.set(uuid4().hex)
+        _trace_event("request_begin")
         served_by = instance_name()
         status_code: int | None = None
 
@@ -61,6 +64,8 @@ class RequestInstrumentationMiddleware:
         try:
             await self.app(scope, receive, instrumented_send)
         finally:
+            _trace_event("request_end", duration_ms=round((perf_counter() - started_at) * 1000, 3))
+            db_trace_request.reset(trace_token)
             access_logger.info(
                 json.dumps(
                     {

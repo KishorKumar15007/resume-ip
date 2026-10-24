@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, require_role
-from app.database import get_db
+from app.database import get_db, _trace_event
 from app.models import JobPosting, Submission, User
 from app.schemas.posting import PostingCreate, PostingResponse, PostingUpdate
 from app.schemas.submission import RankedSubmissionResponse, SubmissionUploadResponse
@@ -95,11 +95,14 @@ def list_postings(
     _current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> list[JobPosting]:
-    return list(
+    _trace_event("postings_query_begin")
+    postings = list(
         db.scalars(
             select(JobPosting).order_by(JobPosting.created_at.desc())
         ).all()
     )
+    _trace_event("postings_query_end", rows=len(postings))
+    return postings
 
 
 @router.get(
