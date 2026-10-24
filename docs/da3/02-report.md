@@ -242,6 +242,8 @@ python docs/da3/scripts/loadtest.py --single-run --instances 1 --concurrency 50 
 
 Authentication was refreshed through `docs/da3/scripts/get_token.py` before the validation runs; its token was held outside the saved artifacts.
 
+The final Step 11 sequence used the same authenticated `GET /postings` route through Nginx, Apache Bench with `-k`, C20, 100 warm-up requests excluded from 1,000 measured requests, and three repetitions per topology in the locked interleaved order 1, 3, 1, 3, 1, 3. One fresh token was acquired for that sequence but is not present in the manifest or result artifacts.
+
 **Result:** The formal calibration matrix is incomplete and no concurrency was selected by its original plateau rule. Table 1b.1 is the retained partial rep3 calibration, not a completed matrix or Step 11 benchmark.
 
 | Configuration | C5 | C10 | C20 | C50 | C100 |
@@ -260,7 +262,25 @@ The owner later selected C20 after two separate successful 1,000-request validat
 
 *Pre-benchmark C20 validation summary. Successful validations from `results/10-single-i1-c20-rep11.json` and `results/10-single-i3-c20-rep12.json`. Table 1b.2 remains reserved for the final three-repetition, interleaved Step 11 benchmark.*
 
-**Evidence:** Figure 1b.1 is a screenshot of the retained incomplete rep3 calibration table. Figures 1b.2 and 1b.3 are screenshots of the saved rep11 and rep12 JSON summaries, respectively. The `docker stats` capture exists but was made without a load running and is inadequate to demonstrate saturation. The Neon connection graph exists but does not by itself establish a causal connection-limit explanation. TODO(evidence): Step 11 three-repetition results, aggregation table, and live-load CPU/saturation capture.
+| Run | Backends | Rep | Status | Requests/s | Mean time per request (ms) | Failed | Non-2xx | Median eligible | Measured raw output |
+| ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: | --- | --- |
+| 1 | 1 | 1 | complete | 10.29 | 1943.935 | 0 | 0 | yes | `results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1.txt` |
+| 2 | 3 | 1 | complete | 24.88 | 803.911 | 0 | 0 | yes | `results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1.txt` |
+| 3 | 1 | 2 | complete | 8.52 | 2347.827 | 0 | 0 | yes | `results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2.txt` |
+| 4 | 3 | 2 | complete | 22.25 | 898.935 | 0 | 0 | yes | `results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2.txt` |
+| 5 | 1 | 3 | complete | 10.68 | 1872.073 | 0 | 0 | yes | `results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3.txt` |
+| 6 | 3 | 3 | complete | 27.42 | 729.359 | 0 | 0 | yes | `results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3.txt` |
+
+*Table 1b.2. Final Step 11 benchmark from `results/11-1b-manifest-s11-20261024t093248z-c7a71d7b.json` and `results/11-1b-summary.json`. The mean column is Apache Bench's first `Time per request` metric. All six saved harness results record successful activation/restoration and zero failed/non-2xx responses; each matched Nginx diagnostic records measured `200:1000`. Apache Bench omits a `Non-2xx responses` line when it is zero, so the saved harness result and the all-200 Nginx reconciliation retain that explicit zero.*
+
+| Topology | Eligible runs | Median requests/s | Median mean time per request | Three-repetition state |
+| --- | --- | ---: | ---: | --- |
+| 1 backend | 3 of 3 | 10.29 | 1943.935 ms | complete |
+| 3 backends | 3 of 3 | 24.88 | 803.911 ms | complete |
+
+Throughput improvement = `(24.88 / 10.29 - 1) * 100` = **141.79%**. Throughput speedup = `24.88 / 10.29` = **2.418×**. Mean-response-time reduction = `(1 - 803.911 / 1943.935) * 100` = **58.65%**. Mean-response-time improvement factor = `1943.935 / 803.911` = **2.418×** (a value above one means lower mean response time with three backends).
+
+**Evidence:** Figures 1b.1–1b.3 remain the historical calibration/validation captures. Figure 1b.4 shows a saved final one-backend Apache Bench result, Figure 1b.5 shows a saved final three-backend result, and Figure 1b.6 shows the aggregate table. `evidence/1b-docker-stats-1-instance.png` remains an idle historical capture and is not used as live-load evidence. `evidence/1b-docker-stats-live-load.png` shows the one-backend live-load capture; `evidence/1b-docker-stats-3-instances.png` shows the three-backend live-load capture. `results/11-1b-docker-stats-20261024-150227.log` is the retained sampler log.
 
 ![Partial rep3 calibration](evidence/1b-calibration-table.png)
 
@@ -274,9 +294,21 @@ The owner later selected C20 after two separate successful 1,000-request validat
 
 **Figure 1b.3. Screenshot of the saved rep12 three-backend C20 validation result.**
 
-**Explanation:** The calibration plan covered concurrency levels 5, 10, 20, 50, and 100 for both one-backend and three-backend configurations. Each planned matrix cell used 100 warm-up requests followed by 300 measured requests, for 4,000 planned requests across the complete matrix including warm-ups. Several attempts failed or stopped early, so the complete valid matrix was not obtained. The original formal rule—select the lowest concurrency at which both configurations attain at least 90% of their own peak throughput with zero failed and zero non-2xx responses—therefore could not be evaluated reliably. We do not present C20 as a result of that formal plateau calculation. The user subsequently adopted a practical C20-first validation rule, with C10 as fallback if either 1,000-request validation had any failure or non-2xx response. Both C20 validation runs completed their 100-request warm-ups and 1,000 measured requests with zero failures and zero non-2xx responses. The user then explicitly selected and locked C20 for the Step 11 comparison. Failed and incomplete calibration attempts, their raw outputs, and the incomplete calibration tables are retained and described as calibration evidence rather than successful benchmark results.
+![Final one-backend Apache Bench result](evidence/1b-ab-1-instance.png)
 
-**Honesty notes:** The two C20 validations account for 2,200 verified completed responses (200 warm-up plus 2,000 measured). They do not establish the final performance improvement: Step 11 still requires three interleaved repetitions per configuration and an aggregate table. The complete calibration matrix planned 4,000 requests, but planned traffic is not an aggregate count of actual requests sent across all historical attempts. Several historical attempts have incomplete or unknown traffic; rep13 requested a 1,000-request measurement, but it timed out with return code 1 and the actual number sent/completed is unknown. The retained Docker stats image shows an idle capture, not saturation. `docker stats` CPU percentage is normalized against one host CPU; for a 0.5-CPU-limited backend, about 50% corresponds to that limit, but that observation was not captured under load. TODO(evidence): retained raw diagnostics for the historical `/health` C50 figure, `/health/db`, direct `/postings` diagnostic series, and a QueuePool excerpt correlated with Nginx lines.
+**Figure 1b.4. Final Step 11 run 1/6: one backend, C20, 1,000 measured requests.**
+
+![Final three-backend Apache Bench result](evidence/1b-ab-3-instances.png)
+
+**Figure 1b.5. Final Step 11 run 2/6: three backends, C20, 1,000 measured requests.**
+
+![Final Step 11 aggregate table](evidence/1b-results-table.png)
+
+**Figure 1b.6. Final Step 11 six-run table, medians, and comparisons.**
+
+**Explanation:** Adding two backend instances increased the measured median throughput from 10.29 to 24.88 requests per second (approximately 2.418×, or a 141.79% increase) and reduced median mean response time from 1,943.935 ms to 803.911 ms (approximately 58.65% lower). This is the observed result of this particular test, not proof that performance scales linearly with instance count. The backends share a request path through Nginx and the same external Neon database, so the database and shared infrastructure remain common dependencies. The formal Step 10 matrix remained incomplete, so C20 was owner-locked after the successful C20 validations rather than selected from a completed plateau calculation; C10 fallback was not triggered.
+
+**Honesty notes:** The load generator and Nginx shared the test machine, so this was not an isolated distributed load-generator experiment. Each backend had a 0.5-CPU limit and one Uvicorn worker. All backends used the same remote Neon database, so network latency, database workload, and Neon compute behaviour can affect the result. Three repetitions per topology support observed medians only; they do not establish statistical significance or general performance guarantees. This Q1 measurement was taken before the planned hardening and MFA work and is not post-hardening/post-MFA performance. The Step 11 sequence planned 6,600 requests (six runs × 1,100); this is planned traffic, while the manifest records the actual completed warm-up and measured outcomes. Historical failed/incomplete calibration artifacts, including rep13's unknown measured sent/completed count, remain preserved separately and are not part of Table 1b.2.
 
 ## 1c — Backend failure resilience
 

@@ -1,0 +1,38 @@
+{
+  "availability": "complete",
+  "malformed_records": 0,
+  "phases": {
+    "measured": {
+      "expected_completed_requests": 1000,
+      "malformed_records": 0,
+      "matching_records": 1000,
+      "non_2xx_excerpt": [],
+      "reconciliation_difference": 0,
+      "status_counts": {
+        "200": 1000
+      },
+      "upstream_address_counts": {
+        "172.19.0.2:8000": 1000
+      },
+      "upstream_status_counts": {
+        "200": 1000
+      }
+    },
+    "warmup": {
+      "expected_completed_requests": 100,
+      "malformed_records": 0,
+      "matching_records": 100,
+      "non_2xx_excerpt": [],
+      "reconciliation_difference": 0,
+      "status_counts": {
+        "200": 100
+      },
+      "upstream_address_counts": {
+        "172.19.0.2:8000": 100
+      },
+      "upstream_status_counts": {
+        "200": 100
+      }
+    }
+  }
+}

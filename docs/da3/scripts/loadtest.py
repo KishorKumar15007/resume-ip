@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 import time
@@ -20,6 +21,7 @@ WARMUP, MEASURED, DEFAULT_REQUESTS = 100, 300, 1000
 BACKENDS = ("backend-1", "backend-2", "backend-3")
 RUN_LABEL = "com.resume_ip.da3_loadtest_run"
 AB_TIMEOUT_SECONDS = 120
+BENCHMARK_ID_PATTERN = re.compile(r"[a-z0-9][a-z0-9-]{0,79}")
 
 @dataclass
 class Cleanup:
@@ -169,14 +171,36 @@ def cleanup_invocation(run_id: str) -> Cleanup:
         return Cleanup(commands_ok, False, None, stopped_leftovers, forced, "could not verify invocation cleanup")
     return Cleanup(commands_ok, True, not bool(remaining), stopped_leftovers, forced, None if commands_ok and not remaining else "invocation cleanup failed or containers remain")
 
-def run_ab(requests: int, concurrency: int, output_path: Path) -> Metrics:
+def benchmark_id(value: str) -> str:
+    if not BENCHMARK_ID_PATTERN.fullmatch(value):
+        raise argparse.ArgumentTypeError(
+            "--benchmark-id must contain lowercase letters, digits, and hyphens"
+        )
+    return value
+
+
+def benchmark_target(marker: str | None, phase: str | None) -> str:
+    if marker is None:
+        return "/postings"
+    if phase not in {"warmup", "measured"}:
+        raise ValueError("benchmark phase is invalid")
+    return f"/postings?bench={marker}&phase={phase}"
+
+
+def run_ab(requests: int, concurrency: int, output_path: Path,
+           target: str = "/postings") -> Metrics:
     name, run_id = project_name(), uuid.uuid4().hex
     if name is None:
         item = parse_ab("", requests, 127)
         item.execution_error, item.invocation_id = "invalid Compose project identity", run_id
         output_path.write_text("", encoding="utf-8")
         return item
-    shell = 'exec ab -k -n {} -c {} -H "Authorization: Bearer '.format(requests, concurrency) + chr(36) + 'LOADTEST_TOKEN" http://nginx/postings'
+    url = shlex.quote("http://nginx" + target)
+    shell = (
+        f'exec ab -k -n {requests} -c {concurrency} '
+        '-H "Authorization: Bearer $LOADTEST_TOKEN" '
+        + url
+    )
     command = ["docker", "compose", "--project-name", name, "-f", str(COMPOSE), "--profile", "loadtest", "run", "--rm", "--no-deps", "--label", f"{RUN_LABEL}={run_id}", "-e", "LOADTEST_TOKEN", "--entrypoint", "sh", "loadtest", "-c", shell]
     parts: list[str] = []
     process: subprocess.Popen[str] | None = None
@@ -287,7 +311,12 @@ def calibration_paths(rep: int) -> tuple[Path, Path, list[Path]]:
             raw.append(RESULTS / (stem + ".txt"))
     return report_json, report_markdown, raw
 
-def single_paths(instances: int, concurrency: int, rep: int) -> tuple[Path, Path, Path, Path]:
+def single_paths(instances: int, concurrency: int, rep: int,
+                 marker: str | None = None) -> tuple[Path, Path, Path, Path]:
+    if marker is not None:
+        stem = "11-1b-" + marker + "-i" + str(instances) + "-c" + str(concurrency) + "-r" + str(rep)
+        return (RESULTS / (stem + "-warmup.txt"), RESULTS / (stem + ".txt"),
+                RESULTS / (stem + ".json"), RESULTS / (stem + ".md"))
     stem = "10-single-i" + str(instances) + "-c" + str(concurrency) + "-rep" + str(rep)
     return (RESULTS / (stem + "-warmup.txt"), RESULTS / (stem + ".txt"),
             RESULTS / (stem + ".json"), RESULTS / (stem + ".md"))
@@ -488,11 +517,14 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--instances", type=int, choices=(1, 3), default=3)
     result.add_argument("--concurrency", type=positive, default=10)
     result.add_argument("--requests", type=positive, default=DEFAULT_REQUESTS)
+    result.add_argument("--benchmark-id", type=benchmark_id,
+                        help="opt-in Step 11 request marker and result namespace")
     return result
 
 def write_single(instances: int, concurrency: int, requests: int, rep: int,
                  warmup: Metrics | None, measured: Metrics | None, error: str | None,
-                 restored: bool, output_json: Path, output_markdown: Path) -> None:
+                  restored: bool, output_json: Path, output_markdown: Path,
+                  marker: str | None = None, activated: bool = False) -> None:
     traffic = {"planned_warmup": WARMUP, "planned_measurement": requests,
                "launched_warmup": 0, "launched_measurement": 0,
                "ab_reported_completed_warmup": 0, "ab_reported_completed_measurement": 0,
@@ -504,13 +536,18 @@ def write_single(instances: int, concurrency: int, requests: int, rep: int,
         record(traffic, "measurement", measured, requests)
     elif warmup is not None:
         traffic["skipped_measurement"] = requests
-    output_json.write_text(json.dumps({
+    document: dict[str, object] = {
         "mode": "single-run", "rep": rep, "instances": instances,
         "concurrency": concurrency, "requests": requests, "error": error,
-        "restored_three_backends": restored, "traffic": traffic,
+        "topology_activated": activated, "restored_three_backends": restored, "traffic": traffic,
         "warmup": serialise_metrics(warmup), "measurement": serialise_metrics(measured),
-    }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    text = ["# Step 10 single run", "", "Topology: " + str(instances) + " backend(s)",
+    }
+    if marker is not None:
+        document["benchmark_id"] = marker
+    output_json.write_text(json.dumps(document, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    text = ["# " + ("Step 11 benchmark run" if marker is not None else "Step 10 single run"), "",
+            *( ["Run ID: " + marker] if marker is not None else []),
+            "Topology: " + str(instances) + " backend(s)",
             "Concurrency: " + str(concurrency), "Warm-up: " + status(warmup, WARMUP),
             "Measured: " + status(measured, requests),
             "Restored three-backend topology: " + ("yes" if restored else "no")]
@@ -525,6 +562,9 @@ def main() -> int:
         return 1
     RESULTS.mkdir(parents=True, exist_ok=True)
     if args.calibrate:
+        if args.benchmark_id is not None:
+            print("--benchmark-id is only valid with --single-run", file=sys.stderr)
+            return 1
         report_json, report_markdown, raw = calibration_paths(args.rep)
         problem = collision([report_json, report_markdown, *raw])
         if problem:
@@ -548,7 +588,9 @@ def main() -> int:
         if interrupted:
             return 130
         return 0 if selected is not None and restored and stopped_reason is None else 1
-    warmup_raw, measured_raw, report_json, report_markdown = single_paths(args.instances, args.concurrency, args.rep)
+    warmup_raw, measured_raw, report_json, report_markdown = single_paths(
+        args.instances, args.concurrency, args.rep, args.benchmark_id
+    )
     problem = collision([warmup_raw, measured_raw, report_json, report_markdown])
     if problem:
         print(problem, file=sys.stderr)
@@ -557,16 +599,24 @@ def main() -> int:
     measured: Metrics | None = None
     error: str | None = None
     interrupted = False
+    activated = False
     try:
         error = activate_topology(args.instances)
         if error is None:
-            warmup = run_ab(WARMUP, args.concurrency, warmup_raw)
+            activated = True
+            warmup = run_ab(
+                WARMUP, args.concurrency, warmup_raw,
+                benchmark_target(args.benchmark_id, "warmup"),
+            )
             if warmup.interrupted:
                 error, interrupted = "warm-up interrupted", True
             elif not warmup_ok(warmup):
                 error = "warm-up " + status(warmup, WARMUP)
             else:
-                measured = run_ab(args.requests, args.concurrency, measured_raw)
+                measured = run_ab(
+                    args.requests, args.concurrency, measured_raw,
+                    benchmark_target(args.benchmark_id, "measured"),
+                )
                 if measured.interrupted:
                     error, interrupted = "measurement interrupted", True
                 elif not complete(measured, args.requests) or measured.return_code != 0:
@@ -576,7 +626,7 @@ def main() -> int:
     finally:
         restored = restore_three_backends()
     write_single(args.instances, args.concurrency, args.requests, args.rep, warmup, measured,
-                 error, restored, report_json, report_markdown)
+                 error, restored, report_json, report_markdown, args.benchmark_id, activated)
     if interrupted:
         return 130
     return 0 if error is None and restored else 1
@@ -594,6 +644,8 @@ def parser_fixture_checks() -> None:
     )
     assert parse_ab(omitted_non_2xx, 100, 0).non_2xx_responses == 0
     assert parse_ab("Complete requests: 1\n", 100, 119).non_2xx_responses is None
+    assert benchmark_target(None, None) == "/postings"
+    assert benchmark_target("s11-example", "measured") == "/postings?bench=s11-example&phase=measured"
     parts = ["abc"]; append_unique(parts, "abcdef"); append_unique(parts, "defghi")
     assert "".join(parts) == "abcdefghi"
 

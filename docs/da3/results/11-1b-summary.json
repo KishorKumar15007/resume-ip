@@ -1,0 +1,245 @@
+{
+  "comparisons": {
+    "mean_response_time_improvement_factor": "2.418097276937372420578894927",
+    "mean_response_time_reduction_percent": "58.64517074902195803872043047",
+    "throughput_improvement_percent": "141.7881438289601554907677357",
+    "throughput_speedup_factor": "2.417881438289601554907677357"
+  },
+  "configurations": {
+    "1": {
+      "complete_three_repetition_benchmark": true,
+      "eligible_runs": 3,
+      "median_mean_time_per_request_ms": "1943.935",
+      "median_requests_per_second": "10.29",
+      "required_runs": 3
+    },
+    "3": {
+      "complete_three_repetition_benchmark": true,
+      "eligible_runs": 3,
+      "median_mean_time_per_request_ms": "803.911",
+      "median_requests_per_second": "24.88",
+      "required_runs": 3
+    }
+  },
+  "formulas": {
+    "mean_response_time_improvement_factor": "median_1_backend_mean_ms / median_3_backend_mean_ms (greater than 1 means improvement)",
+    "mean_response_time_reduction_percent": "(1 - median_3_backend_mean_ms / median_1_backend_mean_ms) * 100",
+    "throughput_improvement_percent": "(median_3_backend_rps / median_1_backend_rps - 1) * 100",
+    "throughput_speedup_factor": "median_3_backend_rps / median_1_backend_rps"
+  },
+  "generated_by": "docs/da3/scripts/aggregate_1b.py",
+  "intended_benchmark_complete": true,
+  "rows": [
+    {
+      "completed_requests": 1000,
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o1.json"
+      ],
+      "failed_requests": 0,
+      "invocation_exit_status": 0,
+      "mean_time_per_request_ms": "1943.935",
+      "measured_requests": 1000,
+      "median_eligible": true,
+      "median_exclusion_reason": null,
+      "metric_source": "measured raw Apache Bench output (zero non-2xx corroborated by saved result JSON)",
+      "nginx_diagnostics": "complete",
+      "nginx_status_counts": {
+        "200": 1000
+      },
+      "non_2xx_responses": 0,
+      "ordinal": 1,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1.txt"
+      ],
+      "reason": null,
+      "requests_per_second": "10.29",
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1.md"
+      ],
+      "run_id": "s11-20261024t093248z-c7a71d7b-o1",
+      "status": "complete",
+      "topology_instances": 1,
+      "topology_repetition": 1,
+      "warmup_requests": 100
+    },
+    {
+      "completed_requests": 1000,
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o2.json"
+      ],
+      "failed_requests": 0,
+      "invocation_exit_status": 0,
+      "mean_time_per_request_ms": "803.911",
+      "measured_requests": 1000,
+      "median_eligible": true,
+      "median_exclusion_reason": null,
+      "metric_source": "measured raw Apache Bench output (zero non-2xx corroborated by saved result JSON)",
+      "nginx_diagnostics": "complete",
+      "nginx_status_counts": {
+        "200": 1000
+      },
+      "non_2xx_responses": 0,
+      "ordinal": 2,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1.txt"
+      ],
+      "reason": null,
+      "requests_per_second": "24.88",
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1.md"
+      ],
+      "run_id": "s11-20261024t093248z-c7a71d7b-o2",
+      "status": "complete",
+      "topology_instances": 3,
+      "topology_repetition": 1,
+      "warmup_requests": 100
+    },
+    {
+      "completed_requests": 1000,
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o3.json"
+      ],
+      "failed_requests": 0,
+      "invocation_exit_status": 0,
+      "mean_time_per_request_ms": "2347.827",
+      "measured_requests": 1000,
+      "median_eligible": true,
+      "median_exclusion_reason": null,
+      "metric_source": "measured raw Apache Bench output (zero non-2xx corroborated by saved result JSON)",
+      "nginx_diagnostics": "complete",
+      "nginx_status_counts": {
+        "200": 1000
+      },
+      "non_2xx_responses": 0,
+      "ordinal": 3,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2.txt"
+      ],
+      "reason": null,
+      "requests_per_second": "8.52",
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2.md"
+      ],
+      "run_id": "s11-20261024t093248z-c7a71d7b-o3",
+      "status": "complete",
+      "topology_instances": 1,
+      "topology_repetition": 2,
+      "warmup_requests": 100
+    },
+    {
+      "completed_requests": 1000,
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o4.json"
+      ],
+      "failed_requests": 0,
+      "invocation_exit_status": 0,
+      "mean_time_per_request_ms": "898.935",
+      "measured_requests": 1000,
+      "median_eligible": true,
+      "median_exclusion_reason": null,
+      "metric_source": "measured raw Apache Bench output (zero non-2xx corroborated by saved result JSON)",
+      "nginx_diagnostics": "complete",
+      "nginx_status_counts": {
+        "200": 1000
+      },
+      "non_2xx_responses": 0,
+      "ordinal": 4,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2.txt"
+      ],
+      "reason": null,
+      "requests_per_second": "22.25",
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2.md"
+      ],
+      "run_id": "s11-20261024t093248z-c7a71d7b-o4",
+      "status": "complete",
+      "topology_instances": 3,
+      "topology_repetition": 2,
+      "warmup_requests": 100
+    },
+    {
+      "completed_requests": 1000,
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o5.json"
+      ],
+      "failed_requests": 0,
+      "invocation_exit_status": 0,
+      "mean_time_per_request_ms": "1872.073",
+      "measured_requests": 1000,
+      "median_eligible": true,
+      "median_exclusion_reason": null,
+      "metric_source": "measured raw Apache Bench output (zero non-2xx corroborated by saved result JSON)",
+      "nginx_diagnostics": "complete",
+      "nginx_status_counts": {
+        "200": 1000
+      },
+      "non_2xx_responses": 0,
+      "ordinal": 5,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3.txt"
+      ],
+      "reason": null,
+      "requests_per_second": "10.68",
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3.md"
+      ],
+      "run_id": "s11-20261024t093248z-c7a71d7b-o5",
+      "status": "complete",
+      "topology_instances": 1,
+      "topology_repetition": 3,
+      "warmup_requests": 100
+    },
+    {
+      "completed_requests": 1000,
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o6.json"
+      ],
+      "failed_requests": 0,
+      "invocation_exit_status": 0,
+      "mean_time_per_request_ms": "729.359",
+      "measured_requests": 1000,
+      "median_eligible": true,
+      "median_exclusion_reason": null,
+      "metric_source": "measured raw Apache Bench output (zero non-2xx corroborated by saved result JSON)",
+      "nginx_diagnostics": "complete",
+      "nginx_status_counts": {
+        "200": 1000
+      },
+      "non_2xx_responses": 0,
+      "ordinal": 6,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3.txt"
+      ],
+      "reason": null,
+      "requests_per_second": "27.42",
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3.md"
+      ],
+      "run_id": "s11-20261024t093248z-c7a71d7b-o6",
+      "status": "complete",
+      "topology_instances": 3,
+      "topology_repetition": 3,
+      "warmup_requests": 100
+    }
+  ],
+  "source_manifest": "11-1b-manifest-s11-20261024t093248z-c7a71d7b.json"
+}

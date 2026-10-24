@@ -1,0 +1,26 @@
+{
+  "availability": "incomplete",
+  "malformed_records": 0,
+  "phases": {
+    "measured": {
+      "expected_completed_requests": null,
+      "malformed_records": 0,
+      "matching_records": 0,
+      "non_2xx_excerpt": [],
+      "reconciliation_difference": null,
+      "status_counts": {},
+      "upstream_address_counts": {},
+      "upstream_status_counts": {}
+    },
+    "warmup": {
+      "expected_completed_requests": null,
+      "malformed_records": 0,
+      "matching_records": 0,
+      "non_2xx_excerpt": [],
+      "reconciliation_difference": null,
+      "status_counts": {},
+      "upstream_address_counts": {},
+      "upstream_status_counts": {}
+    }
+  }
+}

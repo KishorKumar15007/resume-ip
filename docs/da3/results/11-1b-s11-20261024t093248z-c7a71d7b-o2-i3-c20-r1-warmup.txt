@@ -1,0 +1,46 @@
+time="2026-10-24T15:04:58+05:30" level=warning msg="Found orphan containers (resume-portal-postgres) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container resume-ip-loadtest-run-4dd7d15e7607 Creating 
+ Container resume-ip-loadtest-run-4dd7d15e7607 Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking nginx (be patient).....done
+
+
+Server Software:        nginx/1.30.6
+Server Hostname:        nginx
+Server Port:            80
+
+Document Path:          /postings?bench=s11-20261024t093248z-c7a71d7b-o2&phase=warmup
+Document Length:        15896 bytes
+
+Concurrency Level:      20
+Time taken for tests:   7.224 seconds
+Complete requests:      100
+Failed requests:        0
+Keep-Alive requests:    100
+Total transferred:      1607700 bytes
+HTML transferred:       1589600 bytes
+Requests per second:    13.84 [#/sec] (mean)
+Time per request:       1444.787 [ms] (mean)
+Time per request:       72.239 [ms] (mean, across all concurrent requests)
+Transfer rate:          217.34 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.4      0       2
+Processing:   520  940 562.9    655    2303
+Waiting:      520  940 562.9    655    2302
+Total:        520  940 563.3    655    2303
+
+Percentage of the requests served within a certain time (ms)
+  50%    655
+  66%    745
+  75%   1119
+  80%   1440
+  90%   2082
+  95%   2199
+  98%   2225
+  99%   2303
+ 100%   2303 (longest request)

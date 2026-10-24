@@ -4,6 +4,7 @@ from __future__ import annotations
 import importlib.util
 import sys
 import unittest
+import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -129,6 +130,39 @@ class HarnessTests(unittest.TestCase):
         target = Path("existing.json")
         with patch.object(Path, "exists", return_value=True):
             self.assertIn("refusing", HARNESS.collision([target]) or "")
+
+    def test_legacy_single_paths_and_target_are_unchanged(self) -> None:
+        warmup, measured, result_json, result_markdown = HARNESS.single_paths(1, 20, 11)
+        self.assertEqual(warmup.name, "10-single-i1-c20-rep11-warmup.txt")
+        self.assertEqual(measured.name, "10-single-i1-c20-rep11.txt")
+        self.assertEqual(result_json.name, "10-single-i1-c20-rep11.json")
+        self.assertEqual(result_markdown.name, "10-single-i1-c20-rep11.md")
+        self.assertEqual(HARNESS.benchmark_target(None, None), "/postings")
+
+    def test_opt_in_benchmark_marker_has_distinct_paths_and_phases(self) -> None:
+        warmup, measured, result_json, result_markdown = HARNESS.single_paths(
+            3, 20, 2, "s11-example-o2"
+        )
+        self.assertEqual(warmup.name, "11-1b-s11-example-o2-i3-c20-r2-warmup.txt")
+        self.assertEqual(measured.name, "11-1b-s11-example-o2-i3-c20-r2.txt")
+        self.assertEqual(result_json.name, "11-1b-s11-example-o2-i3-c20-r2.json")
+        self.assertEqual(result_markdown.name, "11-1b-s11-example-o2-i3-c20-r2.md")
+        self.assertEqual(
+            HARNESS.benchmark_target("s11-example-o2", "warmup"),
+            "/postings?bench=s11-example-o2&phase=warmup",
+        )
+
+    def test_marker_based_output_has_step_11_title_and_legacy_title_is_preserved(self) -> None:
+        with tempfile.TemporaryDirectory(dir=SOURCE.parent) as directory:
+            base = Path(directory)
+            warmup, measured = metrics(HARNESS.WARMUP), metrics(HARNESS.MEASURED)
+            marked_json, marked_md = base / "marked.json", base / "marked.md"
+            HARNESS.write_single(1, 20, 1000, 1, warmup, measured, None, True, marked_json, marked_md, "s11-test-o1", True)
+            self.assertIn("Step 11 benchmark run", marked_md.read_text(encoding="utf-8"))
+            self.assertIn("Run ID: s11-test-o1", marked_md.read_text(encoding="utf-8"))
+            legacy_json, legacy_md = base / "legacy.json", base / "legacy.md"
+            HARNESS.write_single(1, 20, 1000, 1, warmup, measured, None, True, legacy_json, legacy_md)
+            self.assertIn("Step 10 single run", legacy_md.read_text(encoding="utf-8"))
 
     def test_timeout_writes_partial_output_once(self) -> None:
         self.assertEqual(HARNESS.AB_TIMEOUT_SECONDS, 120)

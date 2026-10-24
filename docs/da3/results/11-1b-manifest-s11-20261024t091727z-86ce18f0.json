@@ -1,0 +1,658 @@
+{
+  "created_at": "2026-10-24T09:17:27.742612+00:00",
+  "generated_by": "docs/da3/scripts/run_1b.py",
+  "locked_configuration": {
+    "backend_cpus": 0.5,
+    "concurrency": 20,
+    "endpoint": "GET /postings through Nginx",
+    "keep_alive": true,
+    "measured_requests": 1000,
+    "order": [
+      1,
+      3,
+      1,
+      3,
+      1,
+      3
+    ],
+    "uvicorn_workers": 1,
+    "warmup_requests": 100
+  },
+  "preflight_topology": "verified",
+  "rows": [
+    {
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o1.json"
+      ],
+      "expected_artifacts": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o1-i1-c20-r1-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o1-i1-c20-r1.txt",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o1-i1-c20-r1.json",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o1-i1-c20-r1.md",
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o1.json",
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o1-non2xx.json"
+      ],
+      "finalized": true,
+      "finished_at": "2026-10-24T09:18:17.881580+00:00",
+      "invocation_exit_status": 1,
+      "median_eligible": false,
+      "median_exclusion_reason": "benchmark harness exited with status 1",
+      "metrics": {
+        "completed_requests": null,
+        "execution_error": null,
+        "failed_requests": null,
+        "harness_error": "warm-up incomplete",
+        "interrupted": null,
+        "mean_time_per_request_ms": null,
+        "non_2xx_responses": null,
+        "requests_per_second": null,
+        "return_code": null,
+        "timed_out": null,
+        "warmup_completed_requests": null
+      },
+      "nginx_diagnostics": {
+        "availability": "incomplete",
+        "malformed_records": 0,
+        "phases": {
+          "measured": {
+            "expected_completed_requests": null,
+            "malformed_records": 0,
+            "matching_records": 0,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": null,
+            "status_counts": {},
+            "upstream_address_counts": {},
+            "upstream_status_counts": {}
+          },
+          "warmup": {
+            "expected_completed_requests": null,
+            "malformed_records": 0,
+            "matching_records": 0,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": null,
+            "status_counts": {},
+            "upstream_address_counts": {},
+            "upstream_status_counts": {}
+          }
+        }
+      },
+      "no_raw_output": false,
+      "ordinal": 1,
+      "planned_measured_requests": 1000,
+      "planned_warmup_requests": 100,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o1-i1-c20-r1-warmup.txt"
+      ],
+      "reason": "benchmark harness exited with status 1",
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o1-i1-c20-r1.json",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o1-i1-c20-r1.md"
+      ],
+      "run_id": "s11-20261024t091727z-86ce18f0-o1",
+      "started_at": "2026-10-24T09:18:04.949632+00:00",
+      "status": "failed",
+      "topology": {
+        "activation": "verified",
+        "restoration": "verified"
+      },
+      "topology_instances": 1,
+      "topology_repetition": 1,
+      "warmup_metrics": {
+        "cleanup": {
+          "commands_succeeded": true,
+          "error": null,
+          "final_state_known": true,
+          "forced": false,
+          "no_containers_remain": true,
+          "stopped_leftovers": 0
+        },
+        "completed_requests": null,
+        "connect_failures": null,
+        "exception_failures": null,
+        "execution_error": null,
+        "failed_requests": null,
+        "interrupted": false,
+        "invocation_id": "dd20daef2c6147b7ad31ba1e39ace3da",
+        "launched": true,
+        "length_failures": null,
+        "mean_time_per_request_ms": null,
+        "non_2xx_responses": null,
+        "receive_failures": null,
+        "requests": 100,
+        "requests_per_second": null,
+        "return_code": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o2.json"
+      ],
+      "expected_artifacts": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o2-i3-c20-r1-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o2-i3-c20-r1.txt",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o2-i3-c20-r1.json",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o2-i3-c20-r1.md",
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o2.json",
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o2-non2xx.json"
+      ],
+      "finalized": true,
+      "finished_at": "2026-10-24T09:18:22.036246+00:00",
+      "invocation_exit_status": 1,
+      "median_eligible": false,
+      "median_exclusion_reason": "benchmark harness exited with status 1",
+      "metrics": {
+        "completed_requests": null,
+        "execution_error": null,
+        "failed_requests": null,
+        "harness_error": "warm-up incomplete",
+        "interrupted": null,
+        "mean_time_per_request_ms": null,
+        "non_2xx_responses": null,
+        "requests_per_second": null,
+        "return_code": null,
+        "timed_out": null,
+        "warmup_completed_requests": null
+      },
+      "nginx_diagnostics": {
+        "availability": "incomplete",
+        "malformed_records": 0,
+        "phases": {
+          "measured": {
+            "expected_completed_requests": null,
+            "malformed_records": 0,
+            "matching_records": 0,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": null,
+            "status_counts": {},
+            "upstream_address_counts": {},
+            "upstream_status_counts": {}
+          },
+          "warmup": {
+            "expected_completed_requests": null,
+            "malformed_records": 0,
+            "matching_records": 0,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": null,
+            "status_counts": {},
+            "upstream_address_counts": {},
+            "upstream_status_counts": {}
+          }
+        }
+      },
+      "no_raw_output": false,
+      "ordinal": 2,
+      "planned_measured_requests": 1000,
+      "planned_warmup_requests": 100,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o2-i3-c20-r1-warmup.txt"
+      ],
+      "reason": "benchmark harness exited with status 1",
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o2-i3-c20-r1.json",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o2-i3-c20-r1.md"
+      ],
+      "run_id": "s11-20261024t091727z-86ce18f0-o2",
+      "started_at": "2026-10-24T09:18:17.885552+00:00",
+      "status": "failed",
+      "topology": {
+        "activation": "verified",
+        "restoration": "verified"
+      },
+      "topology_instances": 3,
+      "topology_repetition": 1,
+      "warmup_metrics": {
+        "cleanup": {
+          "commands_succeeded": true,
+          "error": null,
+          "final_state_known": true,
+          "forced": false,
+          "no_containers_remain": true,
+          "stopped_leftovers": 0
+        },
+        "completed_requests": null,
+        "connect_failures": null,
+        "exception_failures": null,
+        "execution_error": null,
+        "failed_requests": null,
+        "interrupted": false,
+        "invocation_id": "df464b3365b946cda4551006da138532",
+        "launched": true,
+        "length_failures": null,
+        "mean_time_per_request_ms": null,
+        "non_2xx_responses": null,
+        "receive_failures": null,
+        "requests": 100,
+        "requests_per_second": null,
+        "return_code": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o3.json"
+      ],
+      "expected_artifacts": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o3-i1-c20-r2-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o3-i1-c20-r2.txt",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o3-i1-c20-r2.json",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o3-i1-c20-r2.md",
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o3.json",
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o3-non2xx.json"
+      ],
+      "finalized": true,
+      "finished_at": "2026-10-24T09:18:35.941341+00:00",
+      "invocation_exit_status": 1,
+      "median_eligible": false,
+      "median_exclusion_reason": "benchmark harness exited with status 1",
+      "metrics": {
+        "completed_requests": null,
+        "execution_error": null,
+        "failed_requests": null,
+        "harness_error": "warm-up incomplete",
+        "interrupted": null,
+        "mean_time_per_request_ms": null,
+        "non_2xx_responses": null,
+        "requests_per_second": null,
+        "return_code": null,
+        "timed_out": null,
+        "warmup_completed_requests": null
+      },
+      "nginx_diagnostics": {
+        "availability": "incomplete",
+        "malformed_records": 0,
+        "phases": {
+          "measured": {
+            "expected_completed_requests": null,
+            "malformed_records": 0,
+            "matching_records": 0,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": null,
+            "status_counts": {},
+            "upstream_address_counts": {},
+            "upstream_status_counts": {}
+          },
+          "warmup": {
+            "expected_completed_requests": null,
+            "malformed_records": 0,
+            "matching_records": 0,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": null,
+            "status_counts": {},
+            "upstream_address_counts": {},
+            "upstream_status_counts": {}
+          }
+        }
+      },
+      "no_raw_output": false,
+      "ordinal": 3,
+      "planned_measured_requests": 1000,
+      "planned_warmup_requests": 100,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o3-i1-c20-r2-warmup.txt"
+      ],
+      "reason": "benchmark harness exited with status 1",
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o3-i1-c20-r2.json",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o3-i1-c20-r2.md"
+      ],
+      "run_id": "s11-20261024t091727z-86ce18f0-o3",
+      "started_at": "2026-10-24T09:18:22.038690+00:00",
+      "status": "failed",
+      "topology": {
+        "activation": "verified",
+        "restoration": "verified"
+      },
+      "topology_instances": 1,
+      "topology_repetition": 2,
+      "warmup_metrics": {
+        "cleanup": {
+          "commands_succeeded": true,
+          "error": null,
+          "final_state_known": true,
+          "forced": false,
+          "no_containers_remain": true,
+          "stopped_leftovers": 0
+        },
+        "completed_requests": null,
+        "connect_failures": null,
+        "exception_failures": null,
+        "execution_error": null,
+        "failed_requests": null,
+        "interrupted": false,
+        "invocation_id": "86032a5f277f485da12191578416ca4e",
+        "launched": true,
+        "length_failures": null,
+        "mean_time_per_request_ms": null,
+        "non_2xx_responses": null,
+        "receive_failures": null,
+        "requests": 100,
+        "requests_per_second": null,
+        "return_code": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o4.json"
+      ],
+      "expected_artifacts": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o4-i3-c20-r2-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o4-i3-c20-r2.txt",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o4-i3-c20-r2.json",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o4-i3-c20-r2.md",
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o4.json",
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o4-non2xx.json"
+      ],
+      "finalized": true,
+      "finished_at": "2026-10-24T09:18:40.004038+00:00",
+      "invocation_exit_status": 1,
+      "median_eligible": false,
+      "median_exclusion_reason": "benchmark harness exited with status 1",
+      "metrics": {
+        "completed_requests": null,
+        "execution_error": null,
+        "failed_requests": null,
+        "harness_error": "warm-up incomplete",
+        "interrupted": null,
+        "mean_time_per_request_ms": null,
+        "non_2xx_responses": null,
+        "requests_per_second": null,
+        "return_code": null,
+        "timed_out": null,
+        "warmup_completed_requests": null
+      },
+      "nginx_diagnostics": {
+        "availability": "incomplete",
+        "malformed_records": 0,
+        "phases": {
+          "measured": {
+            "expected_completed_requests": null,
+            "malformed_records": 0,
+            "matching_records": 0,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": null,
+            "status_counts": {},
+            "upstream_address_counts": {},
+            "upstream_status_counts": {}
+          },
+          "warmup": {
+            "expected_completed_requests": null,
+            "malformed_records": 0,
+            "matching_records": 0,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": null,
+            "status_counts": {},
+            "upstream_address_counts": {},
+            "upstream_status_counts": {}
+          }
+        }
+      },
+      "no_raw_output": false,
+      "ordinal": 4,
+      "planned_measured_requests": 1000,
+      "planned_warmup_requests": 100,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o4-i3-c20-r2-warmup.txt"
+      ],
+      "reason": "benchmark harness exited with status 1",
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o4-i3-c20-r2.json",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o4-i3-c20-r2.md"
+      ],
+      "run_id": "s11-20261024t091727z-86ce18f0-o4",
+      "started_at": "2026-10-24T09:18:35.947893+00:00",
+      "status": "failed",
+      "topology": {
+        "activation": "verified",
+        "restoration": "verified"
+      },
+      "topology_instances": 3,
+      "topology_repetition": 2,
+      "warmup_metrics": {
+        "cleanup": {
+          "commands_succeeded": true,
+          "error": null,
+          "final_state_known": true,
+          "forced": false,
+          "no_containers_remain": true,
+          "stopped_leftovers": 0
+        },
+        "completed_requests": null,
+        "connect_failures": null,
+        "exception_failures": null,
+        "execution_error": null,
+        "failed_requests": null,
+        "interrupted": false,
+        "invocation_id": "4949f0f32c0340789bb84985c452ef37",
+        "launched": true,
+        "length_failures": null,
+        "mean_time_per_request_ms": null,
+        "non_2xx_responses": null,
+        "receive_failures": null,
+        "requests": 100,
+        "requests_per_second": null,
+        "return_code": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o5.json"
+      ],
+      "expected_artifacts": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o5-i1-c20-r3-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o5-i1-c20-r3.txt",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o5-i1-c20-r3.json",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o5-i1-c20-r3.md",
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o5.json",
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o5-non2xx.json"
+      ],
+      "finalized": true,
+      "finished_at": "2026-10-24T09:18:55.584057+00:00",
+      "invocation_exit_status": 1,
+      "median_eligible": false,
+      "median_exclusion_reason": "benchmark harness exited with status 1",
+      "metrics": {
+        "completed_requests": null,
+        "execution_error": null,
+        "failed_requests": null,
+        "harness_error": "warm-up incomplete",
+        "interrupted": null,
+        "mean_time_per_request_ms": null,
+        "non_2xx_responses": null,
+        "requests_per_second": null,
+        "return_code": null,
+        "timed_out": null,
+        "warmup_completed_requests": null
+      },
+      "nginx_diagnostics": {
+        "availability": "incomplete",
+        "malformed_records": 0,
+        "phases": {
+          "measured": {
+            "expected_completed_requests": null,
+            "malformed_records": 0,
+            "matching_records": 0,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": null,
+            "status_counts": {},
+            "upstream_address_counts": {},
+            "upstream_status_counts": {}
+          },
+          "warmup": {
+            "expected_completed_requests": null,
+            "malformed_records": 0,
+            "matching_records": 0,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": null,
+            "status_counts": {},
+            "upstream_address_counts": {},
+            "upstream_status_counts": {}
+          }
+        }
+      },
+      "no_raw_output": false,
+      "ordinal": 5,
+      "planned_measured_requests": 1000,
+      "planned_warmup_requests": 100,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o5-i1-c20-r3-warmup.txt"
+      ],
+      "reason": "benchmark harness exited with status 1",
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o5-i1-c20-r3.json",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o5-i1-c20-r3.md"
+      ],
+      "run_id": "s11-20261024t091727z-86ce18f0-o5",
+      "started_at": "2026-10-24T09:18:40.011112+00:00",
+      "status": "failed",
+      "topology": {
+        "activation": "verified",
+        "restoration": "verified"
+      },
+      "topology_instances": 1,
+      "topology_repetition": 3,
+      "warmup_metrics": {
+        "cleanup": {
+          "commands_succeeded": true,
+          "error": null,
+          "final_state_known": true,
+          "forced": false,
+          "no_containers_remain": true,
+          "stopped_leftovers": 0
+        },
+        "completed_requests": null,
+        "connect_failures": null,
+        "exception_failures": null,
+        "execution_error": null,
+        "failed_requests": null,
+        "interrupted": false,
+        "invocation_id": "bfae5017b57a4d6085cfa28a3d01273e",
+        "launched": true,
+        "length_failures": null,
+        "mean_time_per_request_ms": null,
+        "non_2xx_responses": null,
+        "receive_failures": null,
+        "requests": 100,
+        "requests_per_second": null,
+        "return_code": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o6.json"
+      ],
+      "expected_artifacts": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o6-i3-c20-r3-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o6-i3-c20-r3.txt",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o6-i3-c20-r3.json",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o6-i3-c20-r3.md",
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o6.json",
+        "docs/da3/results/11-1b-nginx-s11-20261024t091727z-86ce18f0-o6-non2xx.json"
+      ],
+      "finalized": true,
+      "finished_at": "2026-10-24T09:19:00.092346+00:00",
+      "invocation_exit_status": 1,
+      "median_eligible": false,
+      "median_exclusion_reason": "benchmark harness exited with status 1",
+      "metrics": {
+        "completed_requests": null,
+        "execution_error": null,
+        "failed_requests": null,
+        "harness_error": "warm-up incomplete",
+        "interrupted": null,
+        "mean_time_per_request_ms": null,
+        "non_2xx_responses": null,
+        "requests_per_second": null,
+        "return_code": null,
+        "timed_out": null,
+        "warmup_completed_requests": null
+      },
+      "nginx_diagnostics": {
+        "availability": "incomplete",
+        "malformed_records": 0,
+        "phases": {
+          "measured": {
+            "expected_completed_requests": null,
+            "malformed_records": 0,
+            "matching_records": 0,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": null,
+            "status_counts": {},
+            "upstream_address_counts": {},
+            "upstream_status_counts": {}
+          },
+          "warmup": {
+            "expected_completed_requests": null,
+            "malformed_records": 0,
+            "matching_records": 0,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": null,
+            "status_counts": {},
+            "upstream_address_counts": {},
+            "upstream_status_counts": {}
+          }
+        }
+      },
+      "no_raw_output": false,
+      "ordinal": 6,
+      "planned_measured_requests": 1000,
+      "planned_warmup_requests": 100,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o6-i3-c20-r3-warmup.txt"
+      ],
+      "reason": "benchmark harness exited with status 1",
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o6-i3-c20-r3.json",
+        "docs/da3/results/11-1b-s11-20261024t091727z-86ce18f0-o6-i3-c20-r3.md"
+      ],
+      "run_id": "s11-20261024t091727z-86ce18f0-o6",
+      "started_at": "2026-10-24T09:18:55.588041+00:00",
+      "status": "failed",
+      "topology": {
+        "activation": "verified",
+        "restoration": "verified"
+      },
+      "topology_instances": 3,
+      "topology_repetition": 3,
+      "warmup_metrics": {
+        "cleanup": {
+          "commands_succeeded": true,
+          "error": null,
+          "final_state_known": true,
+          "forced": false,
+          "no_containers_remain": true,
+          "stopped_leftovers": 0
+        },
+        "completed_requests": null,
+        "connect_failures": null,
+        "exception_failures": null,
+        "execution_error": null,
+        "failed_requests": null,
+        "interrupted": false,
+        "invocation_id": "ae94acea4b2a4b088f1f094d238d3d45",
+        "launched": true,
+        "length_failures": null,
+        "mean_time_per_request_ms": null,
+        "non_2xx_responses": null,
+        "receive_failures": null,
+        "requests": 100,
+        "requests_per_second": null,
+        "return_code": 0,
+        "timed_out": false
+      }
+    }
+  ],
+  "sequence_id": "s11-20261024t091727z-86ce18f0",
+  "static_compose_contract": "verified",
+  "token_acquisition": "succeeded (token not persisted)",
+  "updated_at": "2026-10-24T09:19:00.094036+00:00"
+}

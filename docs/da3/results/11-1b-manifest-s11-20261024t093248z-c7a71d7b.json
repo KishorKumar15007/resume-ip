@@ -1,0 +1,748 @@
+{
+  "created_at": "2026-10-24T09:32:48.193520+00:00",
+  "generated_by": "docs/da3/scripts/run_1b.py",
+  "locked_configuration": {
+    "backend_cpus": 0.5,
+    "concurrency": 20,
+    "endpoint": "GET /postings through Nginx",
+    "keep_alive": true,
+    "measured_requests": 1000,
+    "order": [
+      1,
+      3,
+      1,
+      3,
+      1,
+      3
+    ],
+    "uvicorn_workers": 1,
+    "warmup_requests": 100
+  },
+  "preflight_topology": "verified",
+  "rows": [
+    {
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o1.json"
+      ],
+      "expected_artifacts": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1.md",
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o1.json",
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o1-non2xx.json"
+      ],
+      "finalized": true,
+      "finished_at": "2026-10-24T09:34:56.573991+00:00",
+      "invocation_exit_status": 0,
+      "median_eligible": true,
+      "median_exclusion_reason": null,
+      "metrics": {
+        "completed_requests": 1000,
+        "execution_error": null,
+        "failed_requests": 0,
+        "harness_error": null,
+        "interrupted": false,
+        "mean_time_per_request_ms": "1943.935",
+        "non_2xx_responses": 0,
+        "requests_per_second": "10.29",
+        "return_code": 0,
+        "timed_out": false,
+        "warmup_completed_requests": 100
+      },
+      "nginx_diagnostics": {
+        "availability": "complete",
+        "malformed_records": 0,
+        "phases": {
+          "measured": {
+            "expected_completed_requests": 1000,
+            "malformed_records": 0,
+            "matching_records": 1000,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": 0,
+            "status_counts": {
+              "200": 1000
+            },
+            "upstream_address_counts": {
+              "172.19.0.2:8000": 1000
+            },
+            "upstream_status_counts": {
+              "200": 1000
+            }
+          },
+          "warmup": {
+            "expected_completed_requests": 100,
+            "malformed_records": 0,
+            "matching_records": 100,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": 0,
+            "status_counts": {
+              "200": 100
+            },
+            "upstream_address_counts": {
+              "172.19.0.2:8000": 100
+            },
+            "upstream_status_counts": {
+              "200": 100
+            }
+          }
+        }
+      },
+      "no_raw_output": false,
+      "ordinal": 1,
+      "planned_measured_requests": 1000,
+      "planned_warmup_requests": 100,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1.txt"
+      ],
+      "reason": null,
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o1-i1-c20-r1.md"
+      ],
+      "run_id": "s11-20261024t093248z-c7a71d7b-o1",
+      "started_at": "2026-10-24T09:32:52.595702+00:00",
+      "status": "complete",
+      "topology": {
+        "activation": "verified",
+        "restoration": "verified"
+      },
+      "topology_instances": 1,
+      "topology_repetition": 1,
+      "warmup_metrics": {
+        "cleanup": {
+          "commands_succeeded": true,
+          "error": null,
+          "final_state_known": true,
+          "forced": false,
+          "no_containers_remain": true,
+          "stopped_leftovers": 0
+        },
+        "completed_requests": 100,
+        "connect_failures": null,
+        "exception_failures": null,
+        "execution_error": null,
+        "failed_requests": 0,
+        "interrupted": false,
+        "invocation_id": "4f442497fcfc40da8ec73552578e7e93",
+        "launched": true,
+        "length_failures": null,
+        "mean_time_per_request_ms": "2096.243",
+        "non_2xx_responses": 0,
+        "receive_failures": null,
+        "requests": 100,
+        "requests_per_second": "9.54",
+        "return_code": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o2.json"
+      ],
+      "expected_artifacts": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1.md",
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o2.json",
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o2-non2xx.json"
+      ],
+      "finalized": true,
+      "finished_at": "2026-10-24T09:35:49.262984+00:00",
+      "invocation_exit_status": 0,
+      "median_eligible": true,
+      "median_exclusion_reason": null,
+      "metrics": {
+        "completed_requests": 1000,
+        "execution_error": null,
+        "failed_requests": 0,
+        "harness_error": null,
+        "interrupted": false,
+        "mean_time_per_request_ms": "803.911",
+        "non_2xx_responses": 0,
+        "requests_per_second": "24.88",
+        "return_code": 0,
+        "timed_out": false,
+        "warmup_completed_requests": 100
+      },
+      "nginx_diagnostics": {
+        "availability": "complete",
+        "malformed_records": 0,
+        "phases": {
+          "measured": {
+            "expected_completed_requests": 1000,
+            "malformed_records": 0,
+            "matching_records": 1000,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": 0,
+            "status_counts": {
+              "200": 1000
+            },
+            "upstream_address_counts": {
+              "172.19.0.2:8000": 333,
+              "172.19.0.3:8000": 334,
+              "172.19.0.4:8000": 333
+            },
+            "upstream_status_counts": {
+              "200": 1000
+            }
+          },
+          "warmup": {
+            "expected_completed_requests": 100,
+            "malformed_records": 0,
+            "matching_records": 100,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": 0,
+            "status_counts": {
+              "200": 100
+            },
+            "upstream_address_counts": {
+              "172.19.0.2:8000": 34,
+              "172.19.0.3:8000": 33,
+              "172.19.0.4:8000": 33
+            },
+            "upstream_status_counts": {
+              "200": 100
+            }
+          }
+        }
+      },
+      "no_raw_output": false,
+      "ordinal": 2,
+      "planned_measured_requests": 1000,
+      "planned_warmup_requests": 100,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1.txt"
+      ],
+      "reason": null,
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o2-i3-c20-r1.md"
+      ],
+      "run_id": "s11-20261024t093248z-c7a71d7b-o2",
+      "started_at": "2026-10-24T09:34:56.577938+00:00",
+      "status": "complete",
+      "topology": {
+        "activation": "verified",
+        "restoration": "verified"
+      },
+      "topology_instances": 3,
+      "topology_repetition": 1,
+      "warmup_metrics": {
+        "cleanup": {
+          "commands_succeeded": true,
+          "error": null,
+          "final_state_known": true,
+          "forced": false,
+          "no_containers_remain": true,
+          "stopped_leftovers": 0
+        },
+        "completed_requests": 100,
+        "connect_failures": null,
+        "exception_failures": null,
+        "execution_error": null,
+        "failed_requests": 0,
+        "interrupted": false,
+        "invocation_id": "9dca8ed9530243b58a9f759a49d3130c",
+        "launched": true,
+        "length_failures": null,
+        "mean_time_per_request_ms": "1444.787",
+        "non_2xx_responses": 0,
+        "receive_failures": null,
+        "requests": 100,
+        "requests_per_second": "13.84",
+        "return_code": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o3.json"
+      ],
+      "expected_artifacts": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2.md",
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o3.json",
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o3-non2xx.json"
+      ],
+      "finalized": true,
+      "finished_at": "2026-10-24T09:38:12.441759+00:00",
+      "invocation_exit_status": 0,
+      "median_eligible": true,
+      "median_exclusion_reason": null,
+      "metrics": {
+        "completed_requests": 1000,
+        "execution_error": null,
+        "failed_requests": 0,
+        "harness_error": null,
+        "interrupted": false,
+        "mean_time_per_request_ms": "2347.827",
+        "non_2xx_responses": 0,
+        "requests_per_second": "8.52",
+        "return_code": 0,
+        "timed_out": false,
+        "warmup_completed_requests": 100
+      },
+      "nginx_diagnostics": {
+        "availability": "complete",
+        "malformed_records": 0,
+        "phases": {
+          "measured": {
+            "expected_completed_requests": 1000,
+            "malformed_records": 0,
+            "matching_records": 1000,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": 0,
+            "status_counts": {
+              "200": 1000
+            },
+            "upstream_address_counts": {
+              "172.19.0.2:8000": 1000
+            },
+            "upstream_status_counts": {
+              "200": 1000
+            }
+          },
+          "warmup": {
+            "expected_completed_requests": 100,
+            "malformed_records": 0,
+            "matching_records": 100,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": 0,
+            "status_counts": {
+              "200": 100
+            },
+            "upstream_address_counts": {
+              "172.19.0.2:8000": 100
+            },
+            "upstream_status_counts": {
+              "200": 100
+            }
+          }
+        }
+      },
+      "no_raw_output": false,
+      "ordinal": 3,
+      "planned_measured_requests": 1000,
+      "planned_warmup_requests": 100,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2.txt"
+      ],
+      "reason": null,
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o3-i1-c20-r2.md"
+      ],
+      "run_id": "s11-20261024t093248z-c7a71d7b-o3",
+      "started_at": "2026-10-24T09:35:49.267142+00:00",
+      "status": "complete",
+      "topology": {
+        "activation": "verified",
+        "restoration": "verified"
+      },
+      "topology_instances": 1,
+      "topology_repetition": 2,
+      "warmup_metrics": {
+        "cleanup": {
+          "commands_succeeded": true,
+          "error": null,
+          "final_state_known": true,
+          "forced": false,
+          "no_containers_remain": true,
+          "stopped_leftovers": 0
+        },
+        "completed_requests": 100,
+        "connect_failures": null,
+        "exception_failures": null,
+        "execution_error": null,
+        "failed_requests": 0,
+        "interrupted": false,
+        "invocation_id": "9bb518cc870441daa46f7b93f21b1799",
+        "launched": true,
+        "length_failures": null,
+        "mean_time_per_request_ms": "2224.002",
+        "non_2xx_responses": 0,
+        "receive_failures": null,
+        "requests": 100,
+        "requests_per_second": "8.99",
+        "return_code": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o4.json"
+      ],
+      "expected_artifacts": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2.md",
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o4.json",
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o4-non2xx.json"
+      ],
+      "finalized": true,
+      "finished_at": "2026-10-24T09:39:09.004698+00:00",
+      "invocation_exit_status": 0,
+      "median_eligible": true,
+      "median_exclusion_reason": null,
+      "metrics": {
+        "completed_requests": 1000,
+        "execution_error": null,
+        "failed_requests": 0,
+        "harness_error": null,
+        "interrupted": false,
+        "mean_time_per_request_ms": "898.935",
+        "non_2xx_responses": 0,
+        "requests_per_second": "22.25",
+        "return_code": 0,
+        "timed_out": false,
+        "warmup_completed_requests": 100
+      },
+      "nginx_diagnostics": {
+        "availability": "complete",
+        "malformed_records": 0,
+        "phases": {
+          "measured": {
+            "expected_completed_requests": 1000,
+            "malformed_records": 0,
+            "matching_records": 1000,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": 0,
+            "status_counts": {
+              "200": 1000
+            },
+            "upstream_address_counts": {
+              "172.19.0.2:8000": 333,
+              "172.19.0.3:8000": 334,
+              "172.19.0.4:8000": 333
+            },
+            "upstream_status_counts": {
+              "200": 1000
+            }
+          },
+          "warmup": {
+            "expected_completed_requests": 100,
+            "malformed_records": 0,
+            "matching_records": 100,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": 0,
+            "status_counts": {
+              "200": 100
+            },
+            "upstream_address_counts": {
+              "172.19.0.2:8000": 34,
+              "172.19.0.3:8000": 33,
+              "172.19.0.4:8000": 33
+            },
+            "upstream_status_counts": {
+              "200": 100
+            }
+          }
+        }
+      },
+      "no_raw_output": false,
+      "ordinal": 4,
+      "planned_measured_requests": 1000,
+      "planned_warmup_requests": 100,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2.txt"
+      ],
+      "reason": null,
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o4-i3-c20-r2.md"
+      ],
+      "run_id": "s11-20261024t093248z-c7a71d7b-o4",
+      "started_at": "2026-10-24T09:38:12.445844+00:00",
+      "status": "complete",
+      "topology": {
+        "activation": "verified",
+        "restoration": "verified"
+      },
+      "topology_instances": 3,
+      "topology_repetition": 2,
+      "warmup_metrics": {
+        "cleanup": {
+          "commands_succeeded": true,
+          "error": null,
+          "final_state_known": true,
+          "forced": false,
+          "no_containers_remain": true,
+          "stopped_leftovers": 0
+        },
+        "completed_requests": 100,
+        "connect_failures": null,
+        "exception_failures": null,
+        "execution_error": null,
+        "failed_requests": 0,
+        "interrupted": false,
+        "invocation_id": "6b21d73d900c4c508b833a42c70376cc",
+        "launched": true,
+        "length_failures": null,
+        "mean_time_per_request_ms": "1300.314",
+        "non_2xx_responses": 0,
+        "receive_failures": null,
+        "requests": 100,
+        "requests_per_second": "15.38",
+        "return_code": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o5.json"
+      ],
+      "expected_artifacts": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3.md",
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o5.json",
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o5-non2xx.json"
+      ],
+      "finalized": true,
+      "finished_at": "2026-10-24T09:41:21.050776+00:00",
+      "invocation_exit_status": 0,
+      "median_eligible": true,
+      "median_exclusion_reason": null,
+      "metrics": {
+        "completed_requests": 1000,
+        "execution_error": null,
+        "failed_requests": 0,
+        "harness_error": null,
+        "interrupted": false,
+        "mean_time_per_request_ms": "1872.073",
+        "non_2xx_responses": 0,
+        "requests_per_second": "10.68",
+        "return_code": 0,
+        "timed_out": false,
+        "warmup_completed_requests": 100
+      },
+      "nginx_diagnostics": {
+        "availability": "complete",
+        "malformed_records": 0,
+        "phases": {
+          "measured": {
+            "expected_completed_requests": 1000,
+            "malformed_records": 0,
+            "matching_records": 1000,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": 0,
+            "status_counts": {
+              "200": 1000
+            },
+            "upstream_address_counts": {
+              "172.19.0.2:8000": 1000
+            },
+            "upstream_status_counts": {
+              "200": 1000
+            }
+          },
+          "warmup": {
+            "expected_completed_requests": 100,
+            "malformed_records": 0,
+            "matching_records": 100,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": 0,
+            "status_counts": {
+              "200": 100
+            },
+            "upstream_address_counts": {
+              "172.19.0.2:8000": 100
+            },
+            "upstream_status_counts": {
+              "200": 100
+            }
+          }
+        }
+      },
+      "no_raw_output": false,
+      "ordinal": 5,
+      "planned_measured_requests": 1000,
+      "planned_warmup_requests": 100,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3.txt"
+      ],
+      "reason": null,
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o5-i1-c20-r3.md"
+      ],
+      "run_id": "s11-20261024t093248z-c7a71d7b-o5",
+      "started_at": "2026-10-24T09:39:09.008813+00:00",
+      "status": "complete",
+      "topology": {
+        "activation": "verified",
+        "restoration": "verified"
+      },
+      "topology_instances": 1,
+      "topology_repetition": 3,
+      "warmup_metrics": {
+        "cleanup": {
+          "commands_succeeded": true,
+          "error": null,
+          "final_state_known": true,
+          "forced": false,
+          "no_containers_remain": true,
+          "stopped_leftovers": 0
+        },
+        "completed_requests": 100,
+        "connect_failures": null,
+        "exception_failures": null,
+        "execution_error": null,
+        "failed_requests": 0,
+        "interrupted": false,
+        "invocation_id": "560a7a0c88ed46a0b809df4e322f8166",
+        "launched": true,
+        "length_failures": null,
+        "mean_time_per_request_ms": "4633.102",
+        "non_2xx_responses": 0,
+        "receive_failures": null,
+        "requests": 100,
+        "requests_per_second": "4.32",
+        "return_code": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "concurrency": 20,
+      "diagnostic_files": [
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o6.json"
+      ],
+      "expected_artifacts": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3.md",
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o6.json",
+        "docs/da3/results/11-1b-nginx-s11-20261024t093248z-c7a71d7b-o6-non2xx.json"
+      ],
+      "finalized": true,
+      "finished_at": "2026-10-24T09:42:09.365629+00:00",
+      "invocation_exit_status": 0,
+      "median_eligible": true,
+      "median_exclusion_reason": null,
+      "metrics": {
+        "completed_requests": 1000,
+        "execution_error": null,
+        "failed_requests": 0,
+        "harness_error": null,
+        "interrupted": false,
+        "mean_time_per_request_ms": "729.359",
+        "non_2xx_responses": 0,
+        "requests_per_second": "27.42",
+        "return_code": 0,
+        "timed_out": false,
+        "warmup_completed_requests": 100
+      },
+      "nginx_diagnostics": {
+        "availability": "complete",
+        "malformed_records": 0,
+        "phases": {
+          "measured": {
+            "expected_completed_requests": 1000,
+            "malformed_records": 0,
+            "matching_records": 1000,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": 0,
+            "status_counts": {
+              "200": 1000
+            },
+            "upstream_address_counts": {
+              "172.19.0.2:8000": 333,
+              "172.19.0.3:8000": 333,
+              "172.19.0.4:8000": 334
+            },
+            "upstream_status_counts": {
+              "200": 1000
+            }
+          },
+          "warmup": {
+            "expected_completed_requests": 100,
+            "malformed_records": 0,
+            "matching_records": 100,
+            "non_2xx_excerpt": [],
+            "reconciliation_difference": 0,
+            "status_counts": {
+              "200": 100
+            },
+            "upstream_address_counts": {
+              "172.19.0.2:8000": 34,
+              "172.19.0.3:8000": 33,
+              "172.19.0.4:8000": 33
+            },
+            "upstream_status_counts": {
+              "200": 100
+            }
+          }
+        }
+      },
+      "no_raw_output": false,
+      "ordinal": 6,
+      "planned_measured_requests": 1000,
+      "planned_warmup_requests": 100,
+      "raw_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3-warmup.txt",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3.txt"
+      ],
+      "reason": null,
+      "result_files": [
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3.json",
+        "docs/da3/results/11-1b-s11-20261024t093248z-c7a71d7b-o6-i3-c20-r3.md"
+      ],
+      "run_id": "s11-20261024t093248z-c7a71d7b-o6",
+      "started_at": "2026-10-24T09:41:21.055492+00:00",
+      "status": "complete",
+      "topology": {
+        "activation": "verified",
+        "restoration": "verified"
+      },
+      "topology_instances": 3,
+      "topology_repetition": 3,
+      "warmup_metrics": {
+        "cleanup": {
+          "commands_succeeded": true,
+          "error": null,
+          "final_state_known": true,
+          "forced": false,
+          "no_containers_remain": true,
+          "stopped_leftovers": 0
+        },
+        "completed_requests": 100,
+        "connect_failures": null,
+        "exception_failures": null,
+        "execution_error": null,
+        "failed_requests": 0,
+        "interrupted": false,
+        "invocation_id": "39e3b77cba2e4e89849c04fdcbc5c7ca",
+        "launched": true,
+        "length_failures": null,
+        "mean_time_per_request_ms": "1348.411",
+        "non_2xx_responses": 0,
+        "receive_failures": null,
+        "requests": 100,
+        "requests_per_second": "14.83",
+        "return_code": 0,
+        "timed_out": false
+      }
+    }
+  ],
+  "sequence_id": "s11-20261024t093248z-c7a71d7b",
+  "static_compose_contract": "verified",
+  "token_acquisition": "succeeded (token not persisted)",
+  "updated_at": "2026-10-24T09:42:09.367621+00:00"
+}
