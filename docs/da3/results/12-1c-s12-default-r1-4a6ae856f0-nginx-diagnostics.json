@@ -1,0 +1,12 @@
+{
+  "measured": {
+    "availability": "not captured",
+    "matching_lines": 0,
+    "status_counts": {}
+  },
+  "warmup": {
+    "availability": "not captured",
+    "matching_lines": 0,
+    "status_counts": {}
+  }
+}

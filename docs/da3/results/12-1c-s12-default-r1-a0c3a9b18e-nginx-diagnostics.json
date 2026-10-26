@@ -1,0 +1,35 @@
+{
+  "measured": {
+    "502_count": 0,
+    "504_count": 0,
+    "availability": "readable",
+    "malformed_lines": 0,
+    "matching_lines": 1000,
+    "non_2xx_records": [],
+    "non_2xx_records_truncated": false,
+    "status_counts": {
+      "200": 1000
+    },
+    "unparseable_statuses": 0,
+    "upstream_status_counts": {
+      "200": 991,
+      "502, 200": 9
+    }
+  },
+  "warmup": {
+    "502_count": 0,
+    "504_count": 0,
+    "availability": "readable",
+    "malformed_lines": 0,
+    "matching_lines": 100,
+    "non_2xx_records": [],
+    "non_2xx_records_truncated": false,
+    "status_counts": {
+      "200": 100
+    },
+    "unparseable_statuses": 0,
+    "upstream_status_counts": {
+      "200": 100
+    }
+  }
+}

@@ -1,0 +1,389 @@
+{
+  "measured": {
+    "502_count": 42,
+    "504_count": 252,
+    "availability": "readable",
+    "malformed_lines": 0,
+    "matching_lines": 1000,
+    "non_2xx_records": [
+      {
+        "request_time": "0.134",
+        "status": 502,
+        "time": "2026-10-26T13:26:26+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "502"
+      },
+      {
+        "request_time": "1.367",
+        "status": 502,
+        "time": "2026-10-26T13:26:26+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "502"
+      },
+      {
+        "request_time": "1.097",
+        "status": 502,
+        "time": "2026-10-26T13:26:26+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "502"
+      },
+      {
+        "request_time": "0.557",
+        "status": 502,
+        "time": "2026-10-26T13:26:26+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "502"
+      },
+      {
+        "request_time": "0.133",
+        "status": 502,
+        "time": "2026-10-26T13:26:26+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "502"
+      },
+      {
+        "request_time": "0.629",
+        "status": 502,
+        "time": "2026-10-26T13:26:26+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "502"
+      },
+      {
+        "request_time": "1.544",
+        "status": 502,
+        "time": "2026-10-26T13:26:26+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "502"
+      },
+      {
+        "request_time": "0.000",
+        "status": 502,
+        "time": "2026-10-26T13:26:26+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "502"
+      },
+      {
+        "request_time": "0.000",
+        "status": 502,
+        "time": "2026-10-26T13:26:26+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "502"
+      },
+      {
+        "request_time": "0.000",
+        "status": 502,
+        "time": "2026-10-26T13:26:26+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "502"
+      },
+      {
+        "request_time": "0.000",
+        "status": 502,
+        "time": "2026-10-26T13:26:26+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "502"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:29+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:29+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:30+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.000",
+        "status": 504,
+        "time": "2026-10-26T13:26:30+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "1.999",
+        "status": 504,
+        "time": "2026-10-26T13:26:30+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.000",
+        "status": 504,
+        "time": "2026-10-26T13:26:30+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.002",
+        "status": 504,
+        "time": "2026-10-26T13:26:30+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:30+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.000",
+        "status": 504,
+        "time": "2026-10-26T13:26:31+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:31+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:31+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.003",
+        "status": 504,
+        "time": "2026-10-26T13:26:31+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:32+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.000",
+        "status": 504,
+        "time": "2026-10-26T13:26:32+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:32+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:32+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.000",
+        "status": 504,
+        "time": "2026-10-26T13:26:32+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:32+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:33+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:33+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:33+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.000",
+        "status": 504,
+        "time": "2026-10-26T13:26:33+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:34+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.002",
+        "status": 504,
+        "time": "2026-10-26T13:26:34+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.000",
+        "status": 504,
+        "time": "2026-10-26T13:26:34+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:34+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.000",
+        "status": 504,
+        "time": "2026-10-26T13:26:35+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:35+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.004",
+        "status": 504,
+        "time": "2026-10-26T13:26:35+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.002",
+        "status": 504,
+        "time": "2026-10-26T13:26:35+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:36+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:36+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:36+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:36+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:36+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.000",
+        "status": 504,
+        "time": "2026-10-26T13:26:37+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:37+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:37+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      },
+      {
+        "request_time": "2.001",
+        "status": 504,
+        "time": "2026-10-26T13:26:37+00:00",
+        "upstream_addr": "172.19.0.3:8000",
+        "upstream_status": "504"
+      }
+    ],
+    "non_2xx_records_truncated": true,
+    "status_counts": {
+      "200": 706,
+      "502": 42,
+      "504": 252
+    },
+    "unparseable_statuses": 0,
+    "upstream_status_counts": {
+      "200": 706,
+      "502": 42,
+      "504": 252
+    }
+  },
+  "warmup": {
+    "502_count": 0,
+    "504_count": 0,
+    "availability": "readable",
+    "malformed_lines": 0,
+    "matching_lines": 100,
+    "non_2xx_records": [],
+    "non_2xx_records_truncated": false,
+    "status_counts": {
+      "200": 100
+    },
+    "unparseable_statuses": 0,
+    "upstream_status_counts": {
+      "200": 100
+    }
+  }
+}

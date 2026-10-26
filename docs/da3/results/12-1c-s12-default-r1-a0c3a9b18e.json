@@ -1,0 +1,159 @@
+{
+  "activation": "verified",
+  "artifacts": {
+    "measured_raw": "docs\\da3\\results\\12-1c-s12-default-r1-a0c3a9b18e-measured.txt",
+    "nginx_diagnostics": "docs\\da3\\results\\12-1c-s12-default-r1-a0c3a9b18e-nginx-diagnostics.json",
+    "nginx_errors": "docs\\da3\\results\\12-1c-s12-default-r1-a0c3a9b18e-nginx-errors.txt",
+    "result_json": "docs\\da3\\results\\12-1c-s12-default-r1-a0c3a9b18e.json",
+    "result_markdown": "docs\\da3\\results\\12-1c-s12-default-r1-a0c3a9b18e.md",
+    "warmup_raw": "docs\\da3\\results\\12-1c-s12-default-r1-a0c3a9b18e-warmup.txt"
+  },
+  "canonical_restoration": false,
+  "completion": "incomplete",
+  "config": "default",
+  "error": "canonical three-backend restoration could not be verified",
+  "finished_at": "2026-10-26T13:01:07.320329+00:00",
+  "kill": {
+    "ab_exit_status": "0",
+    "actual_elapsed_seconds": 12.068534799967892,
+    "cleanup_verified": true,
+    "completion_timestamp": "2026-10-26T13:00:41.428208+00:00",
+    "end_monotonic": 938256.1229165,
+    "end_sentinel_seen": true,
+    "end_sentinel_timestamp": "2026-10-26T13:00:41.212005+00:00",
+    "error": null,
+    "kill_completed_at": "2026-10-26T12:59:40.371146+00:00",
+    "kill_started_at": "2026-10-26T12:59:40.000523+00:00",
+    "late_kill_refused": false,
+    "monotonic_start": 938182.8428921,
+    "reader_joined": true,
+    "return_code": 0,
+    "scheduled_offset_seconds": 12.06,
+    "sentinel_timestamp": "2026-10-26T12:59:27.931991+00:00",
+    "start_sentinel_seen": true,
+    "stopped_verified": true,
+    "timer_joined": true
+  },
+  "measured": {
+    "completed_requests": 1000,
+    "connect_failures": null,
+    "exception_failures": null,
+    "execution_error": null,
+    "failed_requests": 0,
+    "interrupted": false,
+    "launched": true,
+    "length_failures": null,
+    "mean_time_per_request_ms": "1465.301",
+    "non_2xx_responses": 0,
+    "receive_failures": null,
+    "requests": 1000,
+    "requests_per_second": "13.65",
+    "return_code": 0,
+    "timed_out": false
+  },
+  "nginx_diagnostics": {
+    "measured": {
+      "502_count": 0,
+      "504_count": 0,
+      "availability": "readable",
+      "malformed_lines": 0,
+      "matching_lines": 1000,
+      "non_2xx_records": [],
+      "non_2xx_records_truncated": false,
+      "status_counts": {
+        "200": 1000
+      },
+      "unparseable_statuses": 0,
+      "upstream_status_counts": {
+        "200": 991,
+        "502, 200": 9
+      }
+    },
+    "warmup": {
+      "502_count": 0,
+      "504_count": 0,
+      "availability": "readable",
+      "malformed_lines": 0,
+      "matching_lines": 100,
+      "non_2xx_records": [],
+      "non_2xx_records_truncated": false,
+      "status_counts": {
+        "200": 100
+      },
+      "unparseable_statuses": 0,
+      "upstream_status_counts": {
+        "200": 100
+      }
+    }
+  },
+  "nginx_error_log": {
+    "availability": "captured-no-matching-lines",
+    "container_id": "1443b0d9dd0c",
+    "ended_at": "2026-10-26T13:00:41.626699+00:00",
+    "matching_lines": 0,
+    "started_at": "2026-10-26T12:59:05.646242+00:00",
+    "truncated": false
+  },
+  "protocol": {
+    "ab_continue_on_errors": true,
+    "ab_flags": [
+      "-k",
+      "-r"
+    ],
+    "concurrency": 20,
+    "estimated_duration_formula": "1000 / 24.88",
+    "estimated_measured_seconds": 40.19292604501608,
+    "keep_alive": true,
+    "kill_timing_tolerance_seconds": 2.0,
+    "measured_requests": 1000,
+    "reference_rps": 24.88,
+    "request_accounting": "AB-reported completed plus failed counts; partial/unreported requests remain unknown",
+    "scheduled_kill_offset_seconds": 12.06,
+    "warmup_requests": 100
+  },
+  "raw_files": {
+    "measured_raw": "docs\\da3\\results\\12-1c-s12-default-r1-a0c3a9b18e-measured.txt",
+    "warmup_raw": "docs\\da3\\results\\12-1c-s12-default-r1-a0c3a9b18e-warmup.txt"
+  },
+  "recovery": "verified",
+  "rep": 1,
+  "run_id": "s12-default-r1-a0c3a9b18e",
+  "started_at": "2026-10-26T12:59:05.646242+00:00",
+  "traffic": {
+    "ab_reported_completed": 1100,
+    "ab_reported_completed_measured": 1000,
+    "ab_reported_completed_warmup": 100,
+    "ab_reported_failed": 0,
+    "ab_reported_failed_measured": 0,
+    "ab_reported_failed_warmup": 0,
+    "launched": 1100,
+    "launched_measured": 1000,
+    "launched_warmup": 100,
+    "planned": 1100,
+    "planned_measured": 1000,
+    "planned_warmup": 100,
+    "skipped": 0,
+    "skipped_measured": 0,
+    "skipped_warmup": 0,
+    "unknown": 0,
+    "unknown_measured": 0,
+    "unknown_warmup": 0
+  },
+  "warmup": {
+    "completed_requests": 100,
+    "connect_failures": null,
+    "exception_failures": null,
+    "execution_error": null,
+    "failed_requests": 0,
+    "interrupted": false,
+    "launched": true,
+    "length_failures": null,
+    "mean_time_per_request_ms": "2206.848",
+    "non_2xx_responses": 0,
+    "receive_failures": null,
+    "requests": 100,
+    "requests_per_second": "9.06",
+    "return_code": 0,
+    "timed_out": false
+  }
+}

@@ -41,8 +41,8 @@ Legend:
 
 ## 1c — Failure resilience
 
-- [ ] Instance killed mid-run
-- [ ] Failed count before
+- [x] Instance killed mid-run — the three selected baseline runs record a backend-2 `docker kill` about 12.06 seconds after each measured-run start sentinel, with verified stopped/recovery/restoration state.
+- [x] Failed count before — the three selected 1,000-request baseline runs record 298, 294, and 280 failed/non-2xx requests; measured access-log diagnostics separately record the 502/504 counts.
 - [ ] Nginx fix shown (config diff)
 - [ ] Failed count after is 0 in every repetition
 - [ ] Availability probe shows no downtime

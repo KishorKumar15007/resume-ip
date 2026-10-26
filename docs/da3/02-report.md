@@ -314,18 +314,28 @@ Throughput improvement = `(24.88 / 10.29 - 1) * 100` = **141.79%**. Throughput s
 
 **Requirement:** Stop one instance while the load test is running and record the failed requests. Then configure Nginx so that no request fails, and show the before-and-after count. (1.5 marks)
 
-**What I built:** TODO(evidence)
+**What I built:** A controlled before-fix experiment with the three-backend `nginx-3-baseline.conf` profile. Its peers remain selectable (`max_fails=0`) and proxy retry is disabled, making a backend-2 `docker kill` observable rather than automatically retried. The default-profile diagnostic trial recorded zero Apache Bench failed and zero non-2xx responses, so it was retained as diagnostic evidence and not counted as a before-fix repetition. The baseline profile was selected for the three recorded repetitions.
 
-**Commands run:** TODO(evidence)
+**Commands run:** The owner ran `docs/da3/scripts/failover_test.py --config baseline --rep 1`, then the same command for repetitions 2 and 3. Each run used authenticated `GET /postings` through Nginx, Apache Bench `-k -r`, concurrency 20, a 100-request warm-up, and 1,000 measured requests. The harness scheduled the backend-2 kill 12.06 seconds after the measured-run start sentinel, derived before the experiment from the Step 11 three-backend median of 24.88 requests/s.
 
-**Result:** TODO(evidence)
-TODO(evidence): availability-probe table.
+**Result:** The deterministic baseline produced failures in every recorded repetition. All warm-ups were 100 HTTP 200 responses with zero failed/non-2xx responses. Each measured run completed its 1,000 Apache Bench requests, recorded a verified kill, verified backend recovery, successful invocation cleanup, and canonical three-backend restoration.
 
-**Evidence:** TODO(evidence)
+| Repetition | Completed | Failed | Connect / Receive / Length / Exceptions | Non-2xx | Requests/s | Kill after measured sentinel (s) | Access-log HTTP 502 | Access-log HTTP 504 | Raw measured output |
+| --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 1 | 1,000 | 298 | 0 / 0 / 298 / 0 | 298 | 10.89 | 12.074370 | 54 | 244 | `results/12-1c-s12-baseline-r1-2e36ea414f-measured.txt` |
+| 2 | 1,000 | 294 | 0 / 0 / 294 / 0 | 294 | 13.93 | 12.066728 | 42 | 252 | `results/12-1c-s12-baseline-r2-b786793df6-measured.txt` |
+| 3 | 1,000 | 280 | 0 / 0 / 280 / 0 | 280 | 14.74 | 12.064484 | 69 | 211 | `results/12-1c-s12-baseline-r3-db7ba83bd0-measured.txt` |
 
-**Explanation:** TODO(evidence)
+The median requests/s was 13.93 (range 10.89–14.74; spread 3.85). Median failed and non-2xx requests were both 294 (ranges 280–298; spreads 18). The median kill offset was 12.066728 s (range 12.064484–12.074370 s; spread 0.009887 s). The per-run JSON records are `results/12-1c-s12-baseline-r1-2e36ea414f.json`, `results/12-1c-s12-baseline-r2-b786793df6.json`, and `results/12-1c-s12-baseline-r3-db7ba83bd0.json`; their paired diagnostics JSON files contain 1,000 matching measured access-log lines, zero malformed lines, and zero unparseable statuses each.
 
-**Honesty notes:** TODO(evidence)
+The observed 502/504 counts are from the measured **access-log diagnostics** (`...-nginx-diagnostics.json`), not from the Nginx error log. All three result JSON files mark the separately captured bounded error-log evidence `captured-no-matching-lines`; it does not demonstrate upstream error lines.
+TODO(evidence): availability-probe table is a Step 13 after-fix requirement.
+
+**Evidence:** `evidence/1c-before-ab-summary.png` shows the selected baseline repetition-1 Apache Bench summary, including 1,000 complete requests, 298 failed/298 non-2xx responses, and 10.89 requests/s. `evidence/1c-docker-kill.png` shows the selected baseline run and its scheduled and completed backend-2 kill. `evidence/1c-before-nginx-errors.png` truthfully shows that the bounded error-log artifact contained no matching Nginx error/warning lines. Supplementary `evidence/1c-default-kill-candidate.png` records the diagnostic default-profile candidate that motivated baseline selection; it is not a baseline repetition.
+
+**Explanation:** This is the required failure-before-fix observation, not the final resilience configuration. Step 13 will configure passive failover, repeat the equivalent experiment, require zero Apache Bench failed and non-2xx responses in every repetition, and add the separate availability-probe evidence before a before/after conclusion is made.
+
+**Honesty notes:** The profile deliberately disables retries and leaves all peers selectable so a failure can be observed. It is experimental evidence, not a recommended production setting. The error-log capture did not contain marker-correlated errors; only the access-log diagnostics establish the HTTP 502/504 totals. No availability probe was run in Step 12, and no claim of uninterrupted service or zero-failure resilience is made here.
 
 ## 1d — Architecture and cloud bursting/edge/fog
 

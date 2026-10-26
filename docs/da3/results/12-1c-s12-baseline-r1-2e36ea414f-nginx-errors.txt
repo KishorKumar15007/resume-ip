@@ -1,0 +1,1 @@
+No matching Nginx error/warning entries were observed in the bounded capture.
