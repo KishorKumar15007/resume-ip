@@ -43,10 +43,10 @@ Legend:
 
 - [x] Instance killed mid-run — the three selected baseline runs record a backend-2 `docker kill` about 12.06 seconds after each measured-run start sentinel, with verified stopped/recovery/restoration state.
 - [x] Failed count before — the three selected 1,000-request baseline runs record 298, 294, and 280 failed/non-2xx requests; measured access-log diagnostics separately record the 502/504 counts.
-- [ ] Nginx fix shown (config diff)
-- [ ] Failed count after is 0 in every repetition
-- [ ] Availability probe shows no downtime
-- [ ] Before/after table
+- [x] Nginx fix shown (config diff) — `results/13-nginx-config.diff` and `evidence/1c-nginx-diff.png` show the retained experimental-baseline-to-resilient changes.
+- [x] Failed count after is 0 in every repetition — accepted resilient repetitions 4–6 each retain 1,000 complete requests with zero failed and zero non-2xx responses.
+- [x] Availability probe shows no downtime — the accepted probe CSVs retain 336, 362, and 374 samples respectively, with zero non-200/timeout/transport-error samples; this is sampled evidence, not a mathematical availability proof.
+- [x] Before/after table — `results/13-1c-table.md` and `evidence/1c-before-after-table.png` retain all three experimental-baseline and all three accepted resilient rows.
 
 ## 1d — Architecture and bursting
 

@@ -1,0 +1,202 @@
+{
+  "acceptance": "failed",
+  "activation": "verified",
+  "artifacts": {
+    "measured_raw": "docs\\da3\\results\\13-1c-s13-resilient-r1-b5b070786b-measured.txt",
+    "nginx_diagnostics": "docs\\da3\\results\\13-1c-s13-resilient-r1-b5b070786b-nginx-diagnostics.json",
+    "nginx_errors": "docs\\da3\\results\\13-1c-s13-resilient-r1-b5b070786b-nginx-errors.txt",
+    "probe_csv": "docs\\da3\\results\\13-probe-resilient-rep1.csv",
+    "probe_stop": "docs\\da3\\results\\.13-probe-resilient-rep1.stop",
+    "result_json": "docs\\da3\\results\\13-1c-s13-resilient-r1-b5b070786b.json",
+    "result_markdown": "docs\\da3\\results\\13-1c-s13-resilient-r1-b5b070786b.md",
+    "warmup_raw": "docs\\da3\\results\\13-1c-s13-resilient-r1-b5b070786b-warmup.txt"
+  },
+  "availability_probe": {
+    "csv": "docs\\da3\\results\\13-probe-resilient-rep1.csv",
+    "started_at": "2026-10-26T16:19:43.662267+00:00",
+    "state": "verified",
+    "stopped_at": "2026-10-26T16:21:00.215086+00:00",
+    "summary": {
+      "failed_probes": 0,
+      "first_sample_at": "2026-10-26T16:19:43.573191+00:00",
+      "http_200": 343,
+      "last_sample_at": "2026-10-26T16:20:59.752592+00:00",
+      "longest_observed_gap_seconds": 0.38568997383117676,
+      "non_200": 0,
+      "timeouts": 0,
+      "total_samples": 343,
+      "transport_errors": 0
+    }
+  },
+  "canonical_restoration": true,
+  "completion": "incomplete",
+  "config": "resilient",
+  "error": "availability probe CSV does not cover warm-up through post-recovery health",
+  "finished_at": "2026-10-26T16:21:06.631120+00:00",
+  "kill": {
+    "ab_exit_status": "0",
+    "actual_elapsed_seconds": 12.081005899934098,
+    "cleanup_verified": true,
+    "completion_timestamp": "2026-10-26T16:20:30.611861+00:00",
+    "end_monotonic": 950248.7581627,
+    "end_sentinel_seen": true,
+    "end_sentinel_timestamp": "2026-10-26T16:20:30.325171+00:00",
+    "error": null,
+    "kill_completed_at": "2026-10-26T16:20:06.358941+00:00",
+    "kill_started_at": "2026-10-26T16:20:05.084544+00:00",
+    "late_kill_refused": false,
+    "monotonic_start": 950211.4365429,
+    "reader_joined": true,
+    "return_code": 0,
+    "scheduled_offset_seconds": 12.06,
+    "sentinel_timestamp": "2026-10-26T16:19:53.003549+00:00",
+    "start_sentinel_seen": true,
+    "stopped_verified": true,
+    "timer_joined": true
+  },
+  "measured": {
+    "completed_requests": 1000,
+    "connect_failures": null,
+    "exception_failures": null,
+    "execution_error": null,
+    "failed_requests": 0,
+    "interrupted": false,
+    "launched": true,
+    "length_failures": null,
+    "mean_time_per_request_ms": "746.209",
+    "non_2xx_responses": 0,
+    "receive_failures": null,
+    "requests": 1000,
+    "requests_per_second": "26.80",
+    "return_code": 0,
+    "timed_out": false
+  },
+  "nginx_diagnostics": {
+    "measured": {
+      "502_count": 0,
+      "504_count": 0,
+      "availability": "readable",
+      "malformed_lines": 0,
+      "matching_lines": 1000,
+      "non_2xx_records": [],
+      "non_2xx_records_truncated": false,
+      "status_counts": {
+        "200": 1000
+      },
+      "unparseable_statuses": 0,
+      "upstream_status_counts": {
+        "200": 992,
+        "502, 200": 6,
+        "504, 200": 2
+      }
+    },
+    "warmup": {
+      "502_count": 0,
+      "504_count": 0,
+      "availability": "readable",
+      "malformed_lines": 0,
+      "matching_lines": 100,
+      "non_2xx_records": [],
+      "non_2xx_records_truncated": false,
+      "status_counts": {
+        "200": 100
+      },
+      "unparseable_statuses": 0,
+      "upstream_status_counts": {
+        "200": 100
+      }
+    }
+  },
+  "nginx_error_log": {
+    "availability": "captured-no-matching-lines",
+    "container_id": "e6af7665729a",
+    "ended_at": "2026-10-26T16:20:30.971991+00:00",
+    "matching_lines": 0,
+    "started_at": "2026-10-26T16:19:33.002142+00:00",
+    "truncated": false
+  },
+  "post_recovery_health_at": "2026-10-26T16:20:59.905192+00:00",
+  "protocol": {
+    "ab_continue_on_errors": true,
+    "ab_flags": [
+      "-k",
+      "-r"
+    ],
+    "concurrency": 20,
+    "estimated_duration_formula": "1000 / 24.88",
+    "estimated_measured_seconds": 40.19292604501608,
+    "keep_alive": true,
+    "kill_timing_tolerance_seconds": 2.0,
+    "measured_requests": 1000,
+    "reference_rps": 24.88,
+    "request_accounting": "AB-reported completed plus failed counts; partial/unreported requests remain unknown",
+    "scheduled_kill_offset_seconds": 12.06,
+    "warmup_requests": 100
+  },
+  "raw_files": {
+    "measured_raw": "docs\\da3\\results\\13-1c-s13-resilient-r1-b5b070786b-measured.txt",
+    "warmup_raw": "docs\\da3\\results\\13-1c-s13-resilient-r1-b5b070786b-warmup.txt"
+  },
+  "recovery": "verified",
+  "rep": 1,
+  "run_id": "s13-resilient-r1-b5b070786b",
+  "started_at": "2026-10-26T16:19:33.002142+00:00",
+  "traffic": {
+    "ab_reported_completed": 1100,
+    "ab_reported_completed_measured": 1000,
+    "ab_reported_completed_warmup": 100,
+    "ab_reported_failed": 0,
+    "ab_reported_failed_measured": 0,
+    "ab_reported_failed_warmup": 0,
+    "launched": 1100,
+    "launched_measured": 1000,
+    "launched_warmup": 100,
+    "planned": 1100,
+    "planned_measured": 1000,
+    "planned_warmup": 100,
+    "skipped": 0,
+    "skipped_measured": 0,
+    "skipped_warmup": 0,
+    "unknown": 0,
+    "unknown_measured": 0,
+    "unknown_warmup": 0
+  },
+  "warmup": {
+    "completed_requests": 100,
+    "connect_failures": null,
+    "exception_failures": null,
+    "execution_error": null,
+    "failed_requests": 0,
+    "interrupted": false,
+    "launched": true,
+    "length_failures": null,
+    "mean_time_per_request_ms": "1157.421",
+    "non_2xx_responses": 0,
+    "receive_failures": null,
+    "requests": 100,
+    "requests_per_second": "17.28",
+    "return_code": 0,
+    "timed_out": false
+  },
+  "warmup_lifecycle": {
+    "ab_exit_status": "0",
+    "actual_elapsed_seconds": null,
+    "cleanup_verified": true,
+    "completion_timestamp": "2026-10-26T16:19:50.477068+00:00",
+    "end_monotonic": 950208.6279077,
+    "end_sentinel_seen": true,
+    "end_sentinel_timestamp": "2026-10-26T16:19:50.194903+00:00",
+    "error": null,
+    "kill_completed_at": null,
+    "kill_started_at": null,
+    "late_kill_refused": false,
+    "monotonic_start": 950202.8058558,
+    "reader_joined": true,
+    "return_code": null,
+    "scheduled_offset_seconds": null,
+    "sentinel_timestamp": "2026-10-26T16:19:44.372864+00:00",
+    "start_sentinel_seen": true,
+    "stopped_verified": null,
+    "timer_joined": true
+  }
+}

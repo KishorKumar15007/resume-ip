@@ -1,4 +1,4 @@
-"""DA3 Step 12 controlled failure-before-fix harness; owner-run only.
+"""DA3 Step 12/13 controlled failure harness; owner-run only.
 
 The script deliberately keeps the bearer token in process memory.  It preserves
 partial Apache Bench output and restores the canonical three-backend topology in
@@ -7,6 +7,7 @@ partial Apache Bench output and restores the canonical three-backend topology in
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import queue
@@ -28,12 +29,19 @@ ROOT = SCRIPTS.parents[2]
 sys.path.insert(0, str(SCRIPTS))
 import loadtest  # noqa: E402  # existing safe Compose/project helpers
 
+_PROBE_SPEC = importlib.util.spec_from_file_location("da3_availability_probe", SCRIPTS / "availability_probe.py")
+assert _PROBE_SPEC and _PROBE_SPEC.loader
+availability_probe = importlib.util.module_from_spec(_PROBE_SPEC)
+_PROBE_SPEC.loader.exec_module(availability_probe)
+
 RESULTS = ROOT / "docs" / "da3" / "results"
 NGINX_LOG = RESULTS / "nginx-logs" / "da3-access.log"
-PROFILES = {"default": "nginx-3-default.conf", "baseline": "nginx-3-baseline.conf"}
+PROFILES = {"default": "nginx-3-default.conf", "baseline": "nginx-3-baseline.conf",
+            "resilient": "nginx-3-resilient.conf"}
 WARMUP, MEASURED, CONCURRENCY = 100, 1000, 20
 KILL_OFFSET_SECONDS = 12.06
 HEALTH_WAIT_SECONDS = 120
+PROBE_COVERAGE_WAIT_SECONDS = 5
 PASSIVE_WINDOW_SECONDS = 12
 RUN_LABEL = loadtest.RUN_LABEL
 REFERENCE_RPS = 24.88
@@ -54,17 +62,18 @@ def progress(message: str) -> None:
 
 def profile(value: str) -> str:
     if value not in PROFILES:
-        raise argparse.ArgumentTypeError("--config must be default or baseline")
+        raise argparse.ArgumentTypeError("--config must be default, baseline, or resilient")
     return value
 
 
 def run_id(config: str, rep: int) -> str:
-    return f"s12-{config}-r{rep}-{uuid.uuid4().hex[:10]}"
+    step = "s13" if config == "resilient" else "s12"
+    return f"{step}-{config}-r{rep}-{uuid.uuid4().hex[:10]}"
 
 
 def artifact_paths(identifier: str) -> dict[str, Path]:
-    stem = f"12-1c-{identifier}"
-    return {
+    stem = f"{'13' if identifier.startswith('s13-') else '12'}-1c-{identifier}"
+    paths = {
         "warmup_raw": RESULTS / f"{stem}-warmup.txt",
         "measured_raw": RESULTS / f"{stem}-measured.txt",
         "result_json": RESULTS / f"{stem}.json",
@@ -72,6 +81,11 @@ def artifact_paths(identifier: str) -> dict[str, Path]:
         "nginx_diagnostics": RESULTS / f"{stem}-nginx-diagnostics.json",
         "nginx_errors": RESULTS / f"{stem}-nginx-errors.txt",
     }
+    if identifier.startswith("s13-resilient-r"):
+        rep = identifier.split("-", 3)[2].removeprefix("r")
+        paths["probe_csv"] = RESULTS / f"13-probe-resilient-rep{rep}.csv"
+        paths["probe_stop"] = RESULTS / f".13-probe-resilient-rep{rep}.stop"
+    return paths
 
 
 def collision(paths: dict[str, Path]) -> str | None:
@@ -80,6 +94,96 @@ def collision(paths: dict[str, Path]) -> str | None:
                       if path.suffix == ".json")
     existing = [path.name for path in candidates if path.exists()]
     return None if not existing else "refusing to overwrite existing result artifact(s): " + ", ".join(existing)
+
+
+def start_probe(paths: dict[str, Path]) -> tuple[subprocess.Popen[str] | None, str | None]:
+    """Start a separate no-secret probe process and require its CSV header."""
+    process: subprocess.Popen[str] | None = None
+    try:
+        process = subprocess.Popen(
+            [sys.executable, str(SCRIPTS / "availability_probe.py"), "--output", str(paths["probe_csv"]),
+             "--stop-file", str(paths["probe_stop"])], cwd=ROOT, stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL, text=True,
+        )
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline:
+            if process.poll() is not None:
+                return process, "availability probe exited before its CSV header was verified"
+            if paths["probe_csv"].is_file():
+                try:
+                    availability_probe.summarise(paths["probe_csv"])
+                    return process, None
+                except (OSError, ValueError):
+                    pass
+            time.sleep(0.05)
+    except (OSError, KeyError):
+        return process, "availability probe could not be started"
+    return process, "availability probe CSV header was not verified"
+
+
+def utc_instant(value: object) -> datetime:
+    """Parse an offset-bearing timestamp and normalize it for instant comparison."""
+    parsed = datetime.fromisoformat(str(value))
+    if parsed.tzinfo is None:
+        raise ValueError("timestamp has no timezone")
+    return parsed.astimezone(UTC)
+
+
+def probe_coverage(summary: dict[str, Any] | None, start_at: str | None, recovery_at: str | None) -> bool:
+    if not isinstance(summary, dict) or not start_at or not recovery_at:
+        return False
+    try:
+        first = utc_instant(summary["first_sample_at"])
+        last = utc_instant(summary["last_sample_at"])
+        start, recovery = utc_instant(start_at), utc_instant(recovery_at)
+    except (KeyError, TypeError, ValueError):
+        return False
+    return first <= start and last >= recovery
+
+
+def wait_for_probe_coverage(process: subprocess.Popen[str] | None, paths: dict[str, Path],
+                            start_at: str | None, recovery_at: str | None) -> tuple[dict[str, Any] | None, str | None]:
+    """Require a persisted, valid probe sample at/after successful recovery."""
+    if process is None:
+        return None, "availability probe was not running for coverage verification"
+    deadline = time.monotonic() + PROBE_COVERAGE_WAIT_SECONDS
+    summary: dict[str, Any] | None = None
+    while time.monotonic() < deadline:
+        if process.poll() is not None:
+            return summary, "availability probe exited before coverage was established"
+        try:
+            summary = availability_probe.summarise(paths["probe_csv"])
+        except (OSError, ValueError):
+            summary = None
+        if probe_coverage(summary, start_at, recovery_at):
+            return summary, None
+        time.sleep(0.05)
+    return summary, "availability probe CSV did not persist a sample through post-recovery health"
+
+
+def stop_probe(process: subprocess.Popen[str] | None, paths: dict[str, Path]) -> tuple[dict[str, Any] | None, str | None]:
+    if process is None:
+        return None, "availability probe was not running"
+    try:
+        if process.poll() is None:
+            paths["probe_stop"].write_text("stop\n", encoding="utf-8")
+        process.wait(timeout=10)
+        if process.returncode != 0:
+            return None, "availability probe exited unsuccessfully"
+        return availability_probe.summarise(paths["probe_csv"]), None
+    except (OSError, subprocess.TimeoutExpired, ValueError):
+        try:
+            if process.poll() is None:
+                process.terminate()
+            process.wait(timeout=5)
+        except (OSError, subprocess.TimeoutExpired):
+            try:
+                if process.poll() is None:
+                    process.kill()
+                process.wait(timeout=5)
+            except (OSError, subprocess.TimeoutExpired):
+                return None, "availability probe could not be stopped"
+        return None, "availability probe summary could not be verified"
 
 def atomic_json(path: Path, document: dict[str, Any]) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
@@ -144,6 +248,8 @@ def nginx_profile_loaded(config: str) -> bool:
         marker = "# configuration file /etc/nginx/conf.d/default.conf:"
         if marker in effective:
             effective = effective.split(marker, 1)[1].split("\n# configuration file ", 1)[0]
+        if '"upstream_addr":"$upstream_addr"' not in effective or '"upstream_status":"$upstream_status"' not in effective:
+            return False
         upstream = re.search(r"upstream\s+resume_ip_backends\s*\{(?P<body>[^}]*)\}", effective, re.S)
         if not upstream or not re.search(r"zone\s+resume_ip_backends\s+64k\s*;", upstream.group("body")):
             return False
@@ -152,14 +258,28 @@ def nginx_profile_loaded(config: str) -> bool:
             matches = re.findall(rf"server\s+{re.escape(service)}:8000(?P<options>[^;]*)\s*;", body)
             if len(matches) != 1:
                 return False
-            has_zero_fails = bool(re.search(r"\bmax_fails\s*=\s*0\b", matches[0]))
-            if has_zero_fails != (config == "baseline"):
+            options = matches[0]
+            if config == "baseline" and not re.search(r"\bmax_fails\s*=\s*0\b", options):
+                return False
+            if config == "resilient" and not (re.search(r"\bmax_fails\s*=\s*2\b", options)
+                                                and re.search(r"\bfail_timeout\s*=\s*10s\b", options)):
+                return False
+            if config not in ("baseline", "resilient") and "max_fails" in options:
                 return False
         if config == "baseline":
             if not re.search(r"proxy_next_upstream\s+off\s*;", effective):
                 return False
             if not re.search(r"proxy_connect_timeout\s+2s\s*;", effective):
                 return False
+        elif config == "resilient":
+            for directive in (
+                r"proxy_next_upstream\s+error timeout http_502 http_503 http_504\s*;",
+                r"proxy_next_upstream_tries\s+3\s*;",
+                r"proxy_next_upstream_timeout\s+5s\s*;",
+                r"proxy_connect_timeout\s+1s\s*;",
+            ):
+                if not re.search(directive, effective):
+                    return False
         else:
             if re.search(r"proxy_next_upstream\s+off\s*;", effective):
                 return False
@@ -175,11 +295,18 @@ def nginx_profile_loaded(config: str) -> bool:
         return False
 
 def activate(config: str) -> str | None:
+    """Select a profile and prove Nginx itself was recreated with clean state."""
     if not all(backend_identity(name)[0] for name in ("backend-1", "backend-2", "backend-3")):
         return "all backend health checks must pass before profile selection"
+    old_id, old_problem = service_container_id("nginx")
+    if old_problem or not old_id:
+        return "existing Nginx container identity is not verified"
     result = compose("up", "-d", "--force-recreate", "nginx", nginx_conf=PROFILES[config])
     if result.returncode != 0:
         return "Compose could not activate the requested Nginx profile"
+    new_id, new_problem = service_container_id("nginx")
+    if new_problem or not new_id or new_id == old_id:
+        return "Nginx recreation could not be verified"
     if not loadtest.topology_is_ready(3) or not health_ok():
         return "three-backend topology or Nginx health could not be verified"
     return None if nginx_profile_loaded(config) else "selected Nginx profile could not be verified"
@@ -676,7 +803,7 @@ def write_markdown(path: Path, document: dict[str, Any]) -> None:
     kill = document.get("kill", {})
     artifacts = document.get("artifacts", {})
     rows = [
-        "# Step 12 failure-before-fix result", "",
+        f"# Step {'13 resilient failover' if document.get('config') == 'resilient' else '12 failure-before-fix'} result", "",
         f"- Run ID: `{document.get('run_id')}`",
         f"- Profile: `{document.get('config')}`",
         f"- Repetition: `{document.get('rep')}`",
@@ -705,6 +832,7 @@ def write_markdown(path: Path, document: dict[str, Any]) -> None:
         f"- Load-test cleanup verified: {kill.get('cleanup_verified')}",
         f"- Backend recovery: {document.get('recovery', 'not reached')}",
         f"- Canonical restoration: {document.get('canonical_restoration', 'not reached')}", "",
+        f"- Availability probe: `{json.dumps(document.get('availability_probe', {}), sort_keys=True)}`", "",
         "## Artifacts", "",
     ]
     for key, value in artifacts.items():
@@ -850,6 +978,7 @@ def execute(config: str, rep: int) -> tuple[int, dict[str, Any]]:
     }
     code = 1
     runtime_mutated = False
+    probe_process: subprocess.Popen[str] | None = None
     try:
         problem = preflight_error(config, rep)
         if problem:
@@ -868,14 +997,25 @@ def execute(config: str, rep: int) -> tuple[int, dict[str, Any]]:
                     document["error"] = activation
                 else:
                     progress("selected Nginx profile verified")
-                    warmup, _warmup_kill = run_ab(WARMUP, identifier, "warmup", paths["warmup_raw"], token=token)
-                    document["warmup"] = serialise(warmup)
-                    record_traffic(document, "warmup", warmup, WARMUP)
-                    if not metrics_accounted(warmup, WARMUP, warmup=True):
+                    if config == "resilient":
+                        probe_process, probe_problem = start_probe(paths)
+                        document["availability_probe"] = {"csv": str(paths["probe_csv"].relative_to(ROOT)),
+                                                          "state": "running" if probe_process and not probe_problem else "failed",
+                                                          "started_at": now()}
+                        if probe_problem:
+                            document["error"] = probe_problem
+                    if document.get("error"):
+                        pass
+                    else:
+                        warmup, _warmup_kill = run_ab(WARMUP, identifier, "warmup", paths["warmup_raw"], token=token)
+                        document["warmup"] = serialise(warmup)
+                        document["warmup_lifecycle"] = _warmup_kill
+                        record_traffic(document, "warmup", warmup, WARMUP)
+                    if not document.get("error") and not metrics_accounted(warmup, WARMUP, warmup=True):
                         document["traffic"]["skipped_measured"] = MEASURED
                         document["traffic"]["skipped"] += MEASURED
                         document["error"] = "warm-up was incomplete or had failed/non-2xx responses; backend kill was not attempted"
-                    else:
+                    elif not document.get("error"):
                         target, target_error = backend_two_id()
                         if target_error or not target:
                             document["traffic"]["skipped_measured"] = MEASURED
@@ -910,6 +1050,20 @@ def execute(config: str, rep: int) -> tuple[int, dict[str, Any]]:
                                 except Exception:
                                     recovery_problem = "backend recovery raised an exception"
                                 document["recovery"] = "verified" if recovery_problem is None else "failed"
+                                document["post_recovery_health_at"] = now() if recovery_problem is None else None
+                                if recovery_problem is None and config == "resilient":
+                                    coverage_summary, coverage_problem = wait_for_probe_coverage(
+                                        probe_process, paths,
+                                        document.get("warmup_lifecycle", {}).get("sentinel_timestamp"),
+                                        document["post_recovery_health_at"],
+                                    )
+                                    document["availability_probe"]["coverage_summary"] = coverage_summary
+                                    document["availability_probe"]["coverage"] = (
+                                        "verified" if coverage_problem is None else "insufficient"
+                                    )
+                                    if coverage_problem:
+                                        document["completion"] = "incomplete"
+                                        document["error"] = document.get("error") or coverage_problem
                             if recovery_problem:
                                 document["error"] = document.get("error") or recovery_problem
                             elif kill.get("error"):
@@ -926,6 +1080,8 @@ def execute(config: str, rep: int) -> tuple[int, dict[str, Any]]:
                                 document["error"] = document.get("error") or "phase-separated Nginx access diagnostics were unavailable or incomplete"
                             elif document.get("nginx_error_log", {}).get("availability") == "unavailable":
                                 document["error"] = document.get("error") or "Nginx error-log capture was unavailable"
+                            elif document.get("error") is not None:
+                                pass
                             else:
                                 document["completion"] = "complete"
                                 document["error"] = None
@@ -938,6 +1094,29 @@ def execute(config: str, rep: int) -> tuple[int, dict[str, Any]]:
         # The token is scoped to each load-test child environment; it is never added
         # to the parent process environment or inherited by restoration/diagnostics.
         # Evidence collection must happen against the experiment container, before restoration recreates it.
+        if config == "resilient":
+            summary, probe_problem = stop_probe(probe_process, paths)
+            document["availability_probe"] = document.get("availability_probe", {})
+            document["availability_probe"]["summary"] = summary
+            document["availability_probe"]["state"] = "verified" if probe_problem is None else "failed"
+            document["availability_probe"]["stopped_at"] = now()
+            if probe_problem:
+                document["completion"] = "incomplete"
+                document["error"] = document.get("error") or probe_problem
+            try:
+                paths["probe_stop"].unlink(missing_ok=True)
+            except OSError:
+                document["completion"] = "incomplete"
+                document["error"] = document.get("error") or "availability probe stop-control cleanup failed"
+            warmup_start = document.get("warmup_lifecycle", {}).get("sentinel_timestamp")
+            recovery_at = document.get("post_recovery_health_at")
+            coverage_established = document["availability_probe"].get("coverage") == "verified"
+            if not coverage_established:
+                document["completion"] = "incomplete"
+                document["error"] = document.get("error") or "availability probe coverage could not be established"
+            elif not probe_coverage(summary, warmup_start, recovery_at):
+                document["completion"] = "incomplete"
+                document["error"] = document.get("error") or "availability probe CSV does not cover warm-up through post-recovery health"
         if runtime_mutated:
             if not isinstance(document.get("nginx_diagnostics"), dict):
                 try:
@@ -982,6 +1161,14 @@ def execute(config: str, rep: int) -> tuple[int, dict[str, Any]]:
             code = 1
         else:
             code = 0
+        if config == "resilient":
+            measured = document.get("measured", {})
+            probe = document.get("availability_probe", {}).get("summary") or {}
+            accepted = (document.get("completion") == "complete" and measured.get("failed_requests") == 0
+                        and measured.get("non_2xx_responses") == 0 and probe.get("failed_probes") == 0)
+            document["acceptance"] = "passed" if accepted else "failed"
+            if not accepted:
+                code = 1
 
         # Persist each artifact independently so one write failure does not skip all remaining attempts.
         write_errors: list[str] = []

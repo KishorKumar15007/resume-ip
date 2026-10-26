@@ -12,7 +12,7 @@ import time
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 SOURCE = Path(__file__).with_name("failover_test.py")
 SPEC = importlib.util.spec_from_file_location("da3_failover_under_test", SOURCE)
@@ -111,6 +111,7 @@ class FailoverTests(unittest.TestCase):
     def test_only_approved_profiles_are_accepted(self):
         self.assertEqual(HARNESS.profile("default"), "default")
         self.assertEqual(HARNESS.profile("baseline"), "baseline")
+        self.assertEqual(HARNESS.profile("resilient"), "resilient")
         with self.assertRaises(Exception):
             HARNESS.profile("after")
 
@@ -125,6 +126,14 @@ class FailoverTests(unittest.TestCase):
         self.assertEqual(baseline.count("max_fails=0"), 3)
         self.assertIn("proxy_next_upstream off;", baseline)
         self.assertIn("proxy_connect_timeout 2s;", baseline)
+
+        resilient = (HARNESS.ROOT / "nginx" / "nginx-3-resilient.conf").read_text(encoding="utf-8")
+        self.assertEqual(resilient.count("server backend-"), 3)
+        self.assertEqual(resilient.count("max_fails=2 fail_timeout=10s"), 3)
+        self.assertIn("proxy_next_upstream error timeout http_502 http_503 http_504;", resilient)
+        self.assertIn("proxy_next_upstream_tries 3;", resilient)
+        self.assertIn("proxy_next_upstream_timeout 5s;", resilient)
+        self.assertIn("proxy_connect_timeout 1s;", resilient)
 
         canonical = (HARNESS.ROOT / "nginx" / "nginx-3.conf").read_text(encoding="utf-8")
         host_directive = "proxy_set_header Host $http_host;"
@@ -212,6 +221,60 @@ class FailoverTests(unittest.TestCase):
         self.assertNotIn(token, " ".join(argv))
         self.assertEqual(child_env["LOADTEST_TOKEN"], token)
         self.assertNotIn(token, saved)
+
+    def test_probe_startup_failure_retains_handle_for_finally_cleanup(self):
+        with tempfile.TemporaryDirectory() as directory:
+            paths = {"probe_csv": Path(directory) / "probe.csv", "probe_stop": Path(directory) / "probe.stop"}
+            process = Mock(); process.poll.return_value = 1
+            with patch.object(HARNESS.subprocess, "Popen", return_value=process):
+                returned, problem = HARNESS.start_probe(paths)
+        self.assertIs(returned, process)
+        self.assertIn("exited", problem or "")
+
+    def test_probe_shutdown_uses_kill_after_termination_timeout(self):
+        with tempfile.TemporaryDirectory() as directory:
+            paths = {"probe_csv": Path(directory) / "probe.csv", "probe_stop": Path(directory) / "probe.stop"}
+            process = Mock(); process.poll.return_value = None
+            process.wait.side_effect = [subprocess.TimeoutExpired("probe", 10), subprocess.TimeoutExpired("probe", 5), 0]
+            with patch.object(HARNESS.availability_probe, "summarise", side_effect=AssertionError("must not summarise")):
+                _summary, problem = HARNESS.stop_probe(process, paths)
+        process.terminate.assert_called_once(); process.kill.assert_called_once()
+        self.assertIn("summary", problem or "")
+
+    def test_probe_coverage_compares_timezone_aware_instants(self):
+        warmup = "2026-10-26T16:19:44.372864+00:00"
+        recovery = "2026-10-26T16:20:59.905192+00:00"
+        before_recovery = {
+            "first_sample_at": "2026-10-26T21:49:43.573191+05:30",
+            "last_sample_at": "2026-10-26T16:20:59.752592+00:00",
+        }
+        equivalent_recovery = {
+            "first_sample_at": "2026-10-26T21:49:43.573191+05:30",
+            "last_sample_at": "2026-10-26T21:50:59.905192+05:30",
+        }
+        non_equivalent_before = {
+            "first_sample_at": "2026-10-26T21:49:43.573191+05:30",
+            "last_sample_at": "2026-10-26T21:50:59.800000+05:30",
+        }
+        self.assertFalse(HARNESS.probe_coverage(before_recovery, warmup, recovery))
+        self.assertTrue(HARNESS.probe_coverage(equivalent_recovery, warmup, recovery))
+        self.assertFalse(HARNESS.probe_coverage(non_equivalent_before, warmup, recovery))
+
+    def test_probe_coverage_wait_requires_persisted_sample_after_recovery(self):
+        warmup = "2026-10-26T16:19:44+00:00"
+        recovery = "2026-10-26T16:20:59.905192+00:00"
+        before = {"first_sample_at": warmup, "last_sample_at": "2026-10-26T16:20:59.752592+00:00"}
+        after = {"first_sample_at": warmup, "last_sample_at": "2026-10-26T21:50:59.905192+05:30"}
+        process = Mock(); process.poll.return_value = None
+        with tempfile.TemporaryDirectory() as directory, \
+             patch.object(HARNESS.availability_probe, "summarise", side_effect=[before, after]), \
+             patch.object(HARNESS.time, "monotonic", side_effect=[0.0, 0.0, 0.1]), \
+             patch.object(HARNESS.time, "sleep"):
+            summary, problem = HARNESS.wait_for_probe_coverage(
+                process, {"probe_csv": Path(directory) / "probe.csv"}, warmup, recovery,
+            )
+        self.assertIsNone(problem)
+        self.assertEqual(summary, after)
 
     def test_missing_external_env_file_blocks_preflight_before_any_external_command(self):
         with patch.dict(HARNESS.os.environ, {"DA3_LOADTEST_ENV_FILE": ""}), \

@@ -1,0 +1,54 @@
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking nginx (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
+
+
+Server Software:        nginx/1.30.6
+Server Hostname:        nginx
+Server Port:            80
+
+Document Path:          /postings?bench=s13-resilient-r5-d04ef8d925&phase=measured
+Document Length:        15896 bytes
+
+Concurrency Level:      20
+Time taken for tests:   42.508 seconds
+Complete requests:      1000
+Failed requests:        0
+Keep-Alive requests:    1000
+Total transferred:      16077000 bytes
+HTML transferred:       15896000 bytes
+Requests per second:    23.52 [#/sec] (mean)
+Time per request:       850.165 [ms] (mean)
+Time per request:       42.508 [ms] (mean, across all concurrent requests)
+Transfer rate:          369.34 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.3      0       4
+Processing:   465  829 266.2    794    2367
+Waiting:      465  829 266.2    794    2367
+Total:        465  829 266.3    794    2367
+
+Percentage of the requests served within a certain time (ms)
+  50%    794
+  66%    855
+  75%    904
+  80%    941
+  90%   1066
+  95%   1289
+  98%   1942
+  99%   2027
+ 100%   2367 (longest request)

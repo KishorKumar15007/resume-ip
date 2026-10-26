@@ -1,0 +1,27 @@
+--- nginx-3-baseline.conf
++++ nginx-3-resilient.conf
+@@ -6,9 +6,9 @@
+
+ upstream resume_ip_backends {
+     zone resume_ip_backends 64k;
+-    server backend-1:8000 max_fails=0;
+-    server backend-2:8000 max_fails=0;
+-    server backend-3:8000 max_fails=0;
++    server backend-1:8000 max_fails=2 fail_timeout=10s;
++    server backend-2:8000 max_fails=2 fail_timeout=10s;
++    server backend-3:8000 max_fails=2 fail_timeout=10s;
+ }
+
+ server {
+@@ -21,7 +21,9 @@
+         proxy_set_header X-Real-IP $remote_addr;
+         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+         proxy_set_header X-Forwarded-Proto $scheme;
+-        proxy_next_upstream off;
+-        proxy_connect_timeout 2s;
++        proxy_next_upstream error timeout http_502 http_503 http_504;
++        proxy_next_upstream_tries 3;
++        proxy_next_upstream_timeout 5s;
++        proxy_connect_timeout 1s;
+     }
+ }
