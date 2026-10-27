@@ -58,12 +58,12 @@ Legend:
 
 ## 2a — Sensitive data and password hashing
 
-- [ ] Sensitive data identified
-- [ ] Argon2 verified
-- [ ] Per-user salt shown
-- [ ] "Before" and "after" DB screenshots (before labelled as demo)
-- [ ] Sensitive-data inventory table
-- [ ] Hash/salt comparison table
+- [x] Sensitive data identified — `sensitive-data-inventory.md` identifies resume PDFs, password verifiers, user identity/role, submission assessment data, and job-posting content with source boundaries.
+- [x] Argon2 verified — `results/15-argon2-check.md` records successful `app.core.security.verify_password` checks for both synthetic accounts using Argon2id v19.
+- [x] Per-user salt shown — the verifier report and `evidence/2a-salt-proof.png` record 16-byte, distinct per-user salts for the same-password synthetic accounts.
+- [x] "Before" and "after" DB screenshots (before labelled as demo) — `evidence/2a-before-plaintext-demo.png` is explicitly labelled as a demonstration; `evidence/2a-after-hashed-users.png` shows the two synthetic users' Argon2id values.
+- [x] Sensitive-data inventory table — Table 2a.1 in the report is sourced from `sensitive-data-inventory.md`.
+- [x] Hash/salt comparison table — Table 2a.2 in the report is sourced from `results/15-argon2-check.md` without reproducing encoded hashes.
 
 ## 2b — MFA and authorization
 

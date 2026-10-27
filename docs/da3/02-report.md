@@ -374,18 +374,39 @@ The first resilient attempt, `s13-resilient-r1-b5b070786b`, is retained but excl
 
 **Requirement:** Identify the most sensitive data your application stores (for example, patient records, student marks, or employee/production data). Store user passwords as salted hashes (bcrypt or Argon2) instead of plain text, and show a database screenshot before and after. (1 mark)
 
-**What I built:** Existing DA1 baseline: Argon2 password hashing exists in `backend/app/core/security.py`; this baseline implementation is not by itself DA3 evidence. TODO(evidence)
+**What I built:** The portal identifies resume PDF content as its highest-sensitivity data, followed by password verifiers, user email/role data, and application status/score data in `sensitive-data-inventory.md`. For the two synthetic `da3-salt-*` users, `scripts/argon2_check.py` validates the owner-managed DA3 load-test configuration before importing the application database/session code, reads only those users, and verifies their prompted shared password through `app.core.security.verify_password`. The script writes a sanitised result without plaintext passwords, complete encoded hashes, database URLs, or credentials.
 
-**Commands run:** TODO(evidence)
+**Commands run:**
 
-**Result:** TODO(evidence)
-TODO(evidence): sensitive-data inventory table and hash/salt comparison table.
+```powershell
+& .\backend\.venv\Scripts\python.exe .\docs\da3\scripts\argon2_check.py
+```
 
-**Evidence:** TODO(evidence)
+The owner used the Neon SQL editor for the isolated demonstration, narrow synthetic-user query, and post-cleanup schema-existence check; the saved SQL output/screenshots are cited below.
 
-**Explanation:** TODO(evidence)
+**Result:** The saved verification report records PASS for both synthetic users. It records Argon2id version 19, memory cost 65,536 KiB, time cost 3, parallelism 4, a 32-byte hash output, and a 16-byte per-user salt for each account. It also records that both password checks passed and that both salts and complete hashes differ.
 
-**Honesty notes:** TODO(evidence)
+| Sensitive data category | Current storage/location | Why it is sensitive | Source |
+| --- | --- | --- | --- |
+| Resume PDF content | Private object storage; controlled URI retained on a submission | May contain identity, contact, education, and employment history | `sensitive-data-inventory.md` |
+| Password verifier | `users.password_hash` | Authentication verifier; stored as a hash, never as plaintext | `sensitive-data-inventory.md`; `results/15-argon2-check.md` |
+| User identity and role | `users.email`, `users.role` | Personal contact/identity data and authorisation-relevant role | `sensitive-data-inventory.md` |
+| Submission status, score, and matched skills | `submissions` fields | Application-progress and assessment data | `sensitive-data-inventory.md` |
+
+*Table 2a.1. Sensitive-data inventory, reproduced from `sensitive-data-inventory.md` without real records or configuration values.*
+
+| Synthetic account | Algorithm and parameters | Salt length | Password verification | Salt comparison | Hash comparison |
+| --- | --- | ---: | --- | --- | --- |
+| `da3-salt-a@example.com` | Argon2id v19; m=65536 KiB, t=3, p=4; hash length 32 bytes | 16 bytes | PASS | Distinct from account B | Distinct from account B |
+| `da3-salt-b@example.com` | Argon2id v19; m=65536 KiB, t=3, p=4; hash length 32 bytes | 16 bytes | PASS | Distinct from account A | Distinct from account A |
+
+*Table 2a.2. Sanitised hash/salt comparison generated from `results/15-argon2-check.md`; encoded hashes and salt values are intentionally omitted here.*
+
+**Evidence:** `evidence/2a-before-plaintext-demo.png` shows the clearly labelled isolated `da3_demo."users_plaintext_legacy_DEMO"` demonstration with three obviously fake rows. `evidence/2a-after-hashed-users.png` shows the two synthetic application users with Argon2id password-hash values. `evidence/2a-argon2-check.png` and `results/15-argon2-check.md` show the sanitised verifier PASS result and parameters. `evidence/2a-salt-proof.png` shows the verifier's distinct-salt/distinct-hash verdict. `evidence/2a-demo-cleanup-verification.png` shows a successful post-cleanup query with no `da3_demo` schema returned.
+
+**Explanation:** The application has used Argon2 since DA1: signup sends a password through `hash_password`, and login/verifier checks use `verify_password`. The two synthetic accounts were intentionally created with the same password; the recorded different salts and hashes demonstrate that the per-password salt is embedded in each Argon2id encoded value rather than being reused. The load-test configuration guard in the verifier restricts this evidence to the configured `da3-loadtest` branch before the application engine is created.
+
+**Honesty notes:** The application did not historically store plaintext passwords. The before screenshot is an explicitly labelled, isolated `da3_demo` demonstration table containing only fake values; it is not a historical application state. The cleanup verification screenshot establishes that `da3_demo` was absent when checked, but does not independently prove which mechanism removed it. The report intentionally excludes plaintext passwords, complete hashes, database URLs, and configuration secrets.
 
 ## 2b — MFA and update/delete authorization
 

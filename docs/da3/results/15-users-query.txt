@@ -1,0 +1,12 @@
+Query:
+neondb=> SELECT id, email, left(password_hash, 60) AS password_hash_prefix, role
+neondb-> FROM users
+neondb-> WHERE email LIKE 'da3-salt-%';
+
+Result:
+                  id                  |         email          |                     password_hash_prefix                     |   role    
+--------------------------------------+------------------------+--------------------------------------------------------------+-----------
+ 55d7eb18-f4a2-4240-b0b2-9e441dae1ed1 | da3-salt-a@example.com | $argon2id$v=19$m=65536,t=3,p=4$YN4BnoJLPn1JHiOhUuWncg$VhLLW2 | candidate
+ 148b3412-fd82-4590-b18d-5bbd46198248 | da3-salt-b@example.com | $argon2id$v=19$m=65536,t=3,p=4$Y6Ahmj5zHs5a1ZaEn/9tOQ$2Tp6MP | candidate
+(2 rows)
+
