@@ -50,11 +50,11 @@ Legend:
 
 ## 1d — Architecture and bursting
 
-- [ ] Diagram uses real names and ports
-- [ ] Bursting/edge component in a different colour
-- [ ] Explanation ties to the 1a scenario
-- [ ] Reason for choosing it
-- [ ] Components-and-ports table
+- [~] Diagram uses real names and ports — `diagrams/q1-architecture.svg` and its exported `diagrams/q1-architecture.png` show the DA1/DA3 components and verified local ports; the required evidence-folder capture remains pending.
+- [~] Bursting/edge component in a different colour — the orange dashed **Proposed, not built** Cloud Run extension exists in the SVG/PNG; it is design-only and the required evidence-folder capture remains pending.
+- [~] Explanation ties to the 1a scenario — `1d-explanation.md` ties the placement-drive read/total-demand assumptions to the proposal, but remains an owner-rewrite-required draft.
+- [~] Reason for choosing it — the draft explains short-lived central API demand and stateless API capacity, but remains owner-rewrite-required and unverified at runtime.
+- [~] Components-and-ports table — `results/14-components-table.md` exists; the required diagram evidence capture remains pending.
 
 ## 2a — Sensitive data and password hashing
 

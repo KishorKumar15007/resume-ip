@@ -347,18 +347,28 @@ The first resilient attempt, `s13-resilient-r1-b5b070786b`, is retained but excl
 
 **Requirement:** Draw the architecture diagram of your own implementation, using the actual names of your components: your frontend, the three backend containers and Nginx from part (a) (with their ports), your cloud database and hosting platform from Assignment 1, and the tools used (e.g., MongoDB Atlas, Render, Firebase). Then add the cloud bursting or edge/fog computing component to the same diagram, marked in a different colour, and explain how it would handle your peak-demand situation from part (a), and why you chose it for your domain. (1 mark)
 
-**What I built:** TODO(evidence)
+**What I built:** The detailed architecture is `diagrams/q1-architecture.svg`; its owner-exported PNG is `diagrams/q1-architecture.png`. The same design has a hand-draw guide in `diagrams/q1-architecture-hand-draw.md`, a components-and-ports table in `results/14-components-table.md`, and an owner-rewrite-required explanation draft in `1d-explanation.md`. The design separates the existing DA1 Cloud Run frontend, API, worker, Cloud Storage, Pub/Sub, Cloud Logging, IAM/scoped service accounts, and Neon database from the independent DA3 local Docker Compose experiment (Nginx plus `backend-1` through `backend-3`).
 
-**Commands run:** TODO(evidence)
+**Commands run:** No runtime or cloud command was run for Part 1d. The existing diagram and supporting design artifacts were statically checked against `compose.da3.yml`, the Step 7 request-mix result, and the Step 11 benchmark result.
 
-**Result:** TODO(evidence)
-TODO(evidence): components-and-ports table.
+**Result:** Table 1d.1 is a concise view of the complete components-and-ports reference in `results/14-components-table.md`.
 
-**Evidence:** TODO(evidence)
+| Component / tool | Where it runs | Host port | Container port | Status / role |
+| --- | --- | --- | --- | --- |
+| React frontend, FastAPI API, resume worker | DA1 Google Cloud Run | not applicable | platform port not verified | Existing DA1 services; the live frontend API target and deployed API Neon branch remain unknown. |
+| Nginx | Local DA3 Docker Compose | 8080 | 80 | Existing local reverse proxy/load balancer; current configuration has no `max_conns` or backup peer. |
+| `backend-1`, `backend-2`, `backend-3` | Local DA3 Docker Compose | 8001, 8002, 8003 | 8000 each | Existing FastAPI/Uvicorn backends used by the local experiment. |
+| Neon PostgreSQL | AWS Singapore managed database | not applicable | not applicable | Shared pooled dependency; DA3 load-test branch is `da3-loadtest`, while the deployed DA1 API branch is unknown. |
+| Apache Bench and availability probe | Local DA3 test tooling | client targets 8080 | not applicable | Direct Nginx test tools; DA3 has no frontend service. |
+| Proposed Cloud Run burst API | Proposed Google Cloud Run | not verified | platform port not verified | Orange-dashed **Proposed, not built** overflow design; initial cap is six instances. |
 
-**Explanation:** TODO(evidence)
+*Table 1d.1. Components and ports summarised from `results/14-components-table.md`; it is a design/reference table, not runtime validation of the proposed burst service.*
 
-**Honesty notes:** TODO(evidence)
+**Evidence:** `diagrams/q1-architecture.svg` and the visual export `diagrams/q1-architecture.png` exist. The expected evidence-path capture `evidence/1d-architecture-diagram.png` does not currently exist, so it remains TODO(evidence). The hand-draw guide, components table, and explanation draft exist at the paths above.
+
+**Explanation:** The Step 7 placement-drive assumptions distinguish 40,000 read requests over 600 seconds (66.67, about 67 read requests/s) from 44,000 total HTTP requests over 600 seconds (73.33 total requests/s). Step 11's three-backend median is 24.88 requests/s, a local Compose measurement rather than Cloud Run performance. The illustrative linear estimate is `24.88 / 3 = 8.2933`, about 8.3 requests/s per backend; both `ceil(67 / (24.88 / 3))` and `ceil(73.33 / (24.88 / 3))` round to nine total instances, which implies six additional instances beyond the three local instances. Cloud bursting is proposed because a placement drive is a short-lived increase in central web-API demand, while the API is stateless between requests; the shared Neon database may bottleneck and must be capacity-checked before deployment.
+
+**Honesty notes:** The nine-instance arithmetic and the proposed six-instance Cloud Run cap are illustrative, not verified capacity. Linear scaling, compatible Nginx backup hand-off, Cloud Run behavior, HTTPS/SNI/Host configuration, ingress authorization, and Neon connection capacity remain unverified. The diagram PNG is present in `diagrams/`, but the required evidence-folder capture is pending. `1d-explanation.md` remains a draft that the owner must rewrite before submission. Some diagram text extends beyond intended bounds; the owner consciously deferred this optional visual polish due to time/token constraints, and it is not a blocker for this stage.
 
 ## 2a — Sensitive data and password hashing
 
