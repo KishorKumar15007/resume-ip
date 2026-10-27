@@ -412,17 +412,28 @@ The owner used the Neon SQL editor for the isolated demonstration, narrow synthe
 
 **Requirement:** Add multi-factor authentication to login using a TOTP authenticator app (Google or Microsoft Authenticator). Restrict your Update and Delete APIs to logged-in users with the right role for your domain (for example, doctor, faculty, or supervisor), and show a request being rejected without a valid token. (1.5 marks)
 
-**What I built:** Existing DA1 baseline: recruiter role and posting-owner checks exist for update/delete in `backend/app/routers/postings.py`; TOTP MFA has not yet been implemented. TODO(evidence)
+**What I built:** Step 16 adds optional TOTP MFA to the existing authentication flow. `users.mfa_enabled` and `users.totp_secret_encrypted` are introduced by migration `a4c7b6d92e10`; `/auth/mfa/setup` stores the TOTP secret through Fernet encryption, `/auth/mfa/confirm` enables MFA after a valid six-digit code, and `/auth/mfa/verify` exchanges a short-lived MFA-scope token for a normal access token. Existing recruiter role and posting-owner checks in `backend/app/routers/postings.py` remain the update/delete baseline; the separate Step 18 authorization matrix has not yet been run.
 
-**Commands run:** TODO(evidence)
+**Commands run:** The owner ran the retained local synthetic-user flow represented by [`results/16-mfa-flow.md`](results/16-mfa-flow.md). The flow validated the local DA3 target and clock alignment for all three backends, then created and removed one synthetic MFA user. No token, provisioning URI, TOTP secret, Fernet key, or connection detail is retained in the result.
 
-**Result:** TODO(evidence)
+**Result:** **PASS.**
 
-**Evidence:** TODO(evidence)
+| Tested flow | Expected | Recorded actual |
+| --- | --- | --- |
+| Local API preflight; target identity; host and three backend clocks | HTTP 200; DA3 backend identity; clocks within five seconds | HTTP 200; backend identity present; all clock checks aligned |
+| Synthetic signup and pre-enrolment login | HTTP 201, then HTTP 200 with access token | HTTP 201; HTTP 200 |
+| MFA setup and confirmation | HTTP 200 for each | HTTP 200; HTTP 200 |
+| Login after enrolment and challenge shape | HTTP 200 with MFA token only | HTTP 200; MFA challenge fields present |
+| MFA token on protected route | HTTP 401 | HTTP 401 |
+| MFA-token verification and protected-route access | HTTP 200, then HTTP 200 | HTTP 200; HTTP 200 |
+| Invalid code; wrong-scope access token; malformed, invalidly signed, and expired MFA tokens | HTTP 401 for each | HTTP 401 for each |
+| Synthetic-user cleanup | Exactly one created user removed | `rows deleted: 1` |
 
-**Explanation:** TODO(evidence)
+**Evidence:** [`evidence/2b-migration-applied.png`](evidence/2b-migration-applied.png) shows revision `a4c7b6d92e10` with the two MFA columns. [`evidence/2b-secret-encrypted.png`](evidence/2b-secret-encrypted.png) shows one synthetic user with MFA enabled and its stored ciphertext redacted. [`evidence/2b-mfa-flow-test.png`](evidence/2b-mfa-flow-test.png) shows the retained PASS table.
 
-**Honesty notes:** TODO(evidence)
+**Explanation:** TOTP uses `pyotp` with six-digit, 30-second codes. The secret is encrypted before storage with Fernet; confirmation decrypts it only on the server to validate the code. MFA-enabled login yields an MFA-scope token rather than an access token, and the flow confirms that this token is rejected on a normal protected endpoint before `/auth/mfa/verify` returns an access token.
+
+**Honesty notes:** The passing harness uses a synthetic user and `pyotp` to exercise the server flow; it is not a recorded manual Google/Microsoft Authenticator user-interface demonstration. The result does not test update/delete authorization or an unauthenticated mutation; those remain Step 18 work. The approved Step 16 scope does not include lockout, replay protection, rate limiting, security-event logging, or an `mfa_enroll` token/forced-enrolment flow, so none is claimed here.
 
 ## 2c — Trivy scan and image hardening
 

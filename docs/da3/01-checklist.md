@@ -67,12 +67,11 @@ Legend:
 
 ## 2b — MFA and authorization
 
-- [ ] TOTP enrolment works
-- [ ] Login needs the code
+- [x] TOTP enrolment works — the retained synthetic-user flow completed setup and confirmation with HTTP 200; the encrypted-storage and flow screenshots are captured.
+- [x] Login needs the code — after enrolment, login returned the MFA challenge and `/auth/mfa/verify` returned an access token with HTTP 200.
 - [ ] PUT/DELETE role-restricted
 - [ ] Rejection without token shown
-- [ ] MFA-pending token rejected
-- [ ] Rate limiting shown
+- [x] MFA-pending token rejected — the retained flow records HTTP 401 when the MFA token is used on the protected postings route.
 
 ## 2c — Image hardening
 

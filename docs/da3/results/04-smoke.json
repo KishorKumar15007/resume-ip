@@ -1,6 +1,6 @@
 {
   "script": "docs/da3/scripts/smoke_api.py",
-  "base_url": "http://localhost:8000",
+  "base_url": "http://localhost:8080",
   "overall": "PASS",
   "steps": [
     {
