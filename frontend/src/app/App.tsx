@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router";
 import { RedirectIfAuthenticated, RequireAuth } from "../auth/RequireAuth";
 import { AppShell } from "../components/AppShell";
 import { LoginPage } from "../features/auth/LoginPage";
+import { MfaSetupPage } from "../features/auth/MfaSetupPage";
 import { SessionPage } from "../features/auth/SessionPage";
 import { SignupPage } from "../features/auth/SignupPage";
 import { CandidatePostingsPage } from "../features/postings/CandidatePostingsPage";
@@ -16,5 +17,5 @@ import { NotFoundPage } from "../pages/NotFoundPage";
 import { RouteEffects } from "./RouteEffects";
 
 export function App() {
-  return <><RouteEffects /><AppShell><Routes><Route path="/" element={<LandingPage />} /><Route element={<RedirectIfAuthenticated />}><Route path="/login" element={<LoginPage />} /><Route path="/signup" element={<SignupPage />} /></Route><Route element={<RequireAuth />}><Route path="/session" element={<SessionPage />} /><Route path="/postings" element={<CandidatePostingsPage />} /><Route path="/postings/:postingId" element={<PostingDetailPage />} /></Route><Route element={<RequireAuth allowedRoles={["recruiter"]} />}><Route path="/recruiter/postings" element={<RecruiterPostingsPage />} /><Route path="/recruiter/postings/new" element={<PostingEditorPage mode="create" />} /><Route path="/recruiter/postings/:postingId/edit" element={<PostingEditorPage mode="edit" />} /><Route path="/recruiter/postings/:postingId/submissions" element={<RecruiterSubmissionsPage />} /></Route><Route path="/forbidden" element={<ForbiddenPage />} /><Route path="*" element={<NotFoundPage />} /></Routes></AppShell></>;
+  return <><RouteEffects /><AppShell><Routes><Route path="/" element={<LandingPage />} /><Route element={<RedirectIfAuthenticated />}><Route path="/login" element={<LoginPage />} /><Route path="/signup" element={<SignupPage />} /></Route><Route element={<RequireAuth />}><Route path="/session" element={<SessionPage />} /><Route path="/security/mfa" element={<MfaSetupPage />} /><Route path="/postings" element={<CandidatePostingsPage />} /><Route path="/postings/:postingId" element={<PostingDetailPage />} /></Route><Route element={<RequireAuth allowedRoles={["recruiter"]} />}><Route path="/recruiter/postings" element={<RecruiterPostingsPage />} /><Route path="/recruiter/postings/new" element={<PostingEditorPage mode="create" />} /><Route path="/recruiter/postings/:postingId/edit" element={<PostingEditorPage mode="edit" />} /><Route path="/recruiter/postings/:postingId/submissions" element={<RecruiterSubmissionsPage />} /></Route><Route path="/forbidden" element={<ForbiddenPage />} /><Route path="*" element={<NotFoundPage />} /></Routes></AppShell></>;
 }

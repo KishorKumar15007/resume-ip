@@ -6,6 +6,7 @@ const titles: Record<string, string> = {
   "/login": "Sign in",
   "/signup": "Create account",
   "/session": "Session",
+  "/security/mfa": "Set up MFA",
   "/postings": "Browse postings",
   "/recruiter/postings": "Your postings",
   "/recruiter/postings/new": "Create posting",

@@ -8,6 +8,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
+  const isMfaSetup = location.pathname === "/security/mfa";
   const isCandidateWorkspace = location.pathname === "/postings";
   const isCandidateDetail = /^\/postings\/[^/]+$/.test(location.pathname);
   const isRecruiterWorkspace = location.pathname === "/recruiter/postings";
@@ -15,6 +16,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isRecruiterSubmissions = /^\/recruiter\/postings\/[^/]+\/submissions$/.test(location.pathname);
   const contextualLink = !session
     ? isAuthPage ? { to: "/", label: "Back to home" } : null
+    : isMfaSetup ? { to: "/session", label: "Back to session" }
     : isCandidateWorkspace ? { to: "/session", label: "Back to session" }
     : isCandidateDetail ? { to: "/postings", label: "Back to postings" }
     : isRecruiterWorkspace ? { to: "/session", label: "Back to session" }

@@ -5,6 +5,26 @@ export interface TokenResponse {
   token_type: "bearer";
 }
 
+export interface MFAChallengeResponse {
+  mfa_required: true;
+  mfa_token: string;
+  token_type: "bearer";
+}
+
+export type LoginResponse = TokenResponse | MFAChallengeResponse;
+
+export interface MFASetupResponse {
+  provisioning_uri: string;
+}
+
+export interface MFACodeRequest {
+  code: string;
+}
+
+export interface MFAVerifyRequest extends MFACodeRequest {
+  mfa_token: string;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;

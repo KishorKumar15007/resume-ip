@@ -79,12 +79,11 @@ Status meanings: `needed` = not yet captured; `captured` = screenshot file is pr
 | `docs/da3/evidence/2b-migration-applied.png` | 2b / Step 16 | Neon SQL editor result showing revision `a4c7b6d92e10` and the `mfa_enabled` / `totp_secret_encrypted` column definitions. | Existing owner capture; visually checked as a valid PNG. | captured |
 | `docs/da3/evidence/2b-secret-encrypted.png` | 2b / Step 16 | One synthetic user row with `mfa_enabled` true and a redacted stored `totp_secret_encrypted` value. | Existing owner capture; visually checked as a valid PNG. | captured |
 | `docs/da3/evidence/2b-mfa-flow-test.png` | 2b / Step 16 | Sanitised `16-mfa-flow.md` PASS table covering enrolment, challenge, verification, scope rejection, invalid-token cases, and cleanup. | Existing owner capture; visually checked as a valid PNG. | captured |
-| `docs/da3/evidence/2b-qr-enrol-screen.png` | 2b / Step 17 | TOTP setup screen with secret hidden. | Capture the frontend setup view. | needed |
-| `docs/da3/evidence/2b-authenticator-phone.png` | 2b / Step 17 | Authenticator entry and code only. | Capture a cropped phone screen. | needed |
-| `docs/da3/evidence/2b-login-step1.png` | 2b / Step 17 | First login step. | Capture the frontend flow. | needed |
-| `docs/da3/evidence/2b-login-step2.png` | 2b / Step 17 | Second login step. | Capture the frontend flow. | needed |
-| `docs/da3/evidence/2b-login-success.png` | 2b / Step 17 | Successful MFA login. | Capture the frontend flow. | needed |
-| `docs/da3/evidence/2b-recruiter-forced-enrol.png` | 2b / Step 17 | Required recruiter enrolment, if implemented. | Capture the frontend flow. | needed |
+| `docs/da3/evidence/2b-qr-enrol-screen.png` | 2b / Step 17 | Valid PNG visually shows the React **Set up MFA** enrolment screen, locally rendered QR, obscured QR payload, and obscured manual key. | Corrected owner capture; preserve without alteration. | captured; visually reviewed |
+| `docs/da3/evidence/2b-authenticator-phone.png` | 2b / Step 17 | Authenticator-entry capture. | File is absent; capture a cropped phone screen with no active code visible. | needed; absent / TODO(evidence) |
+| `docs/da3/evidence/2b-login-step1.png` | 2b / Step 17 | Valid PNG visually shows the MFA authentication-code challenge screen before a code is entered. | Preserve as the challenge-UI capture; it contains no visible secret. | captured; visually reviewed |
+| `docs/da3/evidence/2b-login-step2.png` | 2b / Step 17 | Valid PNG visually shows the MFA code-entry screen with a deliberately limited portion of the short-lived code visible to demonstrate this stage. | Owner-approved illustrative capture; preserve without alteration. | captured; visually reviewed |
+| `docs/da3/evidence/2b-login-success.png` | 2b / Step 17 | Valid PNG visually shows the post-login session screen and its MFA setup action. | Supports the completed UI flow, but does not alone prove the second-factor exchange. | captured; visually reviewed; limited |
 | `docs/da3/evidence/2b-no-token-rejected.png` | 2b / Step 18 | 401 rejection without a token. | Capture the command and response. | needed |
 | `docs/da3/evidence/2b-swagger-401.png` | 2b / Step 18 | Swagger unauthorised DELETE response. | Capture Swagger Try it out. | needed |
 | `docs/da3/evidence/2b-authz-matrix.png` | 2b / Step 18 | Full authorisation matrix, all PASS. | Run `scripts/authz_matrix.py`. | needed |

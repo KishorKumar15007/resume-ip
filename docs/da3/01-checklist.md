@@ -67,8 +67,9 @@ Legend:
 
 ## 2b — MFA and authorization
 
-- [x] TOTP enrolment works — the retained synthetic-user flow completed setup and confirmation with HTTP 200; the encrypted-storage and flow screenshots are captured.
-- [x] Login needs the code — after enrolment, login returned the MFA challenge and `/auth/mfa/verify` returned an access token with HTTP 200.
+- [x] TOTP enrolment works — the retained synthetic-user flow completed setup and confirmation with HTTP 200, and the owner reported successful real-authenticator enrolment through the optional React flow.
+- [x] Login needs the code — after enrolment, login returned the MFA challenge and `/auth/mfa/verify` returned an access token with HTTP 200; the owner separately reported a successful real-authenticator second-factor login.
+- [~] Step 17 frontend evidence gate — the corrected QR-enrolment capture and the three browser-flow captures are present and reviewed; the authenticator-phone capture is still absent, so the complete gate remains open.
 - [ ] PUT/DELETE role-restricted
 - [ ] Rejection without token shown
 - [x] MFA-pending token rejected — the retained flow records HTTP 401 when the MFA token is used on the protected postings route.
