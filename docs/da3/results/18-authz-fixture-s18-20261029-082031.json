@@ -1,0 +1,33 @@
+{
+  "run_id": "s18-20261029-082031",
+  "attempt": 1,
+  "created_at": "2026-10-29T02:50:33.014077+00:00",
+  "phase": "prepare-failed",
+  "ids": {
+    "recruiter_a": "bef95ba3-161d-592a-b71a-9367fa9d3df2",
+    "recruiter_b": "ae301a62-833c-5995-b493-ad124af2e989",
+    "candidate_a": "f43ac18a-d4ff-5a5a-89c7-89c58a0fe37e",
+    "candidate_b": "55b41e2c-81ce-597e-9128-de86403157e4",
+    "posting": "039f7f14-8339-5dd9-98b7-982cf09a5443",
+    "submission": "c211914a-e771-51ed-8b0b-f0b56dd4ea7a"
+  },
+  "fixture": {
+    "recruiter_a_email": "da3-authz-s18-20261029-082031-recruiter-a@example.com",
+    "recruiter_b_email": "da3-authz-s18-20261029-082031-recruiter-b@example.com",
+    "candidate_a_email": "da3-authz-s18-20261029-082031-candidate-a@example.com",
+    "candidate_b_email": "da3-authz-s18-20261029-082031-candidate-b@example.com",
+    "posting_title": "DA3 authorization fixture s18-20261029-082031",
+    "posting_description": "Synthetic authorization fixture only."
+  },
+  "results": [],
+  "events": [
+    {
+      "at": "2026-10-29T02:50:33.015229+00:00",
+      "event": "manifest-reserved"
+    },
+    {
+      "at": "2026-10-29T02:51:38.325123+00:00",
+      "event": "prepare-failed"
+    }
+  ]
+}

@@ -70,8 +70,8 @@ Legend:
 - [x] TOTP enrolment works — the retained synthetic-user flow completed setup and confirmation with HTTP 200, and the owner reported successful real-authenticator enrolment through the optional React flow.
 - [x] Login needs the code — after enrolment, login returned the MFA challenge and `/auth/mfa/verify` returned an access token with HTTP 200; the owner separately reported a successful real-authenticator second-factor login.
 - [~] Step 17 frontend evidence gate — the corrected QR-enrolment capture and the three browser-flow captures are present and reviewed; the authenticator-phone capture is still absent, so the complete gate remains open.
-- [ ] PUT/DELETE role-restricted
-- [ ] Rejection without token shown
+- [x] PUT/DELETE role-restricted — `results/18-authz-matrix.md` records candidate and non-owner recruiter HTTP 403 denial, owner recruiter PUT HTTP 200, and owner DELETE HTTP 204; the paired matrix captures are present.
+- [x] Rejection without token shown — `results/18-authz-matrix.md` records HTTP 401 with `WWW-Authenticate: Bearer` for both posting PUT and DELETE; terminal and Swagger captures are present.
 - [x] MFA-pending token rejected — the retained flow records HTTP 401 when the MFA token is used on the protected postings route.
 
 ## 2c — Image hardening

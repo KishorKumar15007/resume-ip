@@ -412,7 +412,7 @@ The owner used the Neon SQL editor for the isolated demonstration, narrow synthe
 
 **Requirement:** Add multi-factor authentication to login using a TOTP authenticator app (Google or Microsoft Authenticator). Restrict your Update and Delete APIs to logged-in users with the right role for your domain (for example, doctor, faculty, or supervisor), and show a request being rejected without a valid token. (1.5 marks)
 
-**What I built:** Step 16 adds optional TOTP MFA to the existing authentication flow. `users.mfa_enabled` and `users.totp_secret_encrypted` are introduced by migration `a4c7b6d92e10`; `/auth/mfa/setup` stores the TOTP secret through Fernet encryption, `/auth/mfa/confirm` enables MFA after a valid six-digit code, and `/auth/mfa/verify` exchanges a short-lived MFA-scope token for a normal access token. Step 17 implements Route A in the existing React frontend: the authenticated `/security/mfa` screen creates a QR locally in the browser with `qrcode.react`, offers the manual setup key only in component memory, and sends the six-digit confirmation code to the existing API. The login screen keeps the short-lived MFA challenge token in component memory rather than localStorage and sends it only in the `/auth/mfa/verify` request body; it establishes the normal in-memory session only after verification. Existing recruiter role and posting-owner checks in `backend/app/routers/postings.py` remain the update/delete baseline; the separate Step 18 authorization matrix has not yet been run.
+**What I built:** Step 16 adds optional TOTP MFA to the existing authentication flow. `users.mfa_enabled` and `users.totp_secret_encrypted` are introduced by migration `a4c7b6d92e10`; `/auth/mfa/setup` stores the TOTP secret through Fernet encryption, `/auth/mfa/confirm` enables MFA after a valid six-digit code, and `/auth/mfa/verify` exchanges a short-lived MFA-scope token for a normal access token. Step 17 implements Route A in the existing React frontend: the authenticated `/security/mfa` screen creates a QR locally in the browser with `qrcode.react`, offers the manual setup key only in component memory, and sends the six-digit confirmation code to the existing API. The login screen keeps the short-lived MFA challenge token in component memory rather than localStorage and sends it only in the `/auth/mfa/verify` request body; it establishes the normal in-memory session only after verification. Existing recruiter role and posting-owner checks in `backend/app/routers/postings.py` remain the update/delete baseline.
 
 **Commands run:** The owner ran the retained local synthetic-user flow represented by [`results/16-mfa-flow.md`](results/16-mfa-flow.md). The flow validated the local DA3 target and clock alignment for all three backends, then created and removed one synthetic MFA user. No token, provisioning URI, TOTP secret, Fernet key, or connection detail is retained in the result.
 
@@ -433,11 +433,57 @@ The owner used the Neon SQL editor for the isolated demonstration, narrow synthe
 
 **Separate API smoke result:** [`results/04-smoke.md`](results/04-smoke.md) and [`results/04-smoke.json`](results/04-smoke.json) record **PASS, 19/19** against `http://localhost:8080`. They record recruiter and candidate synthetic signup/login, recruiter posting create/read/update/delete, candidate read access, candidate create/update/delete rejection with HTTP 403, and HTTP 404 after deletion. This is the final retained smoke result; an earlier run against port 8000 is not used for this claim.
 
-**Evidence:** [`evidence/2b-migration-applied.png`](evidence/2b-migration-applied.png) shows revision `a4c7b6d92e10` with the two MFA columns. [`evidence/2b-secret-encrypted.png`](evidence/2b-secret-encrypted.png) shows one synthetic user with MFA enabled and its stored ciphertext redacted. [`evidence/2b-mfa-flow-test.png`](evidence/2b-mfa-flow-test.png) shows the retained PASS table. The corrected [`evidence/2b-qr-enrol-screen.png`](evidence/2b-qr-enrol-screen.png) shows the frontend enrolment screen with its QR and manual key obscured. [`evidence/2b-login-step1.png`](evidence/2b-login-step1.png), [`evidence/2b-login-step2.png`](evidence/2b-login-step2.png), and [`evidence/2b-login-success.png`](evidence/2b-login-success.png) show the browser challenge, intentional short-lived code-entry stage, and post-login session respectively. The authenticator-phone capture is absent, so the complete manual evidence gate remains open.
+**Evidence:** [`evidence/2b-migration-applied.png`](evidence/2b-migration-applied.png) shows revision `a4c7b6d92e10` with the two MFA columns. [`evidence/2b-secret-encrypted.png`](evidence/2b-secret-encrypted.png) shows one synthetic user with MFA enabled and its stored ciphertext redacted. [`evidence/2b-mfa-flow-test.png`](evidence/2b-mfa-flow-test.png) shows the retained PASS table. The corrected [`evidence/2b-qr-enrol-screen.png`](evidence/2b-qr-enrol-screen.png) shows the frontend enrolment screen with its QR and manual key obscured. [`evidence/2b-login-step1.png`](evidence/2b-login-step1.png), [`evidence/2b-login-step2.png`](evidence/2b-login-step2.png), and [`evidence/2b-login-success.png`](evidence/2b-login-success.png) show the browser challenge, intentional short-lived code-entry stage, and post-login session respectively. The authenticator-phone capture is absent, so the complete manual Step 17 evidence gate remains open.
 
 **Explanation:** TOTP uses `pyotp` with six-digit, 30-second codes. The secret is encrypted before storage with Fernet; confirmation decrypts it only on the server to validate the code. MFA-enabled login yields an MFA-scope token rather than an access token, and the flow confirms that this token is rejected on a normal protected endpoint before `/auth/mfa/verify` returns an access token.
 
-**Honesty notes:** The passing harness uses a synthetic user and `pyotp` to exercise the server flow. The manual authenticator demonstration was owner-reported separately; its browser captures were visually checked, but the missing phone capture keeps that evidence gate incomplete. The partially visible short-lived code in the code-entry capture was deliberately retained by the owner to demonstrate that stage and is not treated as a separate evidence failure. The result does not test update/delete authorization or an unauthenticated mutation; those remain Step 18 work. The approved Step 16 scope does not include lockout, replay protection, rate limiting, security-event logging, or an `mfa_enroll` token/forced-enrolment flow, so none is claimed here.
+**Honesty notes:** The passing harness uses a synthetic user and `pyotp` to exercise the server flow. The manual authenticator demonstration was owner-reported separately; its browser captures were visually checked, but the missing phone capture keeps that evidence gate incomplete. The partially visible short-lived code in the code-entry capture was deliberately retained by the owner to demonstrate that stage and is not treated as a separate evidence failure. The approved Step 16 scope does not include lockout, replay protection, rate limiting, security-event logging, or an `mfa_enroll` token/forced-enrolment flow, so none is claimed here.
+
+### Step 18 — Access-control matrix
+
+**What I built:** Step 18 exercised the existing server-side recruiter role and posting-owner checks in `backend/app/routers/postings.py` using four synthetic actors, one synthetic posting, and one synthetic submission.
+
+**Commands run:** The retained capture commands show the local Nginx target and final synthetic run ID:
+
+```powershell
+python docs/da3/scripts/authz_matrix.py --run-id s18-20261029-084722 --base-url http://localhost:8080 --capture-no-token
+python docs/da3/scripts/authz_matrix.py --run-id s18-20261029-084722 --base-url http://localhost:8080 --capture-candidate-denial
+```
+
+The canonical result files identify `docs/da3/scripts/authz_matrix.py`, run `s18-20261029-084722`, attempt 1, and phase `complete`; they do not retain tokens, passwords, response bodies, connection strings, or the full command lines for fixture preparation, the matrix invocation, and final deletion.
+
+**Result:** **PASS, 22/22 rows.** Table 2b.1 is reproduced from [`results/18-authz-matrix.md`](results/18-authz-matrix.md) and cross-checked with [`results/18-authz-matrix.json`](results/18-authz-matrix.json). Invalid or non-access authentication received HTTP 401 with `WWW-Authenticate: Bearer`; authenticated candidates and non-owner recruiters received HTTP 403; the owner recruiter updated the posting with HTTP 200 and deleted it with HTTP 204.
+
+**Table 2b.1. Step 18 synthetic authorization matrix.**
+
+| Request | Token type | Expected | Actual | Result |
+| --- | --- | --- | --- | --- |
+| PUT posting | No token | HTTP 401; WWW-Authenticate: Bearer | HTTP 401; WWW-Authenticate: Bearer | PASS |
+| PUT posting | Malformed token | HTTP 401; WWW-Authenticate: Bearer | HTTP 401; WWW-Authenticate: Bearer | PASS |
+| PUT posting | Expired token | HTTP 401; WWW-Authenticate: Bearer | HTTP 401; WWW-Authenticate: Bearer | PASS |
+| PUT posting | Signature-tampered token | HTTP 401; WWW-Authenticate: Bearer | HTTP 401; WWW-Authenticate: Bearer | PASS |
+| PUT posting | MFA-scope token | HTTP 401; WWW-Authenticate: Bearer | HTTP 401; WWW-Authenticate: Bearer | PASS |
+| DELETE posting | No token | HTTP 401; WWW-Authenticate: Bearer | HTTP 401; WWW-Authenticate: Bearer | PASS |
+| DELETE posting | Malformed token | HTTP 401; WWW-Authenticate: Bearer | HTTP 401; WWW-Authenticate: Bearer | PASS |
+| DELETE posting | Expired token | HTTP 401; WWW-Authenticate: Bearer | HTTP 401; WWW-Authenticate: Bearer | PASS |
+| DELETE posting | Signature-tampered token | HTTP 401; WWW-Authenticate: Bearer | HTTP 401; WWW-Authenticate: Bearer | PASS |
+| DELETE posting | MFA-scope token | HTTP 401; WWW-Authenticate: Bearer | HTTP 401; WWW-Authenticate: Bearer | PASS |
+| PUT posting | Candidate A access token | HTTP 403 | HTTP 403 | PASS |
+| PUT posting | Recruiter B non-owner access token | HTTP 403 | HTTP 403 | PASS |
+| DELETE posting | Candidate A access token | HTTP 403 | HTTP 403 | PASS |
+| DELETE posting | Recruiter B non-owner access token | HTTP 403 | HTTP 403 | PASS |
+| PUT posting | Recruiter A owner access token | HTTP 200 | HTTP 200 | PASS |
+| GET submission | Candidate A access token | HTTP 200 | HTTP 200 | PASS |
+| GET submission | Candidate B access token | HTTP 403 | HTTP 403 | PASS |
+| GET submission | Recruiter A owner access token | HTTP 200 | HTTP 200 | PASS |
+| GET submission | Recruiter B non-owner access token | HTTP 403 | HTTP 403 | PASS |
+| GET posting submissions | Recruiter A owner access token | HTTP 200 | HTTP 200 | PASS |
+| GET posting submissions | Recruiter B non-owner access token | HTTP 403 | HTTP 403 | PASS |
+| DELETE posting | Recruiter A owner access token | HTTP 204 | HTTP 204 | PASS |
+
+**Evidence:** [`evidence/2b-no-token-rejected.png`](evidence/2b-no-token-rejected.png) shows the terminal 401/Bearer rejection; [`evidence/2b-swagger-401.png`](evidence/2b-swagger-401.png) shows Swagger's unauthorised DELETE; [`evidence/2b-authz-matrix.png`](evidence/2b-authz-matrix.png) and [`evidence/2b-authz-matrix-continuation.png`](evidence/2b-authz-matrix-continuation.png) jointly show the complete 22-row PASS table; and [`evidence/2b-candidate-403.png`](evidence/2b-candidate-403.png) shows the candidate mutation rejection.
+
+**Honesty notes:** The Step 18 matrix is limited to the listed posting/submission authorization cases. It does not exercise protected upload, Google Cloud Storage, Pub/Sub delivery, or resume scoring, so those regression paths remain unverified here. The earlier `s18-20261029-082031` fixture manifest is preserved as a `prepare-failed` attempt when Neon was unreachable; it is not part of the final PASS result.
 
 ## 2c — Trivy scan and image hardening
 

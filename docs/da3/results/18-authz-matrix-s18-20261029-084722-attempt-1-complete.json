@@ -1,0 +1,163 @@
+{
+  "script": "docs/da3/scripts/authz_matrix.py",
+  "run_id": "s18-20261029-084722",
+  "attempt": 1,
+  "phase": "complete",
+  "overall": "PASS",
+  "steps": [
+    {
+      "request": "PUT /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "No token",
+      "expected": "HTTP 401; WWW-Authenticate: Bearer",
+      "actual": "HTTP 401; WWW-Authenticate: Bearer",
+      "passed": true
+    },
+    {
+      "request": "PUT /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "Malformed token",
+      "expected": "HTTP 401; WWW-Authenticate: Bearer",
+      "actual": "HTTP 401; WWW-Authenticate: Bearer",
+      "passed": true
+    },
+    {
+      "request": "PUT /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "Expired token",
+      "expected": "HTTP 401; WWW-Authenticate: Bearer",
+      "actual": "HTTP 401; WWW-Authenticate: Bearer",
+      "passed": true
+    },
+    {
+      "request": "PUT /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "Signature-tampered token",
+      "expected": "HTTP 401; WWW-Authenticate: Bearer",
+      "actual": "HTTP 401; WWW-Authenticate: Bearer",
+      "passed": true
+    },
+    {
+      "request": "PUT /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "MFA-scope token",
+      "expected": "HTTP 401; WWW-Authenticate: Bearer",
+      "actual": "HTTP 401; WWW-Authenticate: Bearer",
+      "passed": true
+    },
+    {
+      "request": "DELETE /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "No token",
+      "expected": "HTTP 401; WWW-Authenticate: Bearer",
+      "actual": "HTTP 401; WWW-Authenticate: Bearer",
+      "passed": true
+    },
+    {
+      "request": "DELETE /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "Malformed token",
+      "expected": "HTTP 401; WWW-Authenticate: Bearer",
+      "actual": "HTTP 401; WWW-Authenticate: Bearer",
+      "passed": true
+    },
+    {
+      "request": "DELETE /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "Expired token",
+      "expected": "HTTP 401; WWW-Authenticate: Bearer",
+      "actual": "HTTP 401; WWW-Authenticate: Bearer",
+      "passed": true
+    },
+    {
+      "request": "DELETE /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "Signature-tampered token",
+      "expected": "HTTP 401; WWW-Authenticate: Bearer",
+      "actual": "HTTP 401; WWW-Authenticate: Bearer",
+      "passed": true
+    },
+    {
+      "request": "DELETE /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "MFA-scope token",
+      "expected": "HTTP 401; WWW-Authenticate: Bearer",
+      "actual": "HTTP 401; WWW-Authenticate: Bearer",
+      "passed": true
+    },
+    {
+      "request": "PUT /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "Candidate A access token",
+      "expected": "HTTP 403",
+      "actual": "HTTP 403",
+      "passed": true
+    },
+    {
+      "request": "PUT /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "Recruiter B non-owner access token",
+      "expected": "HTTP 403",
+      "actual": "HTTP 403",
+      "passed": true
+    },
+    {
+      "request": "DELETE /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "Candidate A access token",
+      "expected": "HTTP 403",
+      "actual": "HTTP 403",
+      "passed": true
+    },
+    {
+      "request": "DELETE /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "Recruiter B non-owner access token",
+      "expected": "HTTP 403",
+      "actual": "HTTP 403",
+      "passed": true
+    },
+    {
+      "request": "PUT /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "Recruiter A owner access token",
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "passed": true
+    },
+    {
+      "request": "GET /submissions/91e77743-21a8-56b1-8306-711a900bb948",
+      "token_type": "Candidate A access token",
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "passed": true
+    },
+    {
+      "request": "GET /submissions/91e77743-21a8-56b1-8306-711a900bb948",
+      "token_type": "Candidate B access token",
+      "expected": "HTTP 403",
+      "actual": "HTTP 403",
+      "passed": true
+    },
+    {
+      "request": "GET /submissions/91e77743-21a8-56b1-8306-711a900bb948",
+      "token_type": "Recruiter A owner access token",
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "passed": true
+    },
+    {
+      "request": "GET /submissions/91e77743-21a8-56b1-8306-711a900bb948",
+      "token_type": "Recruiter B non-owner access token",
+      "expected": "HTTP 403",
+      "actual": "HTTP 403",
+      "passed": true
+    },
+    {
+      "request": "GET /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162/submissions",
+      "token_type": "Recruiter A owner access token",
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "passed": true
+    },
+    {
+      "request": "GET /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162/submissions",
+      "token_type": "Recruiter B non-owner access token",
+      "expected": "HTTP 403",
+      "actual": "HTTP 403",
+      "passed": true
+    },
+    {
+      "request": "DELETE /postings/7be1c1fa-d050-5322-8bfd-8517ef58f162",
+      "token_type": "Recruiter A owner access token",
+      "expected": "HTTP 204",
+      "actual": "HTTP 204",
+      "passed": true
+    }
+  ]
+}
