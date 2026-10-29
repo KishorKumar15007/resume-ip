@@ -76,11 +76,11 @@ Legend:
 
 ## 2c — Image hardening
 
-- [ ] Baseline scan saved
+- [x] Baseline scans saved — accepted raw JSON/metadata exist for experimental backend, worker, and final frontend runtime images; the six baseline screenshots were visually reviewed.
 - [ ] Hardened Dockerfile
 - [ ] Rescan saved with same flags
-- [ ] CRITICAL/HIGH table
-- [ ] CRITICAL/HIGH table covering every application image (or the exclusion explained)
+- [~] CRITICAL/HIGH table — Table 2c.1 records the verified baseline counts, but the required before/after comparison awaits Step 20.
+- [x] CRITICAL/HIGH baseline coverage for every application image — backend, worker, and the separately Dockerfile-based frontend are represented in Table 2c.1.
 - [ ] App still works
 
 ## 2d — Threats and regulation

@@ -1,0 +1,79 @@
+{
+  "base_images": [
+    {
+      "declared_from": "python:3.12",
+      "platform": {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      "resolution_status": "not-locally-inspectable-after-build",
+      "resolved_id": "unavailable",
+      "resolved_repo_digests": []
+    }
+  ],
+  "cache_volume": {
+    "driver": "local",
+    "name": "resume-ip-trivy-db-v1"
+  },
+  "database_metadata": {
+    "DownloadedAt": "2026-10-29T07:56:34.956359505Z",
+    "NextUpdate": "2026-10-30T01:22:22.544155326Z",
+    "UpdatedAt": "2026-10-29T01:22:22.544155871Z",
+    "Version": 2
+  },
+  "database_metadata_after": {
+    "DownloadedAt": "2026-10-29T07:56:34.956359505Z",
+    "NextUpdate": "2026-10-30T01:22:22.544155326Z",
+    "UpdatedAt": "2026-10-29T01:22:22.544155871Z",
+    "Version": 2
+  },
+  "database_snapshot": {
+    "downloaded_at": "2026-10-29T07:56:34.956359505Z",
+    "identity_sha256": "d60a5350c19b52a61928a21bdd352fe026ffc3fbccbc14867d1181df80a65f37",
+    "next_update": "2026-10-30T01:22:22.544155326Z",
+    "schema_version": 2,
+    "updated_at": "2026-10-29T01:22:22.544155871Z",
+    "version": 2
+  },
+  "exit_status": 0,
+  "image": {
+    "architecture": "amd64",
+    "configured_user": "default/root",
+    "id": "sha256:bdb91ee950b57b62952327f99df8edce65f17146a916b7f47458252078831864",
+    "os": "linux",
+    "reference": "resume-worker:da3-baseline",
+    "repo_digests": [
+      "resume-worker@sha256:bdb91ee950b57b62952327f99df8edce65f17146a916b7f47458252078831864"
+    ],
+    "resolution_status": "docker-inspected",
+    "size_bytes": 486078814
+  },
+  "label": "worker-baseline",
+  "raw_report_sha256": "4b65e16517f1f3bb0351b758a7329dc016b177ec57b8e418681d26036eccadb7",
+  "scan_arguments": [
+    "image",
+    "--input",
+    "/scan/image.tar",
+    "--scanners",
+    "vuln",
+    "--pkg-types",
+    "os,library",
+    "--severity",
+    "CRITICAL,HIGH",
+    "--format",
+    "json",
+    "--skip-db-update",
+    "--skip-java-db-update",
+    "--skip-check-update",
+    "--skip-version-check",
+    "--offline-scan",
+    "--no-progress"
+  ],
+  "scan_timestamp": "2026-10-29T08:39:55.500263Z",
+  "status": "success",
+  "trivy": {
+    "image": "aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+    "version": "0.76.1"
+  },
+  "trivy_db_sha256": "ad47d4d7f64fb08225e3d0c9f59118e724ecf82a14d5502fff71c742d6cb24b4"
+}

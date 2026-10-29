@@ -1,0 +1,27 @@
+# DA3 experimental baseline only. This is not a historical DA1 Dockerfile.
+# It deliberately uses the full Python image and the default root user so that
+# Step 20 can compare it with the existing slim, unprivileged runtime design.
+# `python:3.12` is deliberately mutable; Stage F must record the Docker-inspected
+# resolved base image ID and platform rather than call this tag reproducible.
+FROM python:3.12 AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8080
+
+WORKDIR /app
+
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
+
+COPY app ./app
+
+EXPOSE 8080
+
+FROM runtime AS worker
+
+CMD ["sh", "-c", "exec uvicorn app.worker:app --host 0.0.0.0 --port \"${PORT}\""]
+
+FROM runtime AS api
+
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port \"${PORT}\""]

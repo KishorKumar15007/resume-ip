@@ -1,0 +1,27 @@
+{
+  "cache_volume": {
+    "driver": "local",
+    "name": "resume-ip-trivy-db-v1"
+  },
+  "created_at": "2026-10-29T08:26:30.770714Z",
+  "database_metadata": {
+    "DownloadedAt": "2026-10-29T07:56:34.956359505Z",
+    "NextUpdate": "2026-10-30T01:22:22.544155326Z",
+    "UpdatedAt": "2026-10-29T01:22:22.544155871Z",
+    "Version": 2
+  },
+  "database_snapshot": {
+    "downloaded_at": "2026-10-29T07:56:34.956359505Z",
+    "identity_sha256": "d60a5350c19b52a61928a21bdd352fe026ffc3fbccbc14867d1181df80a65f37",
+    "next_update": "2026-10-30T01:22:22.544155326Z",
+    "schema_version": 2,
+    "updated_at": "2026-10-29T01:22:22.544155871Z",
+    "version": 2
+  },
+  "reuse_rule": "Steps 19 and 20 must use this unchanged metadata identity and trivy.db SHA-256; a mismatch invalidates comparison.",
+  "snapshot_source": "explicitly-adopted-existing-volume",
+  "status": "success",
+  "trivy_db_sha256": "ad47d4d7f64fb08225e3d0c9f59118e724ecf82a14d5502fff71c742d6cb24b4",
+  "trivy_image": "aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+  "trivy_version": "0.76.1"
+}

@@ -1,0 +1,141 @@
+DA3 Step 19 — Existing application image inventory
+Captured: 2026-10-29 12:12:29 +05:30
+
+
+Image          : asia-south1-docker.pkg.dev/resume-ip/resume-portal/resume-ip-api:2026-09-13-r1
+ImageId        : sha256:37cada47411bd27aae315f236c997c6fa8c29f8dd28cb445d39422fcf471603e
+SizeMB         : 79.55
+ConfiguredUser : app
+WorkingDir     : /app
+Entrypoint     : 
+Cmd            : sh -c exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT}"
+
+Image          : asia-south1-docker.pkg.dev/resume-ip/resume-portal/resume-ip-api:2026-09-13-r2
+ImageId        : sha256:558de518e6e6ee99d5bc421bb31ec31fc97b9047d3cab60b77d14d95493595e3
+SizeMB         : 79.55
+ConfiguredUser : app
+WorkingDir     : /app
+Entrypoint     : 
+Cmd            : sh -c exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT}"
+
+Image          : asia-south1-docker.pkg.dev/resume-ip/resume-portal/resume-ip-api:2026-09-13-r3
+ImageId        : sha256:d4ec5dfc2fdc2b8fb90b945387a6da02feac223e43dd21b1987562331a3adb42
+SizeMB         : 79.55
+ConfiguredUser : app
+WorkingDir     : /app
+Entrypoint     : 
+Cmd            : sh -c exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT}"
+
+Image          : asia-south1-docker.pkg.dev/resume-ip/resume-portal/resume-ip-frontend:2026-09-13-r1
+ImageId        : sha256:b162cca6951fc143c5f60cd55490b292a0dec233a1dc1347b5194f3bfcb9babd
+SizeMB         : 22.11
+ConfiguredUser : 101
+WorkingDir     : /
+Entrypoint     : /docker-entrypoint.sh
+Cmd            : nginx -g daemon off;
+
+Image          : asia-south1-docker.pkg.dev/resume-ip/resume-portal/resume-ip-frontend:2026-09-13-r2
+ImageId        : sha256:b9d73ef0629de2e9ebef9cd04e40d51f605689e8ac06caef05ac78c0dd26916d
+SizeMB         : 22.11
+ConfiguredUser : 101
+WorkingDir     : /
+Entrypoint     : /docker-entrypoint.sh
+Cmd            : nginx -g daemon off;
+
+Image          : asia-south1-docker.pkg.dev/resume-ip/resume-portal/resume-ip-frontend:2026-09-13-r3
+ImageId        : sha256:18ae771e0bceb1f40d003eda9b0a2d4acb85d695c6c05b14fa3024b076b2c0a0
+SizeMB         : 22.11
+ConfiguredUser : 101
+WorkingDir     : /
+Entrypoint     : /docker-entrypoint.sh
+Cmd            : nginx -g daemon off;
+
+Image          : asia-south1-docker.pkg.dev/resume-ip/resume-portal/resume-ip-worker:2026-09-13-r1
+ImageId        : sha256:22753627e6bb629d27c6a3665323340e61615b6659741dec726d9951fc4b5ced
+SizeMB         : 79.55
+ConfiguredUser : app
+WorkingDir     : /app
+Entrypoint     : 
+Cmd            : sh -c exec uvicorn app.worker:app --host 0.0.0.0 --port "${PORT}"
+
+Image          : resume-ip-api:prompt17
+ImageId        : sha256:37cada47411bd27aae315f236c997c6fa8c29f8dd28cb445d39422fcf471603e
+SizeMB         : 79.55
+ConfiguredUser : app
+WorkingDir     : /app
+Entrypoint     : 
+Cmd            : sh -c exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT}"
+
+Image          : resume-ip-api:prompt18
+ImageId        : sha256:0d10389b5ecef8a150d081172ed9ceeab003b4dffde5b5015b45a750078684c4
+SizeMB         : 79.55
+ConfiguredUser : app
+WorkingDir     : /app
+Entrypoint     : 
+Cmd            : sh -c exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT}"
+
+Image          : resume-ip-backend-1:latest
+ImageId        : sha256:3253974718dead99b95136a686556dbe82dfd5a93917ef1956b4e79a9102aabf
+SizeMB         : 79.58
+ConfiguredUser : app
+WorkingDir     : /app
+Entrypoint     : 
+Cmd            : sh -c exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT}"
+
+Image          : resume-ip-backend-2:latest
+ImageId        : sha256:9d0581758d1ae0e0efb0891f5e9870021e407bb0377e08a3742a3cde74ee96e8
+SizeMB         : 79.58
+ConfiguredUser : app
+WorkingDir     : /app
+Entrypoint     : 
+Cmd            : sh -c exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT}"
+
+Image          : resume-ip-backend-3:latest
+ImageId        : sha256:d4cdc943d9ce24fdd18714e0a084fd435129c420cf0931ded94e1922096456a7
+SizeMB         : 79.58
+ConfiguredUser : app
+WorkingDir     : /app
+Entrypoint     : 
+Cmd            : sh -c exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT}"
+
+Image          : resume-ip-frontend:2026-09-13-r2
+ImageId        : sha256:b9d73ef0629de2e9ebef9cd04e40d51f605689e8ac06caef05ac78c0dd26916d
+SizeMB         : 22.11
+ConfiguredUser : 101
+WorkingDir     : /
+Entrypoint     : /docker-entrypoint.sh
+Cmd            : nginx -g daemon off;
+
+Image          : resume-ip-frontend:prompt17
+ImageId        : sha256:b162cca6951fc143c5f60cd55490b292a0dec233a1dc1347b5194f3bfcb9babd
+SizeMB         : 22.11
+ConfiguredUser : 101
+WorkingDir     : /
+Entrypoint     : /docker-entrypoint.sh
+Cmd            : nginx -g daemon off;
+
+Image          : resume-ip-frontend:prompt18
+ImageId        : sha256:ec6414d98c5b6df6195b9c1f3caaffc4ed9a27b72c67e8bf2c15305abce168b2
+SizeMB         : 22.11
+ConfiguredUser : 101
+WorkingDir     : /
+Entrypoint     : /docker-entrypoint.sh
+Cmd            : nginx -g daemon off;
+
+Image          : resume-ip-worker:prompt17
+ImageId        : sha256:22753627e6bb629d27c6a3665323340e61615b6659741dec726d9951fc4b5ced
+SizeMB         : 79.55
+ConfiguredUser : app
+WorkingDir     : /app
+Entrypoint     : 
+Cmd            : sh -c exec uvicorn app.worker:app --host 0.0.0.0 --port "${PORT}"
+
+Image          : resume-ip-worker:prompt18
+ImageId        : sha256:0d2fa9e6b56b502ea10632f3b4c73038573d79ededa01604c8685534cf9f4dd4
+SizeMB         : 79.55
+ConfiguredUser : app
+WorkingDir     : /app
+Entrypoint     : 
+Cmd            : sh -c exec uvicorn app.worker:app --host 0.0.0.0 --port "${PORT}"
+
+

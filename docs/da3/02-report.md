@@ -489,18 +489,27 @@ The canonical result files identify `docs/da3/scripts/authz_matrix.py`, run `s18
 
 **Requirement:** Scan your application's Docker image with Trivy. Harden it (smaller base image, non-root user), rescan, and tabulate the CRITICAL and HIGH counts before and after. (1.5 marks)
 
-**What I built:** Existing DA1 baseline: `backend/Dockerfile` uses a slim base and an unprivileged user; no DA3 baseline/rescan evidence has been collected yet. TODO(evidence)
+**What I built:** Step 19 created a deliberately experimental backend/worker comparison baseline in [`backend/Dockerfile.baseline`](../../backend/Dockerfile.baseline): full `python:3.12`, default/root user, and the same API/worker targets. This is not a recovered historical DA1 image: the existing [`backend/Dockerfile`](../../backend/Dockerfile) was already a slim, unprivileged runtime. The frontend's actual final Nginx runtime image was also scanned; its Node build stage was not scanned as a deployed runtime image.
 
-**Commands run:** TODO(evidence)
+**Commands run:** The retained containerised scan workflow used Trivy `0.76.1` pinned to the recorded image digest, the fixed `CRITICAL,HIGH` severity filter, OS and library package scanning, offline mode, and update-skipping flags. A single validated Trivy DB snapshot (schema/version `2`/`2`, updated `2026-10-29T01:22:22.544155871Z`, content SHA-256 recorded in the metadata) was verified before and after every accepted scan. The scanner preserves raw JSON and Docker-inspected image metadata in `results/`.
 
-**Result:** TODO(evidence)
-TODO(evidence): CRITICAL/HIGH table rows for every scanned application image.
+**Result:** Table 2c.1 is derived from the retained raw JSON reports, not manually entered summaries. The backend and worker totals are raw vulnerability occurrences, so they should not be treated as a count of unique CVEs.
 
-**Evidence:** TODO(evidence)
+**Table 2c.1 — Step 19 baseline Trivy results**
 
-**Explanation:** TODO(evidence)
+| Image | Baseline type / declared base image | Trivy / DB schema-version / DB updated | CRITICAL | HIGH | OS CRITICAL/HIGH | Language CRITICAL/HIGH | Image size | Configured user | Raw source |
+| --- | --- | --- | ---: | ---: | --- | --- | ---: | --- | --- |
+| `resume-backend:da3-baseline` | Experimental comparison baseline; `python:3.12` | `0.76.1` / `2`/`2` / `2026-10-29T01:22:22.544155871Z` | 19 | 461 | 17 / 448 | 2 / 13 | 486,078,810 bytes | `default/root` | [`results/19-trivy-baseline-r3.json`](results/19-trivy-baseline-r3.json), [`results/19-trivy-baseline-r3.metadata.json`](results/19-trivy-baseline-r3.metadata.json) |
+| `resume-worker:da3-baseline` | Experimental comparison baseline; `python:3.12` | `0.76.1` / `2`/`2` / `2026-10-29T01:22:22.544155871Z` | 19 | 461 | 17 / 448 | 2 / 13 | 486,078,814 bytes | `default/root` | [`results/19-trivy-worker-baseline.json`](results/19-trivy-worker-baseline.json), [`results/19-trivy-worker-baseline.metadata.json`](results/19-trivy-worker-baseline.metadata.json) |
+| `resume-frontend:da3-baseline` | Final frontend runtime; `node:24.14.0-alpine` build then `nginxinc/nginx-unprivileged:1.29-alpine` runtime | `0.76.1` / `2`/`2` / `2026-10-29T01:22:22.544155871Z` | 1 | 46 | 1 / 46 | 0 / 0 | 23,193,203 bytes | `101` | [`results/19-trivy-frontend-baseline.json`](results/19-trivy-frontend-baseline.json), [`results/19-trivy-frontend-baseline.metadata.json`](results/19-trivy-frontend-baseline.metadata.json) |
 
-**Honesty notes:** TODO(evidence)
+**Top-five package groups:** The generated backend and worker summaries identify `linux-libc-dev` (61 critical occurrences), `libopenexr-3-1-30` (22 critical), `libopenexr-dev` (22 critical), `libmariadb-dev` (13 critical), and `libmariadb-dev-compat` (13 critical). The generated frontend summary identifies `curl` (8 high), `libcurl` (8 high), `libuuid` (5 high), `libexpat` (4 high), and `pcre2` (3 high). See [`results/19-trivy-baseline-r3-corrected.md`](results/19-trivy-baseline-r3-corrected.md), [`results/19-trivy-worker-baseline-corrected.md`](results/19-trivy-worker-baseline-corrected.md), and [`results/19-trivy-frontend-baseline.md`](results/19-trivy-frontend-baseline.md). The earlier uncorrected backend/worker Markdown summaries are retained as historical artifacts; the corrected summaries are the source for the package-class breakdown.
+
+**Evidence:** [`evidence/2c-trivy-baseline-summary-1.png`](evidence/2c-trivy-baseline-summary-1.png) and [`evidence/2c-trivy-baseline-summary-2.png`](evidence/2c-trivy-baseline-summary-2.png) show the backend baseline result and package groups. [`evidence/2c-dockerfile-baseline.png`](evidence/2c-dockerfile-baseline.png) shows the experimental baseline Dockerfile, and [`evidence/2c-baseline-user-size.png`](evidence/2c-baseline-user-size.png) shows the root runtime check and baseline image size. [`evidence/2c-trivy-baseline-frontend-1.png`](evidence/2c-trivy-baseline-frontend-1.png) and [`evidence/2c-trivy-baseline-frontend-2.png`](evidence/2c-trivy-baseline-frontend-2.png) jointly show the frontend baseline result and package groups.
+
+**Explanation:** These results establish the controlled baseline for Step 20, not a before/after hardening outcome. The experimental backend/worker baseline intentionally differs from the existing production Dockerfile so the assignment's requested smaller-base/non-root comparison can be made without rewriting DA1 history. The frontend result covers the image that serves the built frontend, rather than its transient Node build stage.
+
+**Honesty notes:** The declared base-image tags could not be resolved to locally inspectable base-image IDs after build, so their provenance is recorded as unavailable rather than claimed as verified. The shared DB snapshot supports comparability only if Step 20 uses the exact same metadata identity and `trivy.db` SHA-256; that rescan, hardening, regression test, and before/after table have not started. No improvement or runtime security conclusion is claimed from these baseline scans alone.
 
 ## 2d — Threat agents and regulation
 
