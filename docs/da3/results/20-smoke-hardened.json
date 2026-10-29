@@ -1,0 +1,159 @@
+{
+  "script": "docs/da3/scripts/smoke_api.py",
+  "base_url": "http://127.0.0.1:8004",
+  "overall": "PASS",
+  "steps": [
+    {
+      "step": "Register synthetic recruiter",
+      "expected": "HTTP 201",
+      "actual": "HTTP 201",
+      "passed": true,
+      "status_code": 201,
+      "response_detail": null
+    },
+    {
+      "step": "Register synthetic candidate",
+      "expected": "HTTP 201",
+      "actual": "HTTP 201",
+      "passed": true,
+      "status_code": 201,
+      "response_detail": null
+    },
+    {
+      "step": "Log in synthetic recruiter",
+      "expected": "HTTP 200 and access token",
+      "actual": "HTTP 200",
+      "passed": true,
+      "status_code": 200,
+      "response_detail": null
+    },
+    {
+      "step": "Validate recruiter login token",
+      "expected": "non-empty access token",
+      "actual": "access token received and retained only in memory",
+      "passed": true,
+      "status_code": 200,
+      "response_detail": null
+    },
+    {
+      "step": "Log in synthetic candidate",
+      "expected": "HTTP 200 and access token",
+      "actual": "HTTP 200",
+      "passed": true,
+      "status_code": 200,
+      "response_detail": null
+    },
+    {
+      "step": "Validate candidate login token",
+      "expected": "non-empty access token",
+      "actual": "access token received and retained only in memory",
+      "passed": true,
+      "status_code": 200,
+      "response_detail": null
+    },
+    {
+      "step": "Recruiter creates posting",
+      "expected": "HTTP 201 and posting id",
+      "actual": "HTTP 201",
+      "passed": true,
+      "status_code": 201,
+      "response_detail": null
+    },
+    {
+      "step": "Validate created posting",
+      "expected": "non-empty posting id",
+      "actual": "posting id received",
+      "passed": true,
+      "status_code": 201,
+      "response_detail": null
+    },
+    {
+      "step": "Recruiter reads posting",
+      "expected": "HTTP 200 with matching id",
+      "actual": "HTTP 200",
+      "passed": true,
+      "status_code": 200,
+      "response_detail": null
+    },
+    {
+      "step": "Validate recruiter read response",
+      "expected": "response id matches created posting",
+      "actual": "id matched",
+      "passed": true,
+      "status_code": 200,
+      "response_detail": null
+    },
+    {
+      "step": "Candidate reads posting",
+      "expected": "HTTP 200 with matching id",
+      "actual": "HTTP 200",
+      "passed": true,
+      "status_code": 200,
+      "response_detail": null
+    },
+    {
+      "step": "Validate candidate read response",
+      "expected": "response id matches created posting",
+      "actual": "id matched",
+      "passed": true,
+      "status_code": 200,
+      "response_detail": null
+    },
+    {
+      "step": "Candidate create posting is rejected",
+      "expected": "HTTP 403",
+      "actual": "HTTP 403",
+      "passed": true,
+      "status_code": 403,
+      "response_detail": null
+    },
+    {
+      "step": "Candidate update posting is rejected",
+      "expected": "HTTP 403",
+      "actual": "HTTP 403",
+      "passed": true,
+      "status_code": 403,
+      "response_detail": null
+    },
+    {
+      "step": "Candidate delete posting is rejected",
+      "expected": "HTTP 403",
+      "actual": "HTTP 403",
+      "passed": true,
+      "status_code": 403,
+      "response_detail": null
+    },
+    {
+      "step": "Recruiter updates posting",
+      "expected": "HTTP 200 with updated title",
+      "actual": "HTTP 200",
+      "passed": true,
+      "status_code": 200,
+      "response_detail": null
+    },
+    {
+      "step": "Validate recruiter update response",
+      "expected": "response title matches update",
+      "actual": "title matched",
+      "passed": true,
+      "status_code": 200,
+      "response_detail": null
+    },
+    {
+      "step": "Recruiter deletes posting",
+      "expected": "HTTP 204",
+      "actual": "HTTP 204",
+      "passed": true,
+      "status_code": 204,
+      "response_detail": null
+    },
+    {
+      "step": "Deleted posting is not found",
+      "expected": "HTTP 404",
+      "actual": "HTTP 404",
+      "passed": true,
+      "status_code": 404,
+      "response_detail": null
+    }
+  ]
+}

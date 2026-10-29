@@ -1,0 +1,89 @@
+{
+  "base_images": [
+    {
+      "declared_from": "python:3.14.2-slim",
+      "platform": {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      "resolution_status": "not-locally-inspectable-after-build",
+      "resolved_id": "unavailable",
+      "resolved_repo_digests": []
+    },
+    {
+      "declared_from": "python:3.14.2-slim",
+      "platform": {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      "resolution_status": "not-locally-inspectable-after-build",
+      "resolved_id": "unavailable",
+      "resolved_repo_digests": []
+    }
+  ],
+  "cache_volume": {
+    "driver": "local",
+    "name": "resume-ip-trivy-db-v1"
+  },
+  "database_metadata": {
+    "DownloadedAt": "2026-10-29T07:56:34.956359505Z",
+    "NextUpdate": "2026-10-30T01:22:22.544155326Z",
+    "UpdatedAt": "2026-10-29T01:22:22.544155871Z",
+    "Version": 2
+  },
+  "database_metadata_after": {
+    "DownloadedAt": "2026-10-29T07:56:34.956359505Z",
+    "NextUpdate": "2026-10-30T01:22:22.544155326Z",
+    "UpdatedAt": "2026-10-29T01:22:22.544155871Z",
+    "Version": 2
+  },
+  "database_snapshot": {
+    "downloaded_at": "2026-10-29T07:56:34.956359505Z",
+    "identity_sha256": "d60a5350c19b52a61928a21bdd352fe026ffc3fbccbc14867d1181df80a65f37",
+    "next_update": "2026-10-30T01:22:22.544155326Z",
+    "schema_version": 2,
+    "updated_at": "2026-10-29T01:22:22.544155871Z",
+    "version": 2
+  },
+  "exit_status": 0,
+  "image": {
+    "architecture": "amd64",
+    "configured_user": "10001:10001",
+    "id": "sha256:4c7466bed56226c8c5c1d61070181a784e36461f39cafbee7059a113d13c847e",
+    "os": "linux",
+    "reference": "resume-backend:da3-hardened",
+    "repo_digests": [
+      "resume-backend@sha256:4c7466bed56226c8c5c1d61070181a784e36461f39cafbee7059a113d13c847e"
+    ],
+    "resolution_status": "docker-inspected",
+    "size_bytes": 87338272
+  },
+  "label": "hardened",
+  "raw_report_sha256": "3b16ab99bcb4c16907986145db80284e2f2ca30acae704d89a28c481901ffef9",
+  "scan_arguments": [
+    "image",
+    "--input",
+    "/scan/image.tar",
+    "--scanners",
+    "vuln",
+    "--pkg-types",
+    "os,library",
+    "--severity",
+    "CRITICAL,HIGH",
+    "--format",
+    "json",
+    "--skip-db-update",
+    "--skip-java-db-update",
+    "--skip-check-update",
+    "--skip-version-check",
+    "--offline-scan",
+    "--no-progress"
+  ],
+  "scan_timestamp": "2026-10-29T12:56:25.776682Z",
+  "status": "success",
+  "trivy": {
+    "image": "aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+    "version": "0.76.1"
+  },
+  "trivy_db_sha256": "ad47d4d7f64fb08225e3d0c9f59118e724ecf82a14d5502fff71c742d6cb24b4"
+}

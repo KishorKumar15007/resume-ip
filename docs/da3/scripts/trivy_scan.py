@@ -232,12 +232,14 @@ def base_image_provenance(dockerfile: Path) -> list[dict[str, Any]]:
     return provenance
 
 
-def output_paths(label: str) -> tuple[Path, Path, Path]:
+def output_paths(label: str, result_prefix: str = "19-trivy") -> tuple[Path, Path, Path]:
     if not re.fullmatch(r"[A-Za-z0-9_-]+", label):
         raise ScanError("label may contain only letters, digits, hyphens, and underscores")
-    raw = RESULTS_DIR / f"19-trivy-{label}.json"
-    metadata = RESULTS_DIR / f"19-trivy-{label}.metadata.json"
-    summary = RESULTS_DIR / f"19-trivy-{label}.md"
+    if not re.fullmatch(r"[0-9]+-trivy", result_prefix):
+        raise ScanError("result prefix must use the form '<step>-trivy'")
+    raw = RESULTS_DIR / f"{result_prefix}-{label}.json"
+    metadata = RESULTS_DIR / f"{result_prefix}-{label}.metadata.json"
+    summary = RESULTS_DIR / f"{result_prefix}-{label}.md"
     if any(path.exists() for path in (raw, metadata, summary)):
         raise ScanError(f"refusing to overwrite existing result for label: {label}")
     return raw, metadata, summary
@@ -312,9 +314,9 @@ def failure_metadata(path: Path, metadata: dict[str, Any], error: Exception | st
         atomic_json(path, metadata)
 
 
-def scan_image(reference: str, label: str, dockerfile: Path) -> int:
+def scan_image(reference: str, label: str, dockerfile: Path, *, result_prefix: str = "19-trivy") -> int:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    raw_path, metadata_path, summary_path = output_paths(label)
+    raw_path, metadata_path, summary_path = output_paths(label, result_prefix)
     image = inspect_image(reference)
     ensure_disk_space(image, Path(tempfile.gettempdir()))
     snapshot = load_snapshot()
@@ -388,6 +390,11 @@ def main() -> int:
     parser.add_argument("image", nargs="?")
     parser.add_argument("label", nargs="?")
     parser.add_argument("--dockerfile", type=Path)
+    parser.add_argument(
+        "--result-prefix",
+        default="19-trivy",
+        help="result filename prefix in the form '<step>-trivy' (default: 19-trivy)",
+    )
     parser.add_argument("--initialize-db-snapshot", action="store_true")
     parser.add_argument("--adopt-existing-db-snapshot", action="store_true")
     args = parser.parse_args()
@@ -395,14 +402,14 @@ def main() -> int:
         if args.initialize_db_snapshot or args.adopt_existing_db_snapshot:
             if args.initialize_db_snapshot and args.adopt_existing_db_snapshot:
                 raise ScanError("choose either DB initialization or explicit existing-volume adoption")
-            if args.image or args.label or args.dockerfile:
+            if args.image or args.label or args.dockerfile or args.result_prefix != "19-trivy":
                 raise ScanError("DB snapshot operations accept no image, label, or Dockerfile")
             if args.adopt_existing_db_snapshot:
                 return adopt_existing_db_snapshot()
             return initialize_db_snapshot()
         if not args.image or not args.label or args.dockerfile is None:
             raise ScanError("image, label, and --dockerfile are required for a scan")
-        return scan_image(args.image, args.label, args.dockerfile)
+        return scan_image(args.image, args.label, args.dockerfile, result_prefix=args.result_prefix)
     except ScanError as exc:
         print(f"Trivy scan stopped: {sanitize(str(exc))}", file=sys.stderr)
         return 1

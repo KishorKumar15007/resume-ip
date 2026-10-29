@@ -1,0 +1,15 @@
+# DA3 Step 20 Trivy comparison
+
+Counts below are deduplicated within each `Results[].Class` and severity group by
+`VulnerabilityID + PkgName + InstalledVersion`. They are distinct from Step 19's retained raw-occurrence summaries.
+
+All listed rows share an identical vulnerability DB snapshot, pinned scanner identity, and scan arguments.
+Image-size delta is measured from `prehardening-production` to `hardened-api` only.
+
+| Label | Row kind | Image / ID | Base image(s) | Size bytes | Size delta bytes | User | Trivy | DB schema/version/updated | DB SHA-256 | CRITICAL | HIGH | OS C/H | Language C/H | Unknown C/H | Raw JSON | Metadata |
+| --- | --- | --- | --- | ---: | ---: | --- | --- | --- | --- | ---: | ---: | --- | --- | --- | --- | --- |
+| experimental-backend | experimental-baseline | `resume-backend:da3-baseline` / `sha256:0079bd87c803ca1552c6b61b23fd5e63520cb694968f514ca8a81cc9e4e75069` | `python:3.12` | 486078810 | not applicable | `default/root` | `0.76.1` | 2/2/2026-10-29T01:22:22.544155871Z | `ad47d4d7f64fb08225e3d0c9f59118e724ecf82a14d5502fff71c742d6cb24b4` | 19 | 461 | 17/448 | 2/13 | 0/0 | `docs/da3/results/19-trivy-baseline-r3.json` | `docs/da3/results/19-trivy-baseline-r3.metadata.json` |
+| experimental-worker | experimental-baseline | `resume-worker:da3-baseline` / `sha256:bdb91ee950b57b62952327f99df8edce65f17146a916b7f47458252078831864` | `python:3.12` | 486078814 | not applicable | `default/root` | `0.76.1` | 2/2/2026-10-29T01:22:22.544155871Z | `ad47d4d7f64fb08225e3d0c9f59118e724ecf82a14d5502fff71c742d6cb24b4` | 19 | 461 | 17/448 | 2/13 | 0/0 | `docs/da3/results/19-trivy-worker-baseline.json` | `docs/da3/results/19-trivy-worker-baseline.metadata.json` |
+| frontend-unchanged | unchanged-exclusion | `resume-frontend:da3-baseline` / `sha256:fe14911292943904e0f7b51eca118a83a27a0ef035387bcbe13186176e62e146` | `node:24.14.0-alpine, nginxinc/nginx-unprivileged:1.29-alpine` | 23193203 | not applicable | `101` | `0.76.1` | 2/2/2026-10-29T01:22:22.544155871Z | `ad47d4d7f64fb08225e3d0c9f59118e724ecf82a14d5502fff71c742d6cb24b4` | 1 | 46 | 1/46 | 0/0 | 0/0 | `docs/da3/results/19-trivy-frontend-baseline.json` | `docs/da3/results/19-trivy-frontend-baseline.metadata.json` |
+| prehardening-production | prehardening-production | `resume-backend:da3-prehardening` / `sha256:3253974718dead99b95136a686556dbe82dfd5a93917ef1956b4e79a9102aabf` | `python:3.14.2-slim` | 83449753 | 0 | `app` | `0.76.1` | 2/2/2026-10-29T01:22:22.544155871Z | `ad47d4d7f64fb08225e3d0c9f59118e724ecf82a14d5502fff71c742d6cb24b4` | 8 | 126 | 6/113 | 2/13 | 0/0 | `docs/da3/results/20-trivy-prehardening.json` | `docs/da3/results/20-trivy-prehardening.metadata.json` |
+| hardened-api | hardened | `resume-backend:da3-hardened` / `sha256:4c7466bed56226c8c5c1d61070181a784e36461f39cafbee7059a113d13c847e` | `python:3.14.2-slim, python:3.14.2-slim` | 87338272 | 3888519 | `10001:10001` | `0.76.1` | 2/2/2026-10-29T01:22:22.544155871Z | `ad47d4d7f64fb08225e3d0c9f59118e724ecf82a14d5502fff71c742d6cb24b4` | 7 | 114 | 6/113 | 1/1 | 0/0 | `docs/da3/results/20-trivy-hardened.json` | `docs/da3/results/20-trivy-hardened.metadata.json` |

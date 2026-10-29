@@ -24,6 +24,14 @@ class ScanSafetyTests(unittest.TestCase):
         digest = SCAN.TRIVY_IMAGE.rsplit("@sha256:", 1)[1]
         self.assertRegex(digest, r"^[0-9a-f]{64}$")
 
+    def test_step20_result_prefix_is_distinct_and_validated(self) -> None:
+        raw, metadata, summary = SCAN.output_paths("hardened", "20-trivy")
+        self.assertEqual(raw.name, "20-trivy-hardened.json")
+        self.assertEqual(metadata.name, "20-trivy-hardened.metadata.json")
+        self.assertEqual(summary.name, "20-trivy-hardened.md")
+        with self.assertRaises(SCAN.ScanError):
+            SCAN.output_paths("hardened", "twenty-trivy")
+
     def test_diagnostic_sanitization_redacts_url_shaped_values(self) -> None:
         self.assertNotIn("user:password", SCAN.sanitize("failed https://user:password@example.test/path"))
         self.assertIn("[redacted-url]", SCAN.sanitize("failed https://user:password@example.test/path"))

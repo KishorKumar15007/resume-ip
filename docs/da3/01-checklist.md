@@ -77,11 +77,11 @@ Legend:
 ## 2c — Image hardening
 
 - [x] Baseline scans saved — accepted raw JSON/metadata exist for experimental backend, worker, and final frontend runtime images; the six baseline screenshots were visually reviewed.
-- [ ] Hardened Dockerfile
-- [ ] Rescan saved with same flags
-- [~] CRITICAL/HIGH table — Table 2c.1 records the verified baseline counts, but the required before/after comparison awaits Step 20.
+- [x] Hardened Dockerfile — the reviewed two-stage backend Dockerfile, non-root `10001:10001` runtime, and hardened API build are captured and evidenced.
+- [x] Rescan saved with same flags — accepted prehardening and hardened API JSON/metadata record the same pinned Trivy version, scan arguments, and DB snapshot identity.
+- [x] CRITICAL/HIGH table — Table 2c.2 and `results/20-2c-table.md` record the deterministic API comparison: 8/126 prehardening and 7/114 hardened CRITICAL/HIGH findings.
 - [x] CRITICAL/HIGH baseline coverage for every application image — backend, worker, and the separately Dockerfile-based frontend are represented in Table 2c.1.
-- [ ] App still works
+- [~] App still works — the standalone hardened API container passed the 19-step smoke test on port 8004; the saved MFA result stops in topology preflight without MFA-flow rows, and the 8080-restricted authorization matrix was not run, so the full regression gate remains incomplete.
 
 ## 2d — Threats and regulation
 
