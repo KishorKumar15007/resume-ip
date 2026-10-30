@@ -17,7 +17,7 @@ Legend:
 
 ## 1a — Scale setup and distribution
 
-- [x] Scenario written — placement-drive assumptions and the generated request-mix table are recorded in `results/07-request-mix-table.md` and the report.
+- [x] Scenario written — placement-drive assumptions and the generated request-mix table are recorded in `results/07-request-mix-table.md` and the report; the retained synthetic seed-output evidence has its database host censored.
 - [x] Hardest-hit API named with reason — `GET /postings` is selected by assumed request volume, with the Argon2-login CPU-cost limitation recorded.
 - [x] Compose has 3 backends + Nginx — the isolated default topology was owner-run and evidenced with three healthy backends and Nginx.
 - [x] Connected to Neon — `/health/db` through Nginx returned HTTP 200 with `db: ok`; the topology uses the `da3-loadtest` branch configuration.
@@ -50,11 +50,11 @@ Legend:
 
 ## 1d — Architecture and bursting
 
-- [~] Diagram uses real names and ports — `diagrams/q1-architecture.svg` and its exported `diagrams/q1-architecture.png` show the DA1/DA3 components and verified local ports; the required evidence-folder capture remains pending.
-- [~] Bursting/edge component in a different colour — the orange dashed **Proposed, not built** Cloud Run extension exists in the SVG/PNG; it is design-only and the required evidence-folder capture remains pending.
-- [~] Explanation ties to the 1a scenario — `1d-explanation.md` ties the placement-drive read/total-demand assumptions to the proposal, but remains an owner-rewrite-required draft.
-- [~] Reason for choosing it — the draft explains short-lived central API demand and stateless API capacity, but remains owner-rewrite-required and unverified at runtime.
-- [~] Components-and-ports table — `results/14-components-table.md` exists; the required diagram evidence capture remains pending.
+- [x] Diagram uses real names and ports — `diagrams/q1-architecture.svg`, its exported PNG, and `evidence/1d-architecture-diagram.png` show the DA1/DA3 components and verified local ports.
+- [x] Bursting/edge component in a different colour — the orange dashed **Proposed, not built** Cloud Run extension is visible in the SVG/PNG and captured evidence; it remains design-only.
+- [~] Explanation ties to the 1a scenario — `1d-explanation.md` ties the placement-drive read/total-demand assumptions to the proposal, but remains an owner-rewrite-required Step 24 draft.
+- [~] Reason for choosing it — the draft explains short-lived central API demand and stateless API capacity, but remains an owner-rewrite-required Step 24 draft and is unverified at runtime.
+- [x] Components-and-ports table — `results/14-components-table.md` exists and the required diagram evidence capture is present.
 
 ## 2a — Sensitive data and password hashing
 
@@ -69,7 +69,7 @@ Legend:
 
 - [x] TOTP enrolment works — the retained synthetic-user flow completed setup and confirmation with HTTP 200, and the owner reported successful real-authenticator enrolment through the optional React flow.
 - [x] Login needs the code — after enrolment, login returned the MFA challenge and `/auth/mfa/verify` returned an access token with HTTP 200; the owner separately reported a successful real-authenticator second-factor login.
-- [~] Step 17 frontend evidence gate — the corrected QR-enrolment capture and the three browser-flow captures are present and reviewed; the authenticator-phone capture is still absent, so the complete gate remains open.
+- [x] Step 17 frontend evidence gate — the corrected QR-enrolment capture, cropped second-phone authenticator photograph, and three browser-flow captures are present; the photograph's JPEG markers were verified in the Step 22 documentation audit.
 - [x] PUT/DELETE role-restricted — `results/18-authz-matrix.md` records candidate and non-owner recruiter HTTP 403 denial, owner recruiter PUT HTTP 200, and owner DELETE HTTP 204; the paired matrix captures are present.
 - [x] Rejection without token shown — `results/18-authz-matrix.md` records HTTP 401 with `WWW-Authenticate: Bearer` for both posting PUT and DELETE; terminal and Swagger captures are present.
 - [x] MFA-pending token rejected — the retained flow records HTTP 401 when the MFA token is used on the protected postings route.
@@ -81,7 +81,7 @@ Legend:
 - [x] Rescan saved with same flags — accepted prehardening and hardened API JSON/metadata record the same pinned Trivy version, scan arguments, and DB snapshot identity.
 - [x] CRITICAL/HIGH table — Table 2c.2 and `results/20-2c-table.md` record the deterministic API comparison: 8/126 prehardening and 7/114 hardened CRITICAL/HIGH findings.
 - [x] CRITICAL/HIGH baseline coverage for every application image — backend, worker, and the separately Dockerfile-based frontend are represented in Table 2c.1.
-- [~] App still works — the standalone hardened API container passed the 19-step smoke test on port 8004; the saved MFA result stops in topology preflight without MFA-flow rows, and the 8080-restricted authorization matrix was not run, so the full regression gate remains incomplete.
+- [~] App still works — the standalone hardened API container passed the 19-step smoke test on port 8004, and `results/20-mfa-hardened-regression.md` records a full MFA-flow PASS through the hardened three-backend Nginx stack. The authorization matrix, upload, and worker processing remain unverified on the hardened image and are deferred to the Step 22b live-deployed test, so the full regression gate remains incomplete.
 
 ## 2d — Threats and regulation
 

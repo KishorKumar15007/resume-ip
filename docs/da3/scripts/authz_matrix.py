@@ -35,6 +35,7 @@ LOADTEST_BRANCH_NAME = "da3-loadtest"
 LOOPBACK_HOSTS = {"localhost", "127.0.0.1", "::1"}
 REQUEST_TIMEOUT_SECONDS = 10
 RUN_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{2,63}$")
+ARTIFACT_STEM_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{2,63}$")
 FIXTURE_NAMESPACE = uuid.UUID("9f568ad1-e645-4c4e-b1d0-7ec8d0e7c50b")
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 CAPTURE_FILENAMES = ("2b-no-token-rejected.png", "2b-swagger-401.png", "2b-candidate-403.png", "2b-authz-matrix.png")
@@ -62,6 +63,30 @@ class MatrixResult:
     expected: str
     actual: str
     passed: bool
+
+
+@dataclass(frozen=True)
+class ArtifactLayout:
+    results_stem: str = "18-authz-matrix"
+    fixture_stem: str = "18-authz-fixture"
+    capture_prefix: str = "2b"
+
+    @property
+    def is_default(self) -> bool:
+        return self == DEFAULT_ARTIFACT_LAYOUT
+
+    def capture_filenames(self) -> tuple[str, ...]:
+        if self.is_default:
+            return CAPTURE_FILENAMES
+        return (
+            f"{self.capture_prefix}-no-token-rejected.png",
+            f"{self.capture_prefix}-swagger-401.png",
+            f"{self.capture_prefix}-candidate-403.png",
+            f"{self.capture_prefix}-matrix.png",
+        )
+
+
+DEFAULT_ARTIFACT_LAYOUT = ArtifactLayout()
 
 
 def now_iso() -> str:
@@ -105,24 +130,30 @@ def parse_run_id(value: str) -> str:
     return value
 
 
-def manifest_path(run_id: str) -> Path:
-    return RESULTS_DIRECTORY / f"18-authz-fixture-{run_id}.json"
+def parse_artifact_stem(value: str) -> str:
+    if not ARTIFACT_STEM_PATTERN.fullmatch(value):
+        raise argparse.ArgumentTypeError("artifact stems must contain only lowercase letters, digits, and hyphens")
+    return value
 
 
-def attempt_json_path(run_id: str, attempt: int, phase: str) -> Path:
-    return RESULTS_DIRECTORY / f"18-authz-matrix-{run_id}-attempt-{attempt}-{phase}.json"
+def manifest_path(run_id: str, layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> Path:
+    return RESULTS_DIRECTORY / f"{layout.fixture_stem}-{run_id}.json"
 
 
-def attempt_markdown_path(run_id: str, attempt: int, phase: str) -> Path:
-    return RESULTS_DIRECTORY / f"18-authz-matrix-{run_id}-attempt-{attempt}-{phase}.md"
+def attempt_json_path(run_id: str, attempt: int, phase: str, layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> Path:
+    return RESULTS_DIRECTORY / f"{layout.results_stem}-{run_id}-attempt-{attempt}-{phase}.json"
 
 
-def canonical_json_path() -> Path:
-    return RESULTS_DIRECTORY / "18-authz-matrix.json"
+def attempt_markdown_path(run_id: str, attempt: int, phase: str, layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> Path:
+    return RESULTS_DIRECTORY / f"{layout.results_stem}-{run_id}-attempt-{attempt}-{phase}.md"
 
 
-def canonical_markdown_path() -> Path:
-    return RESULTS_DIRECTORY / "18-authz-matrix.md"
+def canonical_json_path(layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> Path:
+    return RESULTS_DIRECTORY / f"{layout.results_stem}.json"
+
+
+def canonical_markdown_path(layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> Path:
+    return RESULTS_DIRECTORY / f"{layout.results_stem}.md"
 
 
 def atomic_write(path: Path, content: str) -> None:
@@ -223,8 +254,8 @@ def build_manifest(run_id: str) -> dict[str, Any]:
     return {"run_id": run_id, "attempt": 1, "created_at": now_iso(), "phase": "preparing", "ids": fixture_ids(run_id), "fixture": fixture_values(run_id), "results": [], "events": [{"at": now_iso(), "event": "manifest-reserved"}]}
 
 
-def read_manifest(run_id: str) -> dict[str, Any]:
-    path = manifest_path(run_id)
+def read_manifest(run_id: str, layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> dict[str, Any]:
+    path = manifest_path(run_id, layout)
     if not path.is_file():
         raise MatrixError("fixture manifest is unavailable")
     try:
@@ -236,33 +267,36 @@ def read_manifest(run_id: str) -> dict[str, Any]:
     return value
 
 
-def save_manifest(run_id: str, manifest: dict[str, Any]) -> None:
-    atomic_write(manifest_path(run_id), json.dumps(manifest, indent=2) + "\n")
+def save_manifest(run_id: str, manifest: dict[str, Any], layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> None:
+    atomic_write(manifest_path(run_id, layout), json.dumps(manifest, indent=2) + "\n")
 
 
 def record_event(manifest: dict[str, Any], event: str) -> None:
     manifest["events"].append({"at": now_iso(), "event": event})
 
 
-def assert_unused_run(run_id: str) -> None:
-    paths = [manifest_path(run_id), RESULTS_DIRECTORY / f"18-authz-matrix-{run_id}.json", RESULTS_DIRECTORY / f"18-authz-matrix-{run_id}.md"]
-    paths += list(RESULTS_DIRECTORY.glob(f"18-authz-matrix-{run_id}-attempt-*.json")) + list(RESULTS_DIRECTORY.glob(f"18-authz-matrix-{run_id}-attempt-*.md"))
+def assert_unused_run(run_id: str, layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> None:
+    paths = [manifest_path(run_id, layout), RESULTS_DIRECTORY / f"{layout.results_stem}-{run_id}.json", RESULTS_DIRECTORY / f"{layout.results_stem}-{run_id}.md"]
+    paths += list(RESULTS_DIRECTORY.glob(f"{layout.results_stem}-{run_id}-attempt-*.json")) + list(RESULTS_DIRECTORY.glob(f"{layout.results_stem}-{run_id}-attempt-*.md"))
+    if not layout.is_default:
+        paths += [canonical_json_path(layout), canonical_markdown_path(layout)]
     if any(path.exists() for path in paths):
         raise MatrixError("run ID already has preserved fixture or result artifacts; choose a new run ID")
 
 
-def capture_paths(*, include_final: bool = True) -> tuple[Path, ...]:
-    names = CAPTURE_FILENAMES if include_final else PRE_DELETE_CAPTURE_FILENAMES
+def capture_paths(layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT, *, include_final: bool = True) -> tuple[Path, ...]:
+    filenames = layout.capture_filenames()
+    names = filenames if include_final else filenames[:3]
     return tuple(EVIDENCE_DIRECTORY / name for name in names)
 
 
-def assert_capture_slots_unused() -> None:
-    if any(path.exists() for path in capture_paths()):
+def assert_capture_slots_unused(layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> None:
+    if any(path.exists() for path in capture_paths(layout)):
         raise MatrixError("required capture filename already exists; do not overwrite existing evidence")
 
 
-def verify_capture_files(*, include_final: bool = True) -> None:
-    for path in capture_paths(include_final=include_final):
+def verify_capture_files(layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT, *, include_final: bool = True) -> None:
+    for path in capture_paths(layout, include_final=include_final):
         try:
             valid = path.is_file() and path.stat().st_size > len(PNG_SIGNATURE) and path.read_bytes()[:8] == PNG_SIGNATURE
         except OSError:
@@ -294,11 +328,11 @@ def verify_fixture(manifest: dict[str, Any], configuration: dict[str, str], *, r
         raise DatabaseDiagnosticError(database_step, exc) from exc
 
 
-def prepare_fixture(run_id: str, configuration: dict[str, str]) -> None:
-    assert_unused_run(run_id)
-    assert_capture_slots_unused()
+def prepare_fixture(run_id: str, configuration: dict[str, str], layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> None:
+    assert_unused_run(run_id, layout)
+    assert_capture_slots_unused(layout)
     manifest = build_manifest(run_id)
-    save_manifest(run_id, manifest)  # Persist exact IDs before any database write.
+    save_manifest(run_id, manifest, layout)  # Persist exact IDs before any database write.
     ids, fixture = manifest["ids"], manifest["fixture"]
     SessionLocal, User, JobPosting, Submission, hash_password = application_modules(configuration)
     session = SessionLocal()
@@ -323,27 +357,27 @@ def prepare_fixture(run_id: str, configuration: dict[str, str]) -> None:
         session.commit()
     except SQLAlchemyError as exc:
         rollback_after_failure(session)
-        manifest["phase"] = "prepare-failed"; record_event(manifest, "prepare-failed"); save_manifest(run_id, manifest)
+        manifest["phase"] = "prepare-failed"; record_event(manifest, "prepare-failed"); save_manifest(run_id, manifest, layout)
         raise DatabaseDiagnosticError(database_step, exc) from exc
     except Exception:
         rollback_after_failure(session)
-        manifest["phase"] = "prepare-failed"; record_event(manifest, "prepare-failed"); save_manifest(run_id, manifest)
+        manifest["phase"] = "prepare-failed"; record_event(manifest, "prepare-failed"); save_manifest(run_id, manifest, layout)
         raise
     finally:
         session.close()
     manifest["phase"] = "prepared"; record_event(manifest, "fixture-committed")
     try:
-        save_manifest(run_id, manifest)
+        save_manifest(run_id, manifest, layout)
     except OSError as exc:
         raise MatrixError("fixture may be committed; use --recover with this exact run ID") from exc
 
 
-def recover_fixture(run_id: str, configuration: dict[str, str]) -> None:
-    manifest = read_manifest(run_id)
+def recover_fixture(run_id: str, configuration: dict[str, str], layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> None:
+    manifest = read_manifest(run_id, layout)
     if manifest.get("phase") not in {"preparing", "prepare-failed"}:
         raise MatrixError("only an interrupted preparation can be recovered")
     verify_fixture(manifest, configuration)
-    manifest["phase"] = "prepared"; record_event(manifest, "fixture-recovered"); save_manifest(run_id, manifest)
+    manifest["phase"] = "prepared"; record_event(manifest, "fixture-recovered"); save_manifest(run_id, manifest, layout)
 
 
 def login(base_url: str, email: str, password: str) -> str:
@@ -404,23 +438,25 @@ def result_documents(run_id: str, attempt: int, results: list[MatrixResult], pha
     return json.dumps(payload, indent=2) + "\n", "\n".join(rows) + "\n"
 
 
-def write_attempt_results(run_id: str, attempt: int, results: list[MatrixResult], phase: str) -> None:
-    json_path, markdown_path = attempt_json_path(run_id, attempt, phase), attempt_markdown_path(run_id, attempt, phase)
+def write_attempt_results(run_id: str, attempt: int, results: list[MatrixResult], phase: str, layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> None:
+    json_path, markdown_path = attempt_json_path(run_id, attempt, phase, layout), attempt_markdown_path(run_id, attempt, phase, layout)
     if json_path.exists() or markdown_path.exists():
         raise MatrixError("attempt result artifact already exists; refusing to overwrite preserved evidence")
     json_text, markdown_text = result_documents(run_id, attempt, results, phase)
     atomic_write_pair(json_path, json_text, markdown_path, markdown_text)
 
 
-def promote_canonical(run_id: str, attempt: int, results: list[MatrixResult]) -> None:
+def promote_canonical(run_id: str, attempt: int, results: list[MatrixResult], layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> None:
     if not results or not all(item.passed for item in results) or not any(is_final_owner_delete(item) and item.passed for item in results):
         raise MatrixError("canonical promotion requires a fully passing matrix with the recorded final owner DELETE")
+    if not layout.is_default and (canonical_json_path(layout).exists() or canonical_markdown_path(layout).exists()):
+        raise MatrixError("custom canonical result artifact already exists; refusing to overwrite preserved evidence")
     json_text, markdown_text = result_documents(run_id, attempt, results, "complete")
-    atomic_write_pair(canonical_json_path(), json_text, canonical_markdown_path(), markdown_text)
+    atomic_write_pair(canonical_json_path(layout), json_text, canonical_markdown_path(layout), markdown_text)
 
 
-def run_matrix(run_id: str, base_url: str, configuration: dict[str, str]) -> None:
-    manifest = read_manifest(run_id)
+def run_matrix(run_id: str, base_url: str, configuration: dict[str, str], layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> None:
+    manifest = read_manifest(run_id, layout)
     if manifest.get("phase") != "prepared":
         raise MatrixError("fixture run is not ready for a new pre-delete matrix")
     verify_fixture(manifest, configuration)
@@ -443,18 +479,18 @@ def run_matrix(run_id: str, base_url: str, configuration: dict[str, str]) -> Non
     for label, expected in (("Recruiter A owner access token", 200), ("Recruiter B non-owner access token", 403)):
         request_case(results, base_url=base_url, method="GET", path=ranked, token_type=label, token=tokens[label], expected_status=expected)
     manifest["results"] = [asdict(item) for item in results]
-    manifest["phase"] = "matrix-predelete" if all(item.passed for item in results) else "matrix-failed"; record_event(manifest, manifest["phase"]); save_manifest(run_id, manifest)
-    write_attempt_results(run_id, manifest["attempt"], results, manifest["phase"])
+    manifest["phase"] = "matrix-predelete" if all(item.passed for item in results) else "matrix-failed"; record_event(manifest, manifest["phase"]); save_manifest(run_id, manifest, layout)
+    write_attempt_results(run_id, manifest["attempt"], results, manifest["phase"], layout)
     if manifest["phase"] != "matrix-predelete":
         raise MatrixError("authorization matrix contains failed cases; preserve this attempt and clean up")
     print("Pre-delete matrix passed. The synthetic posting remains available for owner captures.")
 
 
-def final_delete(run_id: str, base_url: str, configuration: dict[str, str]) -> None:
-    manifest = read_manifest(run_id)
+def final_delete(run_id: str, base_url: str, configuration: dict[str, str], layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> None:
+    manifest = read_manifest(run_id, layout)
     if manifest.get("phase") != "matrix-predelete":
         raise MatrixError("final owner DELETE requires a passing pre-delete matrix")
-    verify_fixture(manifest, configuration); verify_capture_files(include_final=False); record_event(manifest, "pre-delete-captures-verified")
+    verify_fixture(manifest, configuration); verify_capture_files(layout, include_final=False); record_event(manifest, "pre-delete-captures-verified")
     ids, fixture = manifest["ids"], manifest["fixture"]
     owner_token = login(base_url, fixture["recruiter_a_email"], configuration["DA3_SEED_PASSWORD"])
     SessionLocal, _User, _Posting, Submission, _hash = application_modules(configuration)
@@ -466,15 +502,15 @@ def final_delete(run_id: str, base_url: str, configuration: dict[str, str]) -> N
     results = [MatrixResult(**item) for item in manifest["results"]]
     request_case(results, base_url=base_url, method="DELETE", path=f"/postings/{ids['posting']}", token_type="Recruiter A owner access token", token=owner_token, expected_status=204)
     success = all(item.passed for item in results)
-    manifest["results"], manifest["phase"] = [asdict(item) for item in results], "complete" if success else "final-delete-failed"; record_event(manifest, manifest["phase"]); save_manifest(run_id, manifest)
-    write_attempt_results(run_id, manifest["attempt"], results, manifest["phase"])
+    manifest["results"], manifest["phase"] = [asdict(item) for item in results], "complete" if success else "final-delete-failed"; record_event(manifest, manifest["phase"]); save_manifest(run_id, manifest, layout)
+    write_attempt_results(run_id, manifest["attempt"], results, manifest["phase"], layout)
     if not success:
         raise MatrixError("final owner DELETE failed; preserved this attempt and left canonical output unchanged")
-    promote_canonical(run_id, manifest["attempt"], results)
+    promote_canonical(run_id, manifest["attempt"], results, layout)
 
 
-def capture_no_token(run_id: str, base_url: str, configuration: dict[str, str]) -> None:
-    manifest = read_manifest(run_id)
+def capture_no_token(run_id: str, base_url: str, configuration: dict[str, str], layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> None:
+    manifest = read_manifest(run_id, layout)
     if manifest.get("phase") != "matrix-predelete":
         raise MatrixError("fixture run is not available for the requested capture")
     verify_fixture(manifest, configuration)
@@ -489,8 +525,8 @@ def capture_no_token(run_id: str, base_url: str, configuration: dict[str, str]) 
         raise MatrixError("no-token capture did not return the expected 401 Bearer response")
 
 
-def capture_candidate_denial(run_id: str, base_url: str, configuration: dict[str, str]) -> None:
-    manifest = read_manifest(run_id)
+def capture_candidate_denial(run_id: str, base_url: str, configuration: dict[str, str], layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> None:
+    manifest = read_manifest(run_id, layout)
     if manifest.get("phase") != "matrix-predelete":
         raise MatrixError("fixture run is not available for the requested capture")
     verify_fixture(manifest, configuration)
@@ -505,8 +541,8 @@ def capture_candidate_denial(run_id: str, base_url: str, configuration: dict[str
         raise MatrixError("candidate-denial capture did not return the expected 403 response")
 
 
-def cleanup_fixture(run_id: str, configuration: dict[str, str]) -> None:
-    manifest = read_manifest(run_id)
+def cleanup_fixture(run_id: str, configuration: dict[str, str], layout: ArtifactLayout = DEFAULT_ARTIFACT_LAYOUT) -> None:
+    manifest = read_manifest(run_id, layout)
     ids, fixture = manifest["ids"], manifest["fixture"]
     SessionLocal, User, JobPosting, Submission, _hash = application_modules(configuration)
     with SessionLocal() as session:
@@ -527,37 +563,45 @@ def cleanup_fixture(run_id: str, configuration: dict[str, str]) -> None:
                     raise MatrixError("fixture cleanup ownership validation failed for user")
                 session.delete(user)
         session.commit()
-    manifest["phase"] = "cleaned"; record_event(manifest, "cleanup-complete"); save_manifest(run_id, manifest)
+    manifest["phase"] = "cleaned"; record_event(manifest, "cleanup-complete"); save_manifest(run_id, manifest, layout)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-id", required=True, type=parse_run_id)
     parser.add_argument("--base-url", type=parse_base_url, default="http://localhost:8080")
+    parser.add_argument("--results-stem", type=parse_artifact_stem, default=DEFAULT_ARTIFACT_LAYOUT.results_stem)
+    parser.add_argument("--fixture-stem", type=parse_artifact_stem, default=DEFAULT_ARTIFACT_LAYOUT.fixture_stem)
+    parser.add_argument("--capture-prefix", type=parse_artifact_stem, default=DEFAULT_ARTIFACT_LAYOUT.capture_prefix)
     action = parser.add_mutually_exclusive_group(required=True)
     for flag in ("prepare", "recover", "run-matrix", "verify-captures", "verify-complete-captures", "finalize-delete", "cleanup", "capture-no-token", "capture-candidate-denial"):
         action.add_argument(f"--{flag}", action="store_true")
     args = parser.parse_args()
+    layout = ArtifactLayout(
+        results_stem=args.results_stem,
+        fixture_stem=args.fixture_stem,
+        capture_prefix=args.capture_prefix,
+    )
     try:
         configuration = load_configuration()
         if args.prepare:
-            preflight_api(args.base_url); prepare_fixture(args.run_id, configuration); print("Synthetic authorization fixture prepared.")
+            preflight_api(args.base_url); prepare_fixture(args.run_id, configuration, layout); print("Synthetic authorization fixture prepared.")
         elif args.recover:
-            preflight_api(args.base_url); recover_fixture(args.run_id, configuration); print("Interrupted fixture preparation recovered.")
+            preflight_api(args.base_url); recover_fixture(args.run_id, configuration, layout); print("Interrupted fixture preparation recovered.")
         elif args.run_matrix:
-            preflight_api(args.base_url); run_matrix(args.run_id, args.base_url, configuration)
+            preflight_api(args.base_url); run_matrix(args.run_id, args.base_url, configuration, layout)
         elif args.verify_captures:
-            verify_capture_files(include_final=False); print("Required pre-delete owner-captured PNG files are readable.")
+            verify_capture_files(layout, include_final=False); print("Required pre-delete owner-captured PNG files are readable.")
         elif args.verify_complete_captures:
-            verify_capture_files(); print("All required owner-captured PNG files are readable.")
+            verify_capture_files(layout); print("All required owner-captured PNG files are readable.")
         elif args.finalize_delete:
-            preflight_api(args.base_url); final_delete(args.run_id, args.base_url, configuration); print("Final owner DELETE recorded and canonical matrix promoted.")
+            preflight_api(args.base_url); final_delete(args.run_id, args.base_url, configuration, layout); print("Final owner DELETE recorded and canonical matrix promoted.")
         elif args.capture_no_token:
-            preflight_api(args.base_url); capture_no_token(args.run_id, args.base_url, configuration)
+            preflight_api(args.base_url); capture_no_token(args.run_id, args.base_url, configuration, layout)
         elif args.capture_candidate_denial:
-            preflight_api(args.base_url); capture_candidate_denial(args.run_id, args.base_url, configuration)
+            preflight_api(args.base_url); capture_candidate_denial(args.run_id, args.base_url, configuration, layout)
         else:
-            cleanup_fixture(args.run_id, configuration); print("Synthetic authorization fixture cleanup completed.")
+            cleanup_fixture(args.run_id, configuration, layout); print("Synthetic authorization fixture cleanup completed.")
     except DatabaseDiagnosticError as exc:
         print(str(exc), file=sys.stderr)
         print(diagnostic_text("underlying database error", exc.cause), file=sys.stderr)

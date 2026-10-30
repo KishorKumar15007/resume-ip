@@ -21,7 +21,7 @@ function manualKeyFromProvisioningUri(provisioningUri: string): string | null {
 }
 
 export function MfaSetupPage() {
-  const { establishSession, session } = useAuth();
+  const { establishSession, markMfaEnabled, session } = useAuth();
   const navigate = useNavigate();
   const [provisioningUri, setProvisioningUri] = useState<string>();
   const [manualKey, setManualKey] = useState<string>();
@@ -58,8 +58,12 @@ export function MfaSetupPage() {
       if (!key) throw new ApiError("unexpected");
       setProvisioningUri(response.provisioning_uri);
       setManualKey(key);
-    } catch {
+    } catch (caught) {
       clearEnrollment();
+      if (caught instanceof ApiError && caught.kind === "conflict") {
+        markMfaEnabled();
+        return;
+      }
       setError("We could not start MFA setup. Please try again.");
     } finally { setIsSubmitting(false); }
   }
@@ -81,9 +85,9 @@ export function MfaSetupPage() {
     } finally { setIsSubmitting(false); }
   }
 
-  if (isComplete) {
+  if (isComplete || session?.mfaEnabled) {
     return <section className="auth-page" aria-labelledby="mfa-complete-title"><h1 id="mfa-complete-title">MFA is enabled</h1><Feedback tone="success">Your authenticator app can now be used when you sign in.</Feedback>{sessionRefreshFailed && <Feedback tone="warning">MFA was confirmed, but we could not refresh your session. Sign out and sign in again before continuing.</Feedback>}<div className="session-actions"><Button type="button" onClick={() => navigate("/session", { replace: true })}>Return to your session</Button></div></section>;
   }
 
-  return <section className="auth-page" aria-labelledby="mfa-setup-title"><p className="eyebrow">Account security</p><h1 id="mfa-setup-title">Set up MFA</h1><p className="lede">Add this account to your authenticator app, then confirm a current six-digit code.</p>{error && <Feedback tone="error">{error}</Feedback>}{!provisioningUri || !manualKey ? <div className="form"><Button type="button" onClick={() => void startEnrollment()} isLoading={isSubmitting}>Start MFA setup</Button><Button type="button" variant="secondary" onClick={cancelEnrollment} disabled={isSubmitting}>Cancel</Button></div> : <><div className="form"><QRCodeSVG value={provisioningUri} size={192} level="M" marginSize={4} title="Authenticator setup QR code" /><p className="field-help">If you cannot scan the code, enter this setup key in your authenticator app.</p><code>{manualKey}</code></div><form className="form" onSubmit={confirmEnrollment} noValidate aria-busy={isSubmitting}><FormField label="Authentication code" error={codeError}>{(props) => <input {...props} autoComplete="one-time-code" inputMode="numeric" maxLength={6} pattern="[0-9]{6}" value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))} required />}</FormField><div className="session-actions"><Button type="submit" isLoading={isSubmitting}>Confirm MFA</Button><Button type="button" variant="secondary" onClick={cancelEnrollment} disabled={isSubmitting}>Cancel</Button></div></form></>}</section>;
+  return <section className="auth-page" aria-labelledby="mfa-setup-title"><p className="eyebrow">Account security</p><h1 id="mfa-setup-title">Set up MFA</h1><p className="lede">Add this account to your authenticator app, then confirm a current six-digit code.</p>{error && <Feedback tone="error">{error}</Feedback>}{!provisioningUri || !manualKey ? <div className="form"><Button type="button" onClick={() => void startEnrollment()} isLoading={isSubmitting}>Start MFA setup</Button><Button type="button" variant="secondary" onClick={cancelEnrollment} disabled={isSubmitting}>Cancel</Button></div> : <><div className="form"><QRCodeSVG value={provisioningUri} size={192} level="M" marginSize={4} title="Authenticator setup QR code" /><div className="mfa-manual-key"><p className="mfa-manual-key__label">Manual setup key</p><p className="field-help">If you cannot scan the QR code, enter this key in your authenticator app.</p><code>{manualKey}</code></div></div><form className="form mfa-confirmation-form" onSubmit={confirmEnrollment} noValidate aria-busy={isSubmitting}><FormField label="Authentication code" error={codeError}>{(props) => <input {...props} autoComplete="one-time-code" inputMode="numeric" maxLength={6} pattern="[0-9]{6}" value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))} required />}</FormField><div className="session-actions"><Button type="submit" isLoading={isSubmitting}>Confirm MFA</Button><Button type="button" variant="secondary" onClick={cancelEnrollment} disabled={isSubmitting}>Cancel</Button></div></form></>}</section>;
 }

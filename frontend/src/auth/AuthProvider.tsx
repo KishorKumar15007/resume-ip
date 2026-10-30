@@ -7,6 +7,7 @@ import { isExpired, parseSession, type Session } from "./session";
 interface AuthContextValue {
   session: Session | null;
   establishSession: (tokenResponse: TokenResponse) => boolean;
+  markMfaEnabled: () => void;
   clearSession: () => void;
 }
 
@@ -16,6 +17,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
 
   const clearSession = useCallback(() => setSession(null), []);
+  const markMfaEnabled = useCallback(() => {
+    setSession((current) => current ? { ...current, mfaEnabled: true } : current);
+  }, []);
   const establishSession = useCallback((tokenResponse: TokenResponse): boolean => {
     if (tokenResponse.token_type !== "bearer") return false;
     const parsed = parseSession(tokenResponse.access_token);
@@ -47,6 +51,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [clearSession, session]);
 
-  const value = useMemo(() => ({ session, establishSession, clearSession }), [clearSession, establishSession, session]);
+  const value = useMemo(() => ({ session, establishSession, markMfaEnabled, clearSession }), [clearSession, establishSession, markMfaEnabled, session]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

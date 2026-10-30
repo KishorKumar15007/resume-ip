@@ -22,7 +22,8 @@ from sqlalchemy.engine import make_url
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 BACKEND_DIRECTORY = REPOSITORY_ROOT / "backend"
-RESULT_PATH = REPOSITORY_ROOT / "docs" / "da3" / "results" / "16-mfa-flow.md"
+RESULTS_DIRECTORY = REPOSITORY_ROOT / "docs" / "da3" / "results"
+DEFAULT_RESULT_PATH = RESULTS_DIRECTORY / "16-mfa-flow.md"
 LOADTEST_ENV_VARIABLE = "DA3_LOADTEST_ENV_FILE"
 REQUIRED_CONFIGURATION = {
     "DATABASE_URL",
@@ -295,6 +296,23 @@ def parse_base_url(value: str) -> str:
     return value.rstrip("/")
 
 
+def parse_result_path(value: str) -> Path:
+    candidate = Path(value)
+    path = (REPOSITORY_ROOT / candidate).resolve() if not candidate.is_absolute() else candidate.resolve()
+    try:
+        path.relative_to(RESULTS_DIRECTORY.resolve())
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("--result-path must be inside docs/da3/results") from exc
+    if path.suffix != ".md":
+        raise argparse.ArgumentTypeError("--result-path must name a Markdown file")
+    return path
+
+
+def ensure_requested_result_path_is_unused(path: Path) -> None:
+    if path.exists():
+        raise RuntimeError("requested result path already exists; refusing to overwrite preserved evidence")
+
+
 def load_configuration() -> dict[str, str]:
     configured_path = os.environ.get(LOADTEST_ENV_VARIABLE)
     if not configured_path:
@@ -311,21 +329,28 @@ def load_configuration() -> dict[str, str]:
     return values
 
 
-def write_results(results: list[Result]) -> None:
-    RESULT_PATH.parent.mkdir(parents=True, exist_ok=True)
+def write_results(results: list[Result], result_path: Path = DEFAULT_RESULT_PATH) -> None:
+    result_path.parent.mkdir(parents=True, exist_ok=True)
     overall = "PASS" if results and all(result.passed for result in results) else "FAIL"
     rows = ["# DA3 Step 16 MFA Flow Test", "", f"Overall: **{overall}**", "", "| Step | Expected | Actual |", "| --- | --- | --- |"]
     rows.extend(f"| {result.step} | {result.expected} | {result.actual} |" for result in results)
     rows.append("")
     rows.append("Tokens, provisioning URIs, TOTP secrets, Fernet keys, and connection details are intentionally omitted.")
-    RESULT_PATH.write_text("\n".join(rows) + "\n", encoding="utf-8")
+    result_path.write_text("\n".join(rows) + "\n", encoding="utf-8")
     print("\n".join(rows))
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", required=True, type=parse_base_url, help="explicit local DA3 API origin")
+    parser.add_argument("--result-path", type=parse_result_path, help="new Markdown result path under docs/da3/results")
     args = parser.parse_args()
+    result_path = args.result_path or DEFAULT_RESULT_PATH
+    if args.result_path is not None:
+        try:
+            ensure_requested_result_path_is_unused(result_path)
+        except RuntimeError as exc:
+            parser.error(str(exc))
     try:
         configuration = load_configuration()
     except RuntimeError as exc:
@@ -338,7 +363,8 @@ def main() -> int:
                     "configuration unavailable or invalid",
                     False,
                 )
-            ]
+            ],
+            result_path,
         )
         return 1
     runner = FlowRunner(args.base_url, configuration)
@@ -348,7 +374,7 @@ def main() -> int:
         runner.record("MFA flow execution", "no unexpected exception", f"unexpected error: {type(exc).__name__}", False)
         runner.cleanup()
     finally:
-        write_results(runner.results)
+        write_results(runner.results, result_path)
     return 0 if runner.results and all(result.passed for result in runner.results) else 1
 
 

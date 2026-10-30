@@ -64,10 +64,10 @@ Question 1 also says the application must handle the peak **without downtime**, 
 
 **Q2: security**
 - Keep Argon2id (salt is embedded in each hash). Show per-user salts: the same password gives different hashes.
-- TOTP with `pyotp`; TOTP secret encrypted at rest with a key from the environment; two-step login with a short-lived MFA token that must be **rejected on every normal endpoint**; rate limiting and lockout on login and on code verification; recruiters are required to enrol.
+- TOTP with `pyotp`; TOTP secret encrypted at rest with a key from the environment; optional per-account two-step login with a short-lived MFA token that must be **rejected on every normal endpoint**. Database-backed lockout, replay protection, Nginx rate limiting, security-event logging, and `mfa_enroll`/forced enrolment are excluded and **NOT IMPLEMENTED**.
 - RBAC and ownership checks on PUT/DELETE; candidates see only their own submissions; recruiters only submissions for their own postings.
 - Trivy runs in a container with **identical flags for both scans** (`--severity CRITICAL,HIGH`). Scan **every application image in the repo**: the backend image is hardened and rescanned (required); if a frontend image has its own Dockerfile, scan it too and either harden and rescan it or state in the report why it was not hardened. Hardening: slim base image, multi-stage build, non-root numeric user, no build tools in the final image, `.dockerignore`, upgraded vulnerable dependencies. Regression-test after hardening.
-- Threat agents (suggested): (1) external attacker doing credential stuffing or account takeover → Argon2, TOTP, rate limiting → GDPR Art. 32 (security of processing); (2) malicious or curious insider → RBAC and ownership checks → GDPR Art. 5(1)(f) (integrity and confidentiality) or Art. 25 (data protection by design). Applicability reasoning must be honest: a campus portal in India is primarily governed by the Digital Personal Data Protection Act, 2023; GDPR is cited as the framework the question prescribes, applying to personal data in resumes, and the DPDP Act is mentioned as the domestic equivalent.
+- Threat agents (suggested): (1) external attacker doing credential stuffing or account takeover → Argon2 and optional TOTP → GDPR Art. 32 (security of processing); database-backed lockout and Nginx rate limiting are excluded and **NOT IMPLEMENTED**. (2) malicious or curious insider → RBAC and ownership checks → GDPR Art. 5(1)(f) (integrity and confidentiality) or Art. 25 (data protection by design). Applicability reasoning must be honest: a campus portal in India is primarily governed by the Digital Personal Data Protection Act, 2023; GDPR is cited as the framework the question prescribes, applying to personal data in resumes, and the DPDP Act is mentioned as the domestic equivalent.
 
 **Out of scope:** actually building cloud bursting, Kubernetes, new frameworks, new product features, ML, unrelated refactors.
 
@@ -106,7 +106,7 @@ Never mark `[x]` without the evidence existing. Checklist items:
 | 1c | Instance killed mid-run · Failed count before · Nginx fix shown (config diff) · Failed count after is 0 in every repetition · Availability probe shows no downtime · Before/after table |
 | 1d | Diagram uses real names and ports · Bursting/edge component in a different colour · Explanation ties to the 1a scenario · Reason for choosing it · Components-and-ports table |
 | 2a | Sensitive data identified · Argon2 verified · Per-user salt shown · "Before" and "after" DB screenshots (before labelled as demo) · Sensitive-data inventory table · Hash/salt comparison table |
-| 2b | TOTP enrolment works · Login needs the code · PUT/DELETE role-restricted · Rejection without token shown · MFA-pending token rejected · Rate limiting shown |
+| 2b | TOTP enrolment works · Login needs the code · PUT/DELETE role-restricted · Rejection without token shown · MFA-pending token rejected · Rate limiting/lockout excluded and NOT IMPLEMENTED |
 | 2c | Baseline scan saved · Hardened Dockerfile · Rescan saved with same flags · CRITICAL/HIGH table covering every application image (or the exclusion explained) · App still works |
 | 2d | Two threat agents · Implemented control each (with file/endpoint) · One regulation requirement each · Applicability reason |
 | Overall | README with reproduction steps · Clean-clone test passes · Secrets scan clean · A result table present for every part (1a-2d) · Report PDF · 3-minute video · Branch pushed and accessible |
@@ -200,7 +200,7 @@ Pacing: Phases 0–1 by 20 Oct, Phase 2 by 24 Oct, Phase 3 by 27 Oct, Phase 4 by
 | # | Prompt | What it does |
 |---|---|---|
 | 15 | 2a: sensitive data and hashing | Inventory, Argon2 parameters, per-user salts, hash/salt comparison table, labelled before/after DB evidence. |
-| 16 | 2b: TOTP backend | Encrypted secret, setup/confirm/verify, two-step login, rate limiting and lockout. |
+| 16 | 2b: TOTP backend | Encrypted secret, optional setup/confirm/verify, two-step login; lockout, replay protection, rate limiting, security-event logging, and `mfa_enroll`/forced enrolment excluded and NOT IMPLEMENTED. |
 | 17 | 2b: TOTP frontend | QR enrolment and second-step login. |
 | 18 | 2b: access-control matrix | PUT/DELETE across no/invalid/expired/MFA-pending/wrong-role/non-owner/owner; 401/403/200/204 table. |
 | 19 | 2c: Trivy baseline | Containerised scan of every application image, fixed flags, JSON and table. |

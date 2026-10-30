@@ -2,6 +2,7 @@
 
 import importlib.util
 import sys
+import tempfile
 import types
 import unittest
 from pathlib import Path
@@ -19,6 +20,21 @@ SPEC.loader.exec_module(HARNESS)
 
 
 class MfaFlowHarnessTests(unittest.TestCase):
+    def test_result_path_is_confined_and_requested_collisions_fail_closed(self) -> None:
+        self.assertEqual(HARNESS.DEFAULT_RESULT_PATH.name, "16-mfa-flow.md")
+        with tempfile.TemporaryDirectory(dir=HARNESS.RESULTS_DIRECTORY) as temporary:
+            result_path = Path(temporary) / "20-mfa-hardened-regression.md"
+            parsed = HARNESS.parse_result_path(str(result_path))
+            self.assertEqual(parsed, result_path.resolve())
+            HARNESS.ensure_requested_result_path_is_unused(parsed)
+            parsed.write_text("preserved", encoding="utf-8")
+            with self.assertRaises(RuntimeError):
+                HARNESS.ensure_requested_result_path_is_unused(parsed)
+        for value in ("../outside.md", "docs/da3/results/../outside.md", "docs/da3/results/result.txt"):
+            with self.subTest(value=value):
+                with self.assertRaises(Exception):
+                    HARNESS.parse_result_path(value)
+
     def test_response_parser_rejects_malformed_or_non_object_json(self) -> None:
         class Response:
             def __init__(self, value):

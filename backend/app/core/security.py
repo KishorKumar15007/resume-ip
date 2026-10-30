@@ -46,7 +46,13 @@ def verify_password(password: str, password_hash: str) -> bool:
         return False
 
 
-def _create_scoped_token(user_id: str, role: str, scope: str, expires_in_minutes: int) -> str:
+def _create_scoped_token(
+    user_id: str,
+    role: str,
+    scope: str,
+    expires_in_minutes: int,
+    mfa_enabled: bool | None = None,
+) -> str:
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=expires_in_minutes)
 
     payload = {
@@ -55,6 +61,8 @@ def _create_scoped_token(user_id: str, role: str, scope: str, expires_in_minutes
         "scope": scope,
         "exp": expires_at,
     }
+    if mfa_enabled is not None:
+        payload["mfa_enabled"] = mfa_enabled
 
     return jwt.encode(
         payload,
@@ -63,12 +71,13 @@ def _create_scoped_token(user_id: str, role: str, scope: str, expires_in_minutes
     )
 
 
-def create_access_token(user_id: str, role: str) -> str:
+def create_access_token(user_id: str, role: str, *, mfa_enabled: bool) -> str:
     return _create_scoped_token(
         user_id,
         role,
         scope="access",
         expires_in_minutes=settings.access_token_expire_minutes,
+        mfa_enabled=mfa_enabled,
     )
 
 

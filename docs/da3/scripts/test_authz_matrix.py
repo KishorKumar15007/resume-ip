@@ -44,6 +44,55 @@ class AuthorizationMatrixOfflineTests(unittest.TestCase):
                 with self.assertRaises(Exception):
                     HARNESS.parse_run_id(value)
 
+    def test_custom_artifact_layout_is_isolated_and_validated(self) -> None:
+        layout = HARNESS.ArtifactLayout(
+            results_stem="20-authz-hardened-regression",
+            fixture_stem="20-authz-hardened-fixture",
+            capture_prefix="2c-authz-hardened-regression",
+        )
+        self.assertFalse(layout.is_default)
+        self.assertEqual(
+            HARNESS.manifest_path("s20-example", layout).name,
+            "20-authz-hardened-fixture-s20-example.json",
+        )
+        self.assertEqual(
+            HARNESS.canonical_markdown_path(layout).name,
+            "20-authz-hardened-regression.md",
+        )
+        self.assertEqual(
+            layout.capture_filenames(),
+            (
+                "2c-authz-hardened-regression-no-token-rejected.png",
+                "2c-authz-hardened-regression-swagger-401.png",
+                "2c-authz-hardened-regression-candidate-403.png",
+                "2c-authz-hardened-regression-matrix.png",
+            ),
+        )
+        for value in ("../unsafe", "UPPER", "ab", "name_with_underscore"):
+            with self.subTest(value=value):
+                with self.assertRaises(Exception):
+                    HARNESS.parse_artifact_stem(value)
+
+    def test_custom_layout_refuses_existing_canonical_artifacts_before_fixture_creation(self) -> None:
+        layout = HARNESS.ArtifactLayout(
+            results_stem="20-authz-hardened-regression",
+            fixture_stem="20-authz-hardened-fixture",
+            capture_prefix="2c-authz-hardened-regression",
+        )
+        HARNESS.RESULTS_DIRECTORY.mkdir(parents=True)
+        HARNESS.canonical_json_path(layout).write_text("preserved", encoding="utf-8")
+        with self.assertRaises(HARNESS.MatrixError):
+            HARNESS.assert_unused_run("s20-example", layout)
+        passing = HARNESS.MatrixResult(
+            "DELETE /postings/x",
+            "Recruiter A owner access token",
+            "HTTP 204",
+            "HTTP 204",
+            True,
+        )
+        with self.assertRaises(HARNESS.MatrixError):
+            HARNESS.promote_canonical("s20-example", 1, [passing], layout)
+
     def test_tampered_manifest_and_reused_run_fail_closed(self) -> None:
         manifest = HARNESS.build_manifest("s18-example")
         HARNESS.save_manifest("s18-example", manifest)
@@ -96,7 +145,7 @@ class AuthorizationMatrixOfflineTests(unittest.TestCase):
         source = SCRIPT.read_text(encoding="utf-8")
         self.assertNotIn("hold" + "-for-captures", source)
         self.assertIn("MFA-scope token", source)
-        self.assertIn("verify_capture_files()", source)
+        self.assertIn("verify_capture_files(layout)", source)
 
     def test_preparation_reserves_exact_ids_for_recovery_and_cleanup_order(self) -> None:
         manifest = HARNESS.build_manifest("s18-recover")

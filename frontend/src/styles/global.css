@@ -34,6 +34,9 @@ p { line-height: 1.6; }
 .field-help, .field-error { font-size: 0.875rem; margin: 0; }
 .field-help { color: var(--color-text-muted); }
 .field-error { color: var(--color-error); }
+.mfa-manual-key { background: var(--color-surface-warm); border: 1px solid var(--color-border-strong); display: grid; gap: var(--space-2); margin-top: var(--space-2); padding: var(--space-4); }
+.mfa-manual-key__label { font-weight: 700; margin: 0; }
+.mfa-manual-key code { color: var(--color-text); font-size: 1.125rem; font-weight: 700; letter-spacing: 0.08em; overflow-wrap: anywhere; user-select: all; }
 .button { border: 1px solid transparent; border-radius: var(--radius-control); font-weight: 700; min-height: 2.75rem; padding: var(--space-2) var(--space-4); text-align: center; }
 .button:not(button) { align-items: center; display: inline-flex; justify-content: center; text-decoration: none; }
 .button--primary { background: var(--color-accent); color: var(--color-surface); }

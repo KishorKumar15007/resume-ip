@@ -1,0 +1,9 @@
+services:
+  backend-1:
+    image: resume-backend:da3-hardened
+
+  backend-2:
+    image: resume-backend:da3-hardened
+
+  backend-3:
+    image: resume-backend:da3-hardened

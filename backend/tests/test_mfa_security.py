@@ -69,10 +69,19 @@ class MfaSecurityTests(unittest.TestCase):
         self.security = load_security_module()
 
     def test_access_and_mfa_tokens_have_strictly_separated_scopes(self) -> None:
-        access_token = self.security.create_access_token("user-id", "candidate")
+        access_token = self.security.create_access_token(
+            "user-id", "candidate", mfa_enabled=False
+        )
+        mfa_enabled_access_token = self.security.create_access_token(
+            "user-id", "candidate", mfa_enabled=True
+        )
         mfa_token = self.security.create_mfa_token("user-id", "candidate")
 
         self.assertEqual(self.security.decode_access_token(access_token)["scope"], "access")
+        self.assertFalse(self.security.decode_access_token(access_token)["mfa_enabled"])
+        self.assertTrue(
+            self.security.decode_access_token(mfa_enabled_access_token)["mfa_enabled"]
+        )
         self.assertEqual(self.security.decode_mfa_token(mfa_token)["scope"], "mfa")
         expires_at = jwt.get_unverified_claims(mfa_token)["exp"]
         remaining_seconds = expires_at - datetime.now(timezone.utc).timestamp()
@@ -121,7 +130,9 @@ class MfaSecurityTests(unittest.TestCase):
             "select": lambda _: SimpleNamespace(where=lambda condition: condition),
         }
         get_current_user = load_function(DEPENDENCIES_SOURCE, "get_current_user", namespace)
-        access_token = self.security.create_access_token("user-id", "candidate")
+        access_token = self.security.create_access_token(
+            "user-id", "candidate", mfa_enabled=False
+        )
         self.assertEqual(
             get_current_user(SimpleNamespace(credentials=access_token)).id,
             "user-id",
@@ -283,7 +294,7 @@ class MfaSecurityTests(unittest.TestCase):
                         HTTP_401_UNAUTHORIZED=401,
                     ),
                     "TokenResponse": lambda **kwargs: kwargs,
-                    "create_access_token": lambda *_: "access-token",
+                    "create_access_token": lambda *_, **__: "access-token",
                 },
             )
             return handler, user, database

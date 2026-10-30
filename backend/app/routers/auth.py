@@ -70,6 +70,7 @@ def signup(
     access_token = create_access_token(
         user_id=str(user.id),
         role=user.role,
+        mfa_enabled=False,
     )
 
     return TokenResponse(
@@ -106,7 +107,11 @@ def login(
             mfa_token=create_mfa_token(user_id=str(user.id), role=user.role),
         )
 
-    access_token = create_access_token(user_id=str(user.id), role=user.role)
+    access_token = create_access_token(
+        user_id=str(user.id),
+        role=user.role,
+        mfa_enabled=False,
+    )
 
     return TokenResponse(
         access_token=access_token,
@@ -169,7 +174,13 @@ def confirm_mfa(
 
     user.mfa_enabled = True
     db.commit()
-    return TokenResponse(access_token=create_access_token(str(user.id), user.role))
+    return TokenResponse(
+        access_token=create_access_token(
+            str(user.id),
+            user.role,
+            mfa_enabled=True,
+        )
+    )
 
 
 @router.post("/mfa/verify", response_model=TokenResponse)
@@ -186,4 +197,10 @@ def verify_mfa(request: MFAVerifyRequest, db: Session = Depends(get_db)) -> Toke
     if not _totp(secret).verify(request.code, valid_window=1):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid MFA verification")
 
-    return TokenResponse(access_token=create_access_token(str(user.id), user.role))
+    return TokenResponse(
+        access_token=create_access_token(
+            str(user.id),
+            user.role,
+            mfa_enabled=True,
+        )
+    )

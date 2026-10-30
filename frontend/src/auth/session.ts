@@ -4,6 +4,7 @@ export interface Session {
   token: string;
   userId: string;
   role: UserRole;
+  mfaEnabled: boolean;
   expiresAt: number;
 }
 
@@ -18,7 +19,13 @@ export function parseSession(token: string): Session | null {
   try {
     const payload = JSON.parse(atob(parts[1].replace(/-/g, "+").replace(/_/g, "/"))) as Record<string, unknown>;
     if (typeof payload.sub !== "string" || !isUserRole(payload.role) || typeof payload.exp !== "number") return null;
-    return { token, userId: payload.sub, role: payload.role, expiresAt: payload.exp * 1000 };
+    return {
+      token,
+      userId: payload.sub,
+      role: payload.role,
+      mfaEnabled: payload.mfa_enabled === true,
+      expiresAt: payload.exp * 1000,
+    };
   } catch {
     return null;
   }
