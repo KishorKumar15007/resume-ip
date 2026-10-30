@@ -85,17 +85,21 @@ Legend:
 
 ## 2d — Threats and regulation
 
-- [ ] Two threat agents
-- [ ] Implemented control each (with file/endpoint)
-- [ ] One regulation requirement each
-- [ ] Applicability reason
+- [x] Two threat agents — external credential-stuffing/account-takeover and malicious/curious insider scenarios are recorded in Table 2d.1 and `2d-threat-controls.md`.
+- [x] Implemented control each (with file/endpoint) — source paths, authentication/ownership enforcement points, and retained Step 15/16/18 evidence are cited; lockout and Nginx rate limiting are explicitly recorded as NOT IMPLEMENTED.
+- [x] One regulation requirement each — the draft maps the external attacker to GDPR Article 32 and the insider to GDPR Article 5(1)(f).
+- [x] Applicability reason — the report contains the qualified GDPR Article 3/DPDP framing and links each threat to resume-portal personal data.
+
+## 22b — Deployed demo refresh
+
+- [ ] Pending — redeploy the latest API/frontend to the DA1 Cloud Run services (and the worker only if needed), confirm the live deployment uses `da3-loadtest`, then record the demo video on the deployed URL using synthetic accounts.
 
 ## Overall
 
 - [ ] README with reproduction steps
 - [ ] Clean-clone test passes
 - [ ] Secrets scan clean
-- [ ] A result table present for every part (1a-2d)
+- [x] A result table present for every part (1a-2d) — Table 2d.1 completes the required 2d table; each table is linked to its retained result or source artifact.
 - [ ] Report PDF
 - [ ] 3-minute video
 - [ ] Branch pushed and accessible

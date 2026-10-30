@@ -528,17 +528,26 @@ The measured comparison is 8 to 7 CRITICAL and 126 to 114 HIGH findings for the 
 
 **Requirement:** Name two threat agents relevant to your domain. For each, state the control you implemented against it and one requirement from the regulation that applies to your application (HIPAA for health data, GDPR for personal data in general), with a reason why that regulation applies. (1 mark)
 
-**What I built:** TODO(evidence)
+**Front note:** GDPR is used as the assignment's reference framework. Its territorial applicability is subject to Article 3 and is not automatic merely because personal data is processed. India's Digital Personal Data Protection Act, 2023 provides the domestic legal context. This analysis does not claim legal compliance.
 
-**Commands run:** TODO(evidence)
+**What I built:** The source/evidence ledger in [`2d-threat-controls.md`](2d-threat-controls.md) maps two relevant threat agents to existing controls. The password-storage path calls `hash_password` from `backend/app/core/security.py` in `backend/app/routers/auth.py`; stored synthetic-user evidence confirms Argon2id v19. TOTP is optional per account: `users.mfa_enabled` causes `/auth/login` to return an MFA-scope challenge, and `/auth/mfa/verify` must complete before an access token is issued. Normal protected endpoints decode only access-scope tokens, while the posting and submission routers apply server-side role and ownership checks.
 
-**Result:** TODO(evidence)
+**Commands run:** Read-only repository and retained-result audit only; no application, database, or network activity was run for this section.
 
-**Evidence:** TODO(evidence)
+**Result:**
 
-**Explanation:** TODO(evidence)
+| Threat agent | Why relevant to the resume portal | Control implemented (file / endpoint / evidence) | GDPR requirement | Why GDPR applies |
+| --- | --- | --- | --- | --- |
+| External attacker conducting credential stuffing or account takeover | A compromised candidate or recruiter account can expose personal data in resumes, submission status, job postings, and ranked results. | **Implemented:** `hash_password` / `verify_password` in [`backend/app/core/security.py`](../../backend/app/core/security.py), used by signup/login in [`backend/app/routers/auth.py`](../../backend/app/routers/auth.py); retained synthetic-user evidence confirms Argon2id v19. **Implemented for enrolled accounts:** `/auth/login` returns an MFA challenge and `/auth/mfa/verify` must succeed before an access token is issued. **NOT IMPLEMENTED:** database-backed account lockout; **NOT IMPLEMENTED:** Nginx rate limiting. [`results/15-argon2-check.md`](results/15-argon2-check.md); [`results/16-mfa-flow.md`](results/16-mfa-flow.md) | Article 32 — security of processing | Password hashing and an optional second factor are technical measures relevant to protecting the portal's personal data against unauthorised access; this is not a legal-compliance conclusion. |
+| Malicious or curious insider using a valid account outside its role or ownership | A candidate could seek another candidate's submission; a recruiter could seek another recruiter's submissions. | **Implemented:** `get_current_user` access-scope enforcement in [`backend/app/core/dependencies.py`](../../backend/app/core/dependencies.py), `require_role`, and server-side ownership checks in [`backend/app/routers/postings.py`](../../backend/app/routers/postings.py) and [`backend/app/routers/submissions.py`](../../backend/app/routers/submissions.py). The canonical matrix records Candidate B and Recruiter B cross-user HTTP 403 denials. [`results/18-authz-matrix.md`](results/18-authz-matrix.md); [`results/18-authz-matrix.json`](results/18-authz-matrix.json) | Article 5(1)(f) — integrity and confidentiality | Role and object-ownership checks are relevant to preventing unauthorised access to applicant personal data; this is not a legal-compliance conclusion. |
 
-**Honesty notes:** TODO(evidence)
+*Table 2d.1. Source/evidence audit. The detailed control ledger and exact enforcement paths are in [`2d-threat-controls.md`](2d-threat-controls.md).*
+
+**Evidence:** The Argon2 verification report and its sanitised screenshot are [`results/15-argon2-check.md`](results/15-argon2-check.md) and [`evidence/2a-argon2-check.png`](evidence/2a-argon2-check.png). The retained MFA flow is [`results/16-mfa-flow.md`](results/16-mfa-flow.md), with [`evidence/2b-mfa-flow-test.png`](evidence/2b-mfa-flow-test.png). The complete Step 18 authorization matrix is retained in [`results/18-authz-matrix.md`](results/18-authz-matrix.md) and [`results/18-authz-matrix.json`](results/18-authz-matrix.json); [`evidence/2b-authz-matrix.png`](evidence/2b-authz-matrix.png) and [`evidence/2b-authz-matrix-continuation.png`](evidence/2b-authz-matrix-continuation.png) show the paired captured table.
+
+**Explanation:** Resumes contain personal data because they can identify or help identify applicants and include contact, education, employment, skills, and assessment information. Article 32 is the selected GDPR reference for an external attack because password hashing and an optional second factor are technical safeguards relevant to unauthorised access. TOTP mitigates credential stuffing only for enrolled accounts: it is optional, and the absence of account lockout and Nginx rate limiting leaves repeated login attempts less constrained. Article 5(1)(f) is the selected reference for an insider because role and ownership checks limit access to the authenticated candidate's own submission or the authenticated recruiter's own postings and submissions.
+
+**Honesty notes:** The Step 18 matrix covers both required cross-user read scenarios: Candidate B reading Candidate A's submission returned HTTP 403, and Recruiter B reading Recruiter A's submission returned HTTP 403 both directly and through the posting-submissions list. It does not demonstrate upload, Cloud Storage, Pub/Sub delivery, or worker-scoring authorization. These mappings are a course-work analysis using GDPR as the requested reference framework; they do not assert GDPR or DPDP Act compliance.
 
 ## Reproduction
 
@@ -552,6 +561,7 @@ TODO(evidence)
 - The Cloud SQL console explicitly reports the trial instance as suspended. Neon migration, table verification, and the synthetic 19/19 smoke test are recorded in Section 0; later scale and security work remains pending.
 - Further performance measurement and security-scan results remain pending; the retained Step 11 benchmark and Step 12/13 failover evidence are documented in their respective sections.
 - The DA3 experiments did not exercise the end-to-end resume upload and scoring path; the existing Google Cloud Storage and Pub/Sub code was left unchanged.
+- DA3 measurements were taken on the local Compose stack; the live deployment runs the same code against `da3-loadtest`.
 
 TODO(evidence)
 

@@ -212,6 +212,7 @@ Pacing: Phases 0–1 by 20 Oct, Phase 2 by 24 Oct, Phase 3 by 27 Oct, Phase 4 by
 | # | Prompt | What it does |
 |---|---|---|
 | 22 | Evidence audit | Reconcile `01-checklist.md` and `04-evidence-index.md`; list every gap. |
+| 22b | Redeploy latest API/frontend and record deployed demo | Redeploy the latest API and frontend to the DA1 Cloud Run services, redeploy the worker only if needed, then record the demo video on the deployed URL using synthetic accounts against `da3-loadtest`. |
 | 23 | README, clean-clone test, secrets scan | Reproduction README; fresh clone runs with `docker compose up`; scan full history for secrets. |
 | 24 | Report | Finish `02-report.md`; export to PDF. |
 | 25 | Demo video script | 3-minute shot list (about 90 s each for Q1 and Q2), pre-recorded clips for long runs. |
